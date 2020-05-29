@@ -1,8 +1,16 @@
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import UserMixin
 
 from cinescout import db
+from cinescout import login_manager
 
-class User(db.Model):
+@login_manager.user_loader
+def load_user(id):
+    """Helps flask_login to get user information from database."""
+    return User.query.get(int(id))
+
+
+class User(UserMixin, db.Model):
     __tablename__ = "users"
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True)

@@ -1,0 +1,20 @@
+### User-generated project files ###
+TODO.txt
+*.pdf
+
+
+### Python ###
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+### Other auto-generated files ###
+.DS_Store
+style.css.map
+.pytest_cache
+
+### Ignore database files
+db.sqlite3
+db.sqlite3_bak
+

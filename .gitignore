@@ -16,3 +16,4 @@ style.css.map
 
 ### Ignore database files to avoid merge conflict later
 app.db
+test.db

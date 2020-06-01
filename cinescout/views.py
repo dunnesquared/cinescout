@@ -6,12 +6,12 @@ from cinescout import app # Get app object defined in __init__.py
 from cinescout.models import User
 from cinescout.forms import LoginForm
 
-print("Executing routes.py...")
+print("Executing views.py...")
 
 @app.route('/')
 @app.route('/index')
 def index():
-	message = "This is placeholder content" 
+	message = "This is placeholder content"
 	return render_template("index.html", message=message)
 
 
@@ -43,4 +43,3 @@ def logout():
     logout_user()
     flash('You have been logged out!')
     return redirect(url_for('index'))
-  

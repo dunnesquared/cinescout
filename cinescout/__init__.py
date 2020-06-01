@@ -1,4 +1,4 @@
-"""Defines cinescout directory as package, i.e. can be imnported. 
+"""Defines cinescout directory as package, i.e. can be imnported.
 File executed when package imported."""
 
 print("***Executing __init__.py...***")
@@ -32,8 +32,8 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 print("LoginManager object created and initialized.")
 
-from cinescout import routes
-print("cinescout.routes imported.")
+from cinescout import views
+print("cinescout.views imported.")
 
 from cinescout import models
 print("cinescout.models imported.")

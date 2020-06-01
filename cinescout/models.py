@@ -27,4 +27,43 @@ class User(UserMixin, db.Model):
         return f"{self.username}, {self.email}"
 
 
+class Film(db.Model):
+    __tablename__ = "films"
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(80), nullable=False) # Will have to make this not unique in good version
+    year = db.Column(db.Integer, nullable=False)
+    tmdb_id = db.Column(db.Integer, nullable=True)
 
+    def __repr__(self):
+        return f"{self.id}, {self.title}, {self.year}, {self.tmdb_id}"
+
+
+class CriterionFilm(db.Model):
+    __tablename__ = "criterion_films"
+    id = db.Column(db.Integer, primary_key=True)
+    film_id = db.Column(db.Integer, db.ForeignKey('films.id'), nullable=False)
+
+    def __repr__(self):
+        return f"{self.id}, film_id: {self.film_id}"
+
+
+class PersonalFilm(db.Model):
+    __tablename__ = "personal_films"
+    id = db.Column(db.Integer, primary_key=True)
+    film_id = db.Column(db.Integer, db.ForeignKey('films.id'), nullable=False)
+
+    def __repr__(self):
+        return f"{self.id}, film_id: {self.film_id}"
+
+
+class FilmListItem(db.Model):
+    __tablename__ = "movie_lists"
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    title = db.Column(db.String(80), nullable=False) # Will have to make this not unique in good version
+    year = db.Column(db.Integer, nullable=False)
+    tmdb_id = db.Column(db.Integer, nullable=True)
+    # film_id = db.Column(db.Integer, db.ForeignKey('films.id'), nullable=False)
+
+    def __repr__(self):
+        return f"{self.id}, user_id: {self.user_id}, title: {self.title}, year: {self.year}, tmdb_id: {self.tmdb_id}"

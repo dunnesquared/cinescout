@@ -17,3 +17,6 @@ style.css.map
 ### Ignore database files to avoid merge conflict later
 app.db
 test.db
+
+### Ignore csv files - don't want to have to commit them every time they change.
+*.csv

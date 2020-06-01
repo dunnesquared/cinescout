@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block javascript %}
+  <script src="{{ url_for('static', filename='js/addremove.js') }}"></script>
+{% endblock %}
+
+{% block body %}
+  <h1><i>{{ movie_info['title'] }}</i></h1>
+
+  <img src="{{ movie_info['poster_url_full'] }}"></img>
+  <br>
+  {% if current_user.is_authenticated %}
+    <div id="button-container">
+    {% if not movie_info['on_user_list'] %}
+        <button id="add-button" type="submit"><h2>➕ Add film to list</h2></button>
+    {% else %}
+        <button id="remove-button" type="submit"><h2>➖ Remove film from list</h2></button>
+    {% endif %}
+    </div>
+
+    <!-- <a href="{{ url_for('add_to_list', title=movie_info['title'], year=movie_info['year'], tmdb_id=movie_info['tmdb_id'])}}"><h3>➕</h3> </a> -->
+  {% endif %}
+  <table>
+    <tr>
+      <th>Opening Date:</th>
+      <td> {{ movie_info['opening_date'] }} </td>
+    </tr>
+
+    <tr>
+      <th>Overview:</th>
+      <td> {{ movie_info['overview'] }} </td>
+    </tr>
+
+
+    <tr>
+      <th>NYT Critics Pick:</th>
+      {% if movie_info['nyt_critics_pick'] == 1 %}
+        <td> Yes! </td>
+      {% elif movie_info['nyt_critics_pick'] == 0 %}
+        <td> No. </td>
+      {% else %}
+        <td> N/A </td>
+      {% endif %}
+    </tr>
+    <tr>
+      <th>NYT Review Summary</th>
+      <td> {{ movie_info['nyt_summary_short'] }} </td>
+    </tr>
+
+  </table>
+
+  <!-- Data values required to add/remove film -->
+  <input id="tmdb-id" type="hidden" value="{{ movie_info['tmdb_id'] }}">
+  <input id="title" type="hidden" value="{{ movie_info['title'] }}">
+  <input id="year" type="hidden" value="{{ movie_info['year'] }}">
+  <!-- <input id="film-list-item-id" type="hidden" value="{{ movie_info['film_list_item_id'] }}"> -->
+
+
+
+
+
+
+
+
+
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block body %}
+  <h1>Browse</h1>
+
+  <h2>All Films</h2>
+
+  <ul>
+  {% for film in films %}
+
+    <li>
+      <a href="{{ url_for('movie_info', tmdb_id=film.tmdb_id )}}">
+        {{ film.title }}
+      </a>
+    </li>
+
+  {% endfor %}
+  </ul>
+
+  <h2>Criterion Films</h2>
+
+  <ul>
+  {% for film in criterion_films %}
+
+    <li>
+      <a href="{{ url_for('movie_info', tmdb_id=film.tmdb_id )}}">
+        {{ film.title }}
+      </a>
+    </li>
+
+  {% endfor %}
+  </ul>
+
+  <h2>Personal Films</h2>
+  <ul>
+  {% for film in personal_films %}
+
+    <li>
+      <a href="{{ url_for('movie_info', tmdb_id=film.tmdb_id )}}">
+        {{ film.title }}
+      </a>
+    </li>
+
+  {% endfor %}
+  </ul>
+
+{% endblock %}

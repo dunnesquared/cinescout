@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block javascript %}
+  <script src="{{ url_for('static', filename='js/remove.js') }}"></script>
+{% endblock %}
+
+{% block body %}
+  <h1>{{ current_user.username }}'s List</h1>
+
+  <!-- <ul>
+    <li>Dudder: The Movie</li>
+    <li>Giovanni: Pizza Cat Adventures</li>
+  </ul> -->
+
+  <ul>
+
+  {% for film in films %}
+    <li>
+      <a href="{{ url_for('movie_info', tmdb_id=film.tmdb_id )}}">
+        {{ film.title }} ({{ film.year }})
+      </a>
+
+      <!-- <button class="trash-button"
+              name="remove" type="submit" value="{{ film.id }}"
+              alt="remove item">🗑</button> -->
+
+      <button class="trash-button"
+              name="remove" type="submit" value="{{ film.tmdb_id  }}"
+              alt="remove item">🗑</button>
+
+    </li>
+
+  {% else %}
+    </ul>
+    <!-- <p> Your list is empty. Add some films today! </p> -->
+
+  {% endfor %}
+  </ul>
+
+  <p id="empty-list-message">Your list is empty. Add some films today! </p>
+
+
+
+{% endblock %}

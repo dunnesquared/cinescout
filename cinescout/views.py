@@ -66,7 +66,6 @@ def logout():
 def movie_list():
     """Displays list of movies user has added."""
 
-    # films = Film.query.join(FilmListItem).filter_by(user_id=current_user.id).all()
     films = FilmListItem.query.filter_by(user_id=current_user.id).all()
 
     return render_template("list.html", films=films)
@@ -101,47 +100,6 @@ def add_to_list():
     else:
         return jsonify({"success": False})
 
-    # if not film:
-    #     # Add film to list
-    #     new_film = FilmListItem(user_id=current_user.id,
-    #                             title=title,
-    #                             year=year,
-    #                             tmdb_id=tmdb_id)
-    #
-    #     db.session.add(new_film)
-    #     db.session.commit()
-    #
-    #     return f"Movie added to list: {title} ({year}), {tmdb_id}"
-    # else:
-    #     # Do nothing.
-    #     return f"This movie is already on your list."
-
-# @app.route('/add-to-list')
-# @login_required
-# def add_to_list():
-#     """Adds movies to user's list"""
-#     tmdb_id = int(request.args.get("tmdb_id"))
-#     title = request.args.get("title")
-#     year = int(request.args.get("year"))
-#
-#     # See whether movie is user list
-#     film = FilmListItem.query.filter_by(user_id=current_user.id, tmdb_id=tmdb_id).first()
-#
-#     if not film:
-#         # Add film to list
-#         new_film = FilmListItem(user_id=current_user.id,
-#                                 title=title,
-#                                 year=year,
-#                                 tmdb_id=tmdb_id)
-#
-#         db.session.add(new_film)
-#         db.session.commit()
-#
-#         return f"Movie added to list: {title} ({year}), {tmdb_id}"
-#     else:
-#         # Do nothing.
-#         return f"This movie is already on your list."
-
 
 @app.route('/remove-from-list', methods=["POST"])
 @login_required
@@ -159,29 +117,9 @@ def remove_from_list():
         db.session.commit()
         return jsonify({"success": True})
 
-        # return "Movie removed from list!!"
-
     else:
         return jsonify({"success": False})
-        # return "Film not on list. Can't be removed!"
 
-
-# @app.route('/remove-from-list', methods=["POST"])
-# @login_required
-# def remove_from_list():
-#     #Check that film is on list
-#     item_id = request.form.get('remove')
-#     print(item_id)
-#
-#     film = FilmListItem.query.filter_by(id=item_id, user_id=current_user.id).first()
-#     print(film)
-#
-#     if film:
-#         db.session.delete(film)
-#         db.session.commit()
-#         return "Movie removed from list!!"
-#     else:
-#         return "Film not on list. Can't be removed!"
 
 
 @app.route("/browse")
@@ -208,11 +146,6 @@ def search_results():
     """Gets results from the TMDB."""
 
     if request.method == 'POST':
-
-        # if request.form.get("criterion_box"):
-        #     print("FILTER FOR CRITERION RESULTS!")
-        # else:
-        #     print("DO NOT FILTER FOR CRITERION RESULTS!")
 
         title = request.form.get("title")
 
@@ -315,8 +248,8 @@ def movie_info(tmdb_id):
             print("Using heuristic that NYT reviewed film at closest date AFTER TMDB's release date....")
 
             print("Analyzing NYT review results...")
+			
             # Get critics pick data and summary short for review that has years closest to TMDBs
-
             years = []
 
             for result in nyt_data['results']:
@@ -376,10 +309,6 @@ def movie_info(tmdb_id):
     if current_user.is_authenticated:
         film = FilmListItem.query.filter_by(tmdb_id=tmdb_id, user_id=current_user.id).first()
         on_user_list = True if film else False
-        # if film:
-        #     on_user_list = True
-        #     film_list_item_id = film.id
-
         print(f"On user list? {on_user_list}, id: {film_list_item_id}")
 
 
@@ -393,7 +322,6 @@ def movie_info(tmdb_id):
         'nyt_critics_pick': nyt_critics_pick,
         'nyt_summary_short': nyt_summary_short,
         'on_user_list': on_user_list,
-        # 'film_list_item_id': film_list_item_id
     }
 
 

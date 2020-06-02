@@ -19,21 +19,25 @@
     </head>
 
     <body>
-      <div>
-        <strong>cinescout:</strong>
-        <a href= "{{ url_for('search') }}">Search</a>
-        <a href="{{ url_for('browse')}}">Browse</a>
 
-        {% if current_user.is_anonymous %}
-          <a href="{{ url_for('login')}}">Login</a>
-        {% endif %}
+      <div class="container-fluid">
 
-          {% if current_user.is_authenticated %}
-            <a href="{{ url_for('movie_list')}}">List</a>
-            <a href="{{ url_for('logout')}}">Logout</a>
-            (Hi {{ current_user.username }}!)
+        <nav>
+          <strong>cinescout:</strong>
+          <a href= "{{ url_for('search') }}">Search</a>
+          <a href="{{ url_for('browse')}}">Browse</a>
+
+          {% if current_user.is_anonymous %}
+            <a href="{{ url_for('login')}}">Login</a>
           {% endif %}
-      </div>
+
+            {% if current_user.is_authenticated %}
+              <a href="{{ url_for('movie_list')}}">List</a>
+              <a href="{{ url_for('logout')}}">Logout</a>
+              (Hi {{ current_user.username }}!)
+            {% endif %}
+        </nav>
+        
       <hr>
 
       {% with messages = get_flashed_messages() %}
@@ -49,6 +53,8 @@
 
       {% block body %}
       {% endblock %}
+
+      </div>
     </body>
 
 </html>

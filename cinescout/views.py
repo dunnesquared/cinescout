@@ -398,8 +398,3 @@ def movie_info(tmdb_id):
 
 
     return render_template("movie.html", movie_info=movie_info)
-
-
-@app.errorhandler(404)
-def page_not_found(e):
-    return f"Page not Found (404): {request.path}"

@@ -38,4 +38,8 @@ print("cinescout.views imported.")
 from cinescout import models
 print("cinescout.models imported.")
 
+from cinescout import errors
+print("cinescout.errors imported.")
+
+
 print("***End of __init__.py***")

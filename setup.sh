@@ -1,6 +1,7 @@
 # Script to setup project environment variables.
 # To run type the following on the console: "source setup.sh"
 echo "Setting up Flask environment variables..."
+export FLASK_ENV=development
 export FLASK_APP=app.py
 export FLASK_DEBUG=True
 printf "FLASK_APP=%s\n" $FLASK_APP

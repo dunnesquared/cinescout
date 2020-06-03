@@ -13,7 +13,6 @@ class Movie:
                  release_date=None, overview=None, runtime=None):
                  self.id = id
                  self.title = title
-                 self.year = title
                  self.release_year = release_year
                  self.release_date = release_date
                  self.overview = overview
@@ -200,7 +199,7 @@ class NytMovieReview(MovieReview):
             # Check case where year in NYT db and TMBD don't match.
             print("Checking to see whether release year in TMDB and NYT don't match....")
 
-            print(f"Delaying next NYT API call by {NYT_API_DELAY} seconds...")
+            print(f"Delaying next NYT API call by {cls.delay} seconds...")
             time.sleep(cls.delay)
 
             print("Making second request to NYT with TMDB release year unspecified...")

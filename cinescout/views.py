@@ -10,6 +10,7 @@ from flask_login import current_user, login_user, logout_user, login_required
 from cinescout import app, db # Get app, db object defined in __init__.py
 from cinescout.models import User, Film, CriterionFilm, PersonalFilm, FilmListItem
 from cinescout.forms import LoginForm
+from cinescout.movies import TmdbMovie
 
 NYT_API_KEY = app.config['NYT_API_KEY']
 TMDB_API_KEY = app.config['TMDB_API_KEY']
@@ -152,19 +153,20 @@ def search_results():
         if title is None:
             return "<em> Unable to get title from form. Please debug. </em>"
 
-        # Get JSON response from New York Times
-        res = requests.get("https://api.themoviedb.org/3/search/movie",
-                            params={"api_key": TMDB_API_KEY, "query": title.strip()})
-
-        tmdb_data = res.json()
-
-        if tmdb_data["total_results"] == 0:
-            return "<em> TMDB: No results matching that query. </em>"
-
-        if tmdb_data["total_results"] >= 1:
-            # Get results for each movie
-            movies = tmdb_data["results"]
-
+        # # Get JSON response from New York Times
+        # res = requests.get("https://api.themoviedb.org/3/search/movie",
+        #                     params={"api_key": TMDB_API_KEY, "query": title.strip()})
+		#
+        # tmdb_data = res.json()
+		#
+        # if tmdb_data["total_results"] == 0:
+        #     return "<em> TMDB: No results matching that query. </em>"
+		#
+        # if tmdb_data["total_results"] >= 1:
+        #     # Get results for each movie
+        #     movies = tmdb_data["results"]
+		
+        movies = TmdbMovie.get_movie_list_by_title(title)
         return render_template("results.html", movies=movies)
 
 
@@ -248,7 +250,7 @@ def movie_info(tmdb_id):
             print("Using heuristic that NYT reviewed film at closest date AFTER TMDB's release date....")
 
             print("Analyzing NYT review results...")
-			
+
             # Get critics pick data and summary short for review that has years closest to TMDBs
             years = []
 

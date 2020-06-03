@@ -26,8 +26,8 @@ class Movie:
         pass
 
     @classmethod
-    def get_movie_info(cls):
-        """Builds Movie object."""
+    def get_movie_info_by_id(cls):
+        """Builds Movie object with id to search external api db."""
         pass
 
 
@@ -37,11 +37,10 @@ class Movie:
         title = '{self.title}'
         release year = {self.release_year}
         release date = {self.release_date}
-        overview = {self.overview}
-        runtime = {self.runtime} min.
-        """)
+        overview = {self.overview} runtime = {self.runtime} min.""")
 
-
+    def __repr__(self):
+        pass
 
 class TmdbMovie(Movie):
 
@@ -53,13 +52,13 @@ class TmdbMovie(Movie):
 
     def __init__(self, id=None, title=None, release_year=None,
                  release_date=None, overview=None, runtime=None,
-                 poster_rel_url=None):
+                 poster_full_url=None):
 
         Movie.__init__(self, id, title, release_year, release_date,
                         overview, runtime)
 
 
-        self.poster_rel_url = poster_rel_url
+        self.poster_full_url = poster_full_url
 
 
     @classmethod
@@ -82,9 +81,53 @@ class TmdbMovie(Movie):
 
 
     @classmethod
-    def get_movie_info(cls):
-        """Get info from TMDB API  to create instance."""
-        pass
+    def get_movie_info_by_id(cls, id):
+        """Get info from TMDB API  to create instance.
+
+        Args:
+            id: Integer representing TMDB movie id.
+
+        Returns:
+            result: A dictionary with three fields
+                success: True or False, depending on wheter movie found.
+                status_code: Status code of Http response
+                movie: Movie object with all salient fields filled-in, or None
+                       if method could not get data.
+        """
+        # Setup return value
+        result = {'success': True, 'status_code': 200, 'movie': None}
+
+        # Get movie info TMDB database
+        res = requests.get(f"https://api.themoviedb.org/3/movie/{id}",
+                            params={"api_key": cls.api_key})
+
+        # Check whether movie found
+        if res.status_code != 200:
+            result['success'] = False
+            result['status_code'] = res.status_code
+        else:
+            # Deserialize JSON response object
+            tmdb_movie_data = res.json()
+
+            # Get year movie was released
+            release_year = int(tmdb_movie_data['release_date'].split('-')[0].strip()) or None
+
+            # Build full url for movie poster
+            poster_full_url = None
+            if tmdb_movie_data['poster_path']:
+                poster_full_url = cls.poster_base_url + cls.poster_size + tmdb_movie_data['poster_path']
+
+            movie = cls(id=id, title=tmdb_movie_data['title'],
+                        release_year = release_year,
+                        release_date=tmdb_movie_data['release_date'],
+                        overview=tmdb_movie_data['overview'],
+                        runtime=tmdb_movie_data['runtime'],
+                        poster_full_url=poster_full_url)
+
+            result['movie'] = movie
+
+
+        return result
 
 
 

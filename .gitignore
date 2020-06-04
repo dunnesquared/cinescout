@@ -1,0 +1,22 @@
+### User-generated project files ###
+TODO.txt
+*.pdf
+
+
+### Python ###
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+### Other auto-generated files ###
+.DS_Store
+style.css.map
+.pytest_cache
+
+### Ignore database files to avoid merge conflict later
+app.db
+test.db
+
+### Ignore csv files - don't want to have to commit them every time they change.
+*.csv

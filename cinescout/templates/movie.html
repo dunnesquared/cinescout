@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block javascript %}
+  <script src="{{ url_for('static', filename='js/addremove.js') }}"></script>
+{% endblock %}
+
+{% block body %}
+  <h1><i>{{ movie.title }}</i></h1>
+
+  <img src="{{ movie.poster_full_url }}"></img>
+  <br>
+  {% if current_user.is_authenticated %}
+    <div id="button-container">
+    {% if not on_user_list %}
+        <button id="add-button" type="submit"><h2>➕ Add film to list</h2></button>
+    {% else %}
+        <button id="remove-button" type="submit"><h2>➖ Remove film from list</h2></button>
+    {% endif %}
+    </div>
+
+  {% endif %}
+  <table>
+    <tr>
+      <th>Opening Date:</th>
+      <td> {{ movie.release_date }} </td>
+    </tr>
+
+    <tr>
+      <th>Overview:</th>
+      <td> {{ movie.overview }} </td>
+    </tr>
+
+
+    <tr>
+      <th>NYT Critics Pick:</th>
+      {% if review.critics_pick == 1 %}
+        <td> Yes! </td>
+      {% elif review.critics_pick == 0 %}
+        <td> No. </td>
+      {% else %}
+        <td> N/A </td>
+      {% endif %}
+    </tr>
+    <tr>
+      <th>NYT Review Summary</th>
+      <td> {{ review.text }} </td>
+    </tr>
+
+  </table>
+
+  <!-- Data values required to add/remove film -->
+  <input id="tmdb-id" type="hidden" value="{{ movie.id }}">
+  <input id="title" type="hidden" value="{{ movie.title }}">
+  <input id="year" type="hidden" value="{{ movie.release_year }}">
+
+
+{% endblock %}

@@ -4,6 +4,7 @@ echo "Setting up Flask environment variables..."
 export FLASK_ENV=development
 export FLASK_APP=app.py
 export FLASK_DEBUG=True
+printf "FLASK_ENV=%s\n" $FLASK_ENV
 printf "FLASK_APP=%s\n" $FLASK_APP
 printf "FLASK_DEBUG=%s\n" $FLASK_DEBUG
 

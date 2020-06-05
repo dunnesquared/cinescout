@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.fields.html5 import EmailField
-from wtforms.validators import DataRequired, ValidationError, Email, EqualTo, Regexp
+from wtforms.validators import DataRequired, ValidationError, Email, EqualTo, Regexp, Length
 from cinescout.models import User
 
 class LoginForm(FlaskForm):
@@ -18,8 +18,10 @@ class RegistrationForm(FlaskForm):
                             ])
     email = EmailField('Email', validators=[ DataRequired(), Email()])
 
-    password = PasswordField('Password', validators=[DataRequired(), 
-                            EqualTo('password2', message="Passwords do not match.")])
+    password = PasswordField('Password', validators=[DataRequired(),
+                            EqualTo('password2', message="Passwords do not match."),
+                            Length(min=8, message="Password must be at least 8 characters long.")
+                            ])
     password2 = PasswordField('Re-enter Password',
                               validators=[DataRequired()])
     submit = SubmitField('Register')

@@ -49,21 +49,47 @@ class RouteTests(unittest.TestCase):
 			follow_redirects=True
 		)
 
+
 	# **** TESTS ****
 	def test_main_page(self):
 		response = self.app.get('/', follow_redirects=True)
 		self.assertEqual(response.status_code, 200)
 
-	# *** Login ***
+	# *** LOGIN ***
 	def test_valid_login(self):
 		response = self.login(username="Alex", password="123")
 		self.assertIn(b'You have been logged in!', response.data)
 
 	def test_invalid_login(self):
+		# Bad password.
 		response = self.login(username="Alex", password="789")
 		self.assertIn(b'Invalid username or password', response.data)
 
-	# *** Register ***
+		# User does not exist.
+		response = self.login(username="AlexO324", password="123")
+		self.assertIn(b'Invalid username or password', response.data)
+
+	def test_login_when_loggedin(self):
+		response = self.login(username="Alex", password="123")
+		self.assertNotIn(b'Login', response.data)
+		self.assertIn(b'Logout', response.data)
+
+	def test_login_no_data(self):
+		# No data
+		response = self.login(username=None, password=None)
+		self.assertIn(b'This field is required.', response.data)
+
+		# Whitespace data
+		response = self.login(username="   ", password="\n\t\r   ")
+		self.assertIn(b'This field is required.', response.data)
+
+	def test_login_remember_me(self):
+		# Can't figure out a good way to test this; proabably
+		# have to use a higher-level framework like Selenium.
+		pass
+
+
+	# *** REGISTER ***
 	def test_register_page_anonymous(self):
 		response = self.app.get('/register', follow_redirects=True)
 		self.assertEqual(response.status_code, 200)
@@ -138,7 +164,6 @@ class RouteTests(unittest.TestCase):
 		)
 		self.assertIn(b'An account already exists with this email address.', response.data)
 
-
 	def test_bad_input(self):
 		# Non alphanumeric characters in username
 		response = self.app.post(
@@ -157,7 +182,6 @@ class RouteTests(unittest.TestCase):
 			follow_redirects=True
 		)
 		self.assertIn(b'Invalid email address.', response.data)
-
 
 	def test_different_passwords(self):
 		response = self.app.post(

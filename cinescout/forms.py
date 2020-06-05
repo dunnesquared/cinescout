@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.fields.html5 import EmailField
-from wtforms.validators import DataRequired, ValidationError, Email, EqualTo
+from wtforms.validators import DataRequired, ValidationError, Email, EqualTo, Regexp
 from cinescout.models import User
 
 class LoginForm(FlaskForm):
@@ -11,8 +11,12 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Sign In')
 
 class RegistrationForm(FlaskForm):
-    username = StringField('Username', validators=[DataRequired()])
-    email = EmailField('Email', validators=[DataRequired(), Email()])
+    username = StringField('Username',
+                            validators=[DataRequired(),
+                                        Regexp('^\w+$',
+                                        message="Username must contain only alphanumeric or underscore characters.")
+                            ])
+    email = EmailField('Email', validators=[ DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired()])
     password2 = PasswordField('Re-enter Password',
                               validators=[DataRequired(), EqualTo('password')])
@@ -23,7 +27,7 @@ class RegistrationForm(FlaskForm):
         """Checks that username has not already been used"""
         user = User.query.filter_by(username=username.data).first()
         if user:
-            raise ValidationError('User name already taken. Please use another.')
+            raise ValidationError('Username already taken. Please use another.')
 
     def validate_email(self, email):
         """Checks that user is not creating multiple accounts with same

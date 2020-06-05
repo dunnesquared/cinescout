@@ -29,6 +29,7 @@
 
           {% if current_user.is_anonymous %}
             <a href="{{ url_for('login')}}">Login</a>
+            <a href="{{ url_for('register')}}">Register</a>
           {% endif %}
 
             {% if current_user.is_authenticated %}
@@ -37,7 +38,7 @@
               (Hi {{ current_user.username }}!)
             {% endif %}
         </nav>
-        
+
       <hr>
 
       {% with messages = get_flashed_messages() %}

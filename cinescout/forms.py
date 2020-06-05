@@ -17,9 +17,11 @@ class RegistrationForm(FlaskForm):
                                         message="Username must contain only alphanumeric or underscore characters.")
                             ])
     email = EmailField('Email', validators=[ DataRequired(), Email()])
-    password = PasswordField('Password', validators=[DataRequired()])
+
+    password = PasswordField('Password', validators=[DataRequired(), 
+                            EqualTo('password2', message="Passwords do not match.")])
     password2 = PasswordField('Re-enter Password',
-                              validators=[DataRequired(), EqualTo('password')])
+                              validators=[DataRequired()])
     submit = SubmitField('Register')
 
 

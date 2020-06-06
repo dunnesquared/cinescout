@@ -50,7 +50,9 @@ class RouteTests(unittest.TestCase):
 		)
 
 
-	# **** TESTS ****
+	# +++++++++++++++++++++++++++++++ TESTS +++++++++++++++++++++++++++++++++
+
+	# *** INDEX ***
 	def test_main_page(self):
 		response = self.app.get('/', follow_redirects=True)
 		self.assertEqual(response.status_code, 200)
@@ -87,6 +89,17 @@ class RouteTests(unittest.TestCase):
 		# Can't figure out a good way to test this; proabably
 		# have to use a higher-level framework like Selenium.
 		pass
+
+	# *** LOGOUT ***
+	def test_logout_when_logged_in(self):
+		response = self.login(username="Alex", password="123")
+		response = self.logout()
+		self.assertIn(b'Login', response.data)
+		self.assertNotIn(b'Logout', response.data)
+
+	def test_logout_when_not_logged_in(self):
+		response = self.logout()
+		self.assertIn(b'Access Denied', response.data)
 
 
 	# *** REGISTER ***

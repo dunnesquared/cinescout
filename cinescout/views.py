@@ -48,7 +48,7 @@ def register():
 		user.set_password(form.password.data)
 		db.session.add(user)
 		db.session.commit()
-		flash(f'Welcome to cinescout, {form.username.data}! Now login to get started.')
+		flash(f'Welcome to cinescout, {form.username.data}! Now login to get started.', 'success')
 		return redirect(url_for('login'))
 
 	# When users GET the register page
@@ -85,7 +85,7 @@ def login():
 @login_required
 def logout():
     logout_user()
-    flash('You have been logged out!')
+    flash('You have been logged out!', 'success')
     return redirect(url_for('index'))
 
 

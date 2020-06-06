@@ -69,13 +69,13 @@ def login():
         user = User.query.filter_by(username=form.username.data).first()
 
         if user is None or not user.check_password(form.password.data):
-            flash('Invalid username or password.')
+            flash('Invalid username or password.', 'error')
             return redirect(url_for('login'))
 
 		# Remember user id in case session ended and user then re-enters app,
 		# e.g. closing tab while still logged-in.
         login_user(user, remember=form.remember_me.data)
-        flash('You have been logged in!')
+        flash('You have been logged in!', 'success')
         return redirect(url_for('index'))
 
     return render_template('login.html', title='Sign In', form=form)

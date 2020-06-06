@@ -58,6 +58,8 @@ def register():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     """Log-in user with valid credentials. Reject otherwise."""
+
+	# Logged-in users don't get to log-in before logging out again.
     if current_user.is_authenticated:
         return redirect(url_for('index'))
 
@@ -65,11 +67,13 @@ def login():
 
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
-        print(f"{user}")
+
         if user is None or not user.check_password(form.password.data):
-            flash('Invalid username or password')
+            flash('Invalid username or password.')
             return redirect(url_for('login'))
 
+		# Remember user id in case session ended and user then re-enters app,
+		# e.g. closing tab while still logged-in.
         login_user(user, remember=form.remember_me.data)
         flash('You have been logged in!')
         return redirect(url_for('index'))

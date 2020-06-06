@@ -7,6 +7,7 @@ from wtforms.validators import DataRequired, ValidationError, Email, EqualTo, Re
 from cinescout.models import User
 
 class LoginForm(FlaskForm):
+    """Form for new users to log-in to site."""
     username = StringField('Username', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
     remember_me = BooleanField('Remember Me')
@@ -14,7 +15,7 @@ class LoginForm(FlaskForm):
 
 
 class RegistrationForm(FlaskForm):
-    """Form for new users to register with site"""
+    """Form for new users to register with site."""
 
     # Class data
     username = StringField('Username',

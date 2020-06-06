@@ -4,7 +4,11 @@ from cinescout import app, db
 @app.errorhandler(404)
 def not_found_error(e):
 	return render_template("errors/404.html"), 404
-    # return f"Page not Found (404): {request.path}"
+
+
+@app.errorhandler(401)
+def not_found_error(e):
+	return render_template("errors/401.html"), 401
 
 
 # THIS CODE WILL SUPERSEDE INTERACTIVE DEBUGGER DURING DEVELOPMENT

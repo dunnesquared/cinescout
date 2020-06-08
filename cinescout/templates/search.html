@@ -3,18 +3,14 @@
 {% block body %}
 <h1>Search</h1>
 
-<div>Please enter a title of a movie to search</div>
+<section>
+  <h2> By title </h2>
+  <div>Please enter a title of a movie to search</div>
 
-<form action="{{ url_for('search_results') }}" method="post">
-  <input type="text" name="title">
-  <!-- <br>
-  <br>
-  <input type="checkbox" id="critirion_box" name="criterion_box">
-  <label for="criterion_box"><i>Limit search to Criterion movies?</i></label>
-  <br>
-  <br> -->
-
-  <input type="submit" value="Search">
-</form>
+  <form action="{{ url_for('search_results') }}" method="post">
+    <input type="text" name="title">
+    <input type="submit" value="Search">
+  </form>
+</section>
 
 {% endblock %}

@@ -175,7 +175,7 @@ def search():
 # def search():
 #     return render_template("search.html")
 
-@app.route("/results", methods=["POST"])
+@app.route("/title-search-results", methods=["POST"])
 def search_results_title():
     """Gets movie results from the TMDB based on title supplied."""
 
@@ -185,7 +185,8 @@ def search_results_title():
         movies = TmdbMovie.get_movie_list_by_title(form.title.data.strip())
         return render_template("results.html", movies=movies)
 
-
+    # In case users GET the page, or the data is invalid
+    return render_template("search.html", title_form=form)
 
 
 # ***** OLD *****

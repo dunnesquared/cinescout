@@ -66,3 +66,9 @@ class RegistrationForm(FlaskForm):
 
         if user:
             raise ValidationError('An account already exists with this email address. Please use another.')
+
+
+class SearchByTitleForm(FlaskForm):
+    """Form to search for movie by title keywords"""
+    title = StringField('Title', validators=[DataRequired()])
+    submit = SubmitField('Search')

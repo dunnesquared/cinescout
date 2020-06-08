@@ -7,9 +7,18 @@
   <h2> By title </h2>
   <div>Please enter a title of a movie to search</div>
 
-  <form action="{{ url_for('search_results') }}" method="post">
-    <input type="text" name="title">
-    <input type="submit" value="Search">
+  <form action="{{ url_for('search_results_title') }}" method="post">
+    {# Add token to prevent CRSF attacks #}
+     {{ title_form.hidden_tag() }}
+
+     {{ title_form.title(size=32) }}<br>
+
+     {% for error in title_form.title.errors %}
+       <span style="color: red;">[{{ error }}]</span>
+     {% endfor %}
+
+      <div>{{ title_form.submit() }}</div>
+
   </form>
 </section>
 

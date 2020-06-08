@@ -9,7 +9,7 @@ from flask_login import current_user, login_user, logout_user, login_required
 
 from cinescout import app, db # Get app, db object defined in __init__.py
 from cinescout.models import User, Film, CriterionFilm, PersonalFilm, FilmListItem
-from cinescout.forms import LoginForm, RegistrationForm
+from cinescout.forms import LoginForm, RegistrationForm, SearchByTitleForm
 from cinescout.movies import TmdbMovie, NytMovieReview
 
 NYT_API_KEY = app.config['NYT_API_KEY']
@@ -166,9 +166,29 @@ def browse():
 
 @app.route("/search")
 def search():
-    return render_template("search.html")
+    """Renders search forms"""
+    title_form = SearchByTitleForm()
+    return render_template("search.html", title_form=title_form)
 
 
+# @app.route("/search")
+# def search():
+#     return render_template("search.html")
+
+@app.route("/results", methods=["POST"])
+def search_results_title():
+    """Gets movie results from the TMDB based on title supplied."""
+
+    form = SearchByTitleForm()
+
+    if form.validate_on_submit():
+        movies = TmdbMovie.get_movie_list_by_title(form.title.data.strip())
+        return render_template("results.html", movies=movies)
+
+
+
+
+# ***** OLD *****
 @app.route("/results", methods=["POST"])
 def search_results():
     """Gets results from the TMDB."""

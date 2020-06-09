@@ -82,7 +82,7 @@ def value_label_list():
     """Returns list of tuples with value-label pairs required for selection
     list."""
     tuple_list = [ (department, department) for department in TMDB_DEPARTMENTS ]
-    tuple_list.insert(0, ("all", "Search all categories"))
+    tuple_list.insert(0, ("All", "Search all categories"))
     return tuple_list
 
 class SearchByPersonForm(FlaskForm):

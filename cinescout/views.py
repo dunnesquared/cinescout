@@ -190,33 +190,25 @@ def search_results_title():
     return render_template("search.html", title_form=form)
 
 
-# ***** OLD *****
-@app.route("/results", methods=["POST"])
-def search_results():
-    """Gets results from the TMDB."""
+@app.route("/person-search-results", methods=["POST"])
+def search_results_person():
+    """Renders list of people in their associated fields."""
 
-    if request.method == 'POST':
+    form = SearchByPersonForm()
 
-        title = request.form.get("title")
+    if form.validate_on_submit():
+		name = form.name.data.strip()
+		known_for = form.known_for.data
+        # movies = TmdbMovie.get_movie_list_by_title(form.title.data.strip())
+        return f"{name}, {form.known_for}"
+        # return render_template("results.html", movies=movies)
 
-        if title is None:
-            return "<em> Unable to get title from form. Please debug. </em>"
+    # In case users GET the page, or the data is invalid
+    return render_template("search.html", title_form=form)
 
-        # # Get JSON response from New York Times
-        # res = requests.get("https://api.themoviedb.org/3/search/movie",
-        #                     params={"api_key": TMDB_API_KEY, "query": title.strip()})
-		#
-        # tmdb_data = res.json()
-		#
-        # if tmdb_data["total_results"] == 0:
-        #     return "<em> TMDB: No results matching that query. </em>"
-		#
-        # if tmdb_data["total_results"] >= 1:
-        #     # Get results for each movie
-        #     movies = tmdb_data["results"]
 
-        movies = TmdbMovie.get_movie_list_by_title(title)
-        return render_template("results.html", movies=movies)
+
+
 
 @app.route("/movie/<int:tmdb_id>", methods=["GET"])
 def movie_info(tmdb_id):

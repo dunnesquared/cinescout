@@ -27,7 +27,7 @@
 <section>
   <h2> By Person </h2>
 
-  <form action="" method="post">
+  <form action="{{ url_for('search_results_person') }}" method="post">
     {# Add token to prevent CRSF attacks #}
      {{ person_form.hidden_tag() }}
 

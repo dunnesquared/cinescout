@@ -252,6 +252,7 @@ class TmdbMovie(Movie):
         # Sort movies by release date, descending order
         cast.sort(key=lambda x: datetime.strptime(x['movie'].release_date, '%Y-%m-%d'),
                  reverse=True)
+
         result['cast'] = cast
 
         # # debug
@@ -286,6 +287,33 @@ class TmdbMovie(Movie):
 
         crew.sort(key=lambda x: datetime.strptime(x['movie'].release_date, '%Y-%m-%d'),
                  reverse=True)
+
+        # Eliminate duplicate movies, but combine jobs
+        curr = 0
+        next = curr + 1
+
+        while curr < len(crew) and next < len(crew):
+            # # DEBUG
+            # print(f"len={len(crew)}")
+            # print(f'curr={curr}')
+            # print(f'next={next}')
+
+            # In a sorted list, two movies with the same title are next
+            # to each other.
+            if crew[curr]['movie'].title != crew[next]['movie'].title:
+                curr += 1
+                next = curr + 1
+            else:
+                # print(f"DUPLICATE! {crew[next]['movie'].title}")
+
+                # Add job name from duplicate to original
+                crew[curr]['job'] += ", " + crew[next]['job']
+
+                # print(crew[curr].get('job'))
+
+                # Delete the duplicate
+                del crew[next]
+
 
         result['crew'] = crew
 

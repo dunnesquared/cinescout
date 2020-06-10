@@ -10,7 +10,7 @@ from flask_login import current_user, login_user, logout_user, login_required
 from cinescout import app, db # Get app, db object defined in __init__.py
 from cinescout.models import User, Film, CriterionFilm, PersonalFilm, FilmListItem
 from cinescout.forms import LoginForm, RegistrationForm, SearchByTitleForm, SearchByPersonForm
-from cinescout.movies import TmdbMovie, NytMovieReview
+from cinescout.movies import TmdbMovie, NytMovieReview, Person
 
 NYT_API_KEY = app.config['NYT_API_KEY']
 TMDB_API_KEY = app.config['TMDB_API_KEY']
@@ -28,38 +28,38 @@ print("Executing views.py...")
 @app.route('/')
 @app.route('/index')
 def index():
-	message = "This is placeholder content"
-	return render_template("index.html", message=message)
+    message = "This is placeholder content"
+    return render_template("index.html", message=message)
 
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-	"""Allows non-logged in users to register for account."""
+    """Allows non-logged in users to register for account."""
 
-	# Logged in users shouldn't be allowed to register.
-	if current_user.is_authenticated:
-		return redirect(url_for('index'))
+    # Logged in users shouldn't be allowed to register.
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
 
-	form = RegistrationForm()
+    form = RegistrationForm()
 
-	# Ensure user-entered data is good. If so, register and take to login page!
-	if form.validate_on_submit():
-		user = User(username=form.username.data, email=form.email.data)
-		user.set_password(form.password.data)
-		db.session.add(user)
-		db.session.commit()
-		flash(f'Welcome to cinescout, {form.username.data}! Now login to get started.', 'success')
-		return redirect(url_for('login'))
+    # Ensure user-entered data is good. If so, register and take to login page!
+    if form.validate_on_submit():
+        user = User(username=form.username.data, email=form.email.data)
+        user.set_password(form.password.data)
+        db.session.add(user)
+        db.session.commit()
+        flash(f'Welcome to cinescout, {form.username.data}! Now login to get started.', 'success')
+        return redirect(url_for('login'))
 
-	# When users GET the register page
-	return render_template('register.html', title='Register', form=form)
+    # When users GET the register page
+    return render_template('register.html', title='Register', form=form)
 
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     """Log-in user with valid credentials. Reject otherwise."""
 
-	# Logged-in users don't get to log-in before logging out again.
+    # Logged-in users don't get to log-in before logging out again.
     if current_user.is_authenticated:
         return redirect(url_for('index'))
 
@@ -72,8 +72,8 @@ def login():
             flash('Invalid username or password.', 'error')
             return redirect(url_for('login'))
 
-		# Remember user id in case session ended and user then re-enters app,
-		# e.g. closing tab while still logged-in.
+        # Remember user id in case session ended and user then re-enters app,
+        # e.g. closing tab while still logged-in.
         login_user(user, remember=form.remember_me.data)
         flash('You have been logged in!', 'success')
         return redirect(url_for('index'))
@@ -170,8 +170,8 @@ def search():
     title_form = SearchByTitleForm()
     person_form = SearchByPersonForm()
     return render_template("search.html",
-	                        title_form=title_form,
-							person_form=person_form)
+                            title_form=title_form,
+                            person_form=person_form)
 
 
 
@@ -197,14 +197,56 @@ def search_results_person():
     form = SearchByPersonForm()
 
     if form.validate_on_submit():
-		name = form.name.data.strip()
-		known_for = form.known_for.data
-        # movies = TmdbMovie.get_movie_list_by_title(form.title.data.strip())
-        return f"{name}, {form.known_for}"
-        # return render_template("results.html", movies=movies)
+        name = form.name.data.strip()
+        known_for = form.known_for.data
+        result = TmdbMovie.get_person_list_by_name_known_for(name=name,
+                                                         known_for=known_for)
+
+        if not result['success']:
+            if result['status_code'] != 200:
+                abort(result['status_code'])
+            else:
+                # No people to display
+                no_persons = True
+                return render_template("persons.html",
+                                         persons=result['persons'])
+        else:
+            print("Tmdb person data retrieved :-)!")
+
+        return render_template("persons.html", persons=result['persons'])
+
 
     # In case users GET the page, or the data is invalid
     return render_template("search.html", title_form=form)
+
+
+@app.route("/person/<int:tmdb_person_id>", methods=["GET"])
+def filmography(tmdb_person_id):
+
+	filmography_data = TmdbMovie.get_movie_list_by_person_id(tmdb_person_id)
+
+	if not filmography_data['success']:
+		if filmography_data['status_code'] != 200:
+			abort(filmography_data['status_code'])
+		else:
+			# No films to display
+			return render_template("filmography.html",
+									 cast=None,
+									 crew=None,
+									 no_films=True)
+	else:
+		print("Tmdb filmography data retrieved :-)!")
+		return render_template("filmography.html",
+								 cast=filmography_data.get('cast'),
+								 crew=filmography_data.get('crew'),
+								 no_films=False)
+
+
+
+
+	# return TmdbMovie.get_movie_list_by_person_id(tmdb_person_id)
+	# return f"Booyah! {tmdb_person_id}."
+
 
 
 
@@ -214,42 +256,42 @@ def search_results_person():
 def movie_info(tmdb_id):
 
     # Get movie info TMDB database
-	result = TmdbMovie.get_movie_info_by_id(tmdb_id)
+    result = TmdbMovie.get_movie_info_by_id(tmdb_id)
 
-	if not result['success']:
-		if result['status_code'] == 404:
-			abort(404)
-		else:
-			err_message = f"TMDB API query failed; HTTP response = {result['status_code']}"
-			return render_template("misc-error.html", err_message=err_message)
-	else:
-		print("Tmdb data retrieved :-)!")
+    if not result['success']:
+        if result['status_code'] == 404:
+            abort(404)
+        else:
+            err_message = f"TMDB API query failed; HTTP response = {result['status_code']}"
+            return render_template("misc-error.html", err_message=err_message)
+    else:
+        print("Tmdb data retrieved :-)!")
 
-	movie = result['movie']
+    movie = result['movie']
 
     # Get NYT movie review
-	result = NytMovieReview.get_review_by_title_and_year(title=movie.title,
-	 													 year=movie.release_year)
+    result = NytMovieReview.get_review_by_title_and_year(title=movie.title,
+     													 year=movie.release_year)
 
-	if not result['success']:
-		err_message = f"NYT API query failed; HTTP response = {result['status_code']}  description={result['message']}"
-		return render_template("misc-error.html", err_message=err_message)
-	else:
-		print("Nyt review data retrieved :-)!")
+    if not result['success']:
+        err_message = f"NYT API query failed; HTTP response = {result['status_code']}  description={result['message']}"
+        return render_template("misc-error.html", err_message=err_message)
+    else:
+        print("Nyt review data retrieved :-)!")
 
-	review = result['review']
+    review = result['review']
 
-	# Assess whether movie is already on user's list.
-	on_user_list, film_list_item_id = None, None
-	if current_user.is_authenticated:
-	    film = FilmListItem.query.filter_by(tmdb_id=tmdb_id, user_id=current_user.id).first()
-	    on_user_list = True if film else False
-	    print(f"On user list? {on_user_list}, id: {film_list_item_id}")
+    # Assess whether movie is already on user's list.
+    on_user_list, film_list_item_id = None, None
+    if current_user.is_authenticated:
+        film = FilmListItem.query.filter_by(tmdb_id=tmdb_id, user_id=current_user.id).first()
+        on_user_list = True if film else False
+        print(f"On user list? {on_user_list}, id: {film_list_item_id}")
 
-	return render_template("movie.html",
-							movie=movie,
-							review=review,
-							on_user_list=on_user_list)
+    return render_template("movie.html",
+                            movie=movie,
+                            review=review,
+                            on_user_list=on_user_list)
 
 
 #

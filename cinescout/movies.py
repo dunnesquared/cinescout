@@ -8,6 +8,29 @@ from textwrap import dedent
 # N.B. Use app.config['TMDB_KEY'] to set key below once class has been set up
 # from cinescout import app
 
+class Person:
+    """Class representing a person in the film industry
+
+    Attributes:
+        id: Integer representing person in external database.
+        name: String representing person's name
+        known_for: what the person is best known for in the movie industry.
+    """
+
+    def __init__(self, id, name, known_for):
+        self.id = id
+        self.name = name
+        self.known_for = known_for
+
+    # def add_known_for(self, known_for):
+    #     """Insert known_for person has worked in"""
+    #     self.known_fors.append(known_for)
+    #     print(self.known_fors)
+
+    def __str__(self):
+        return f"name: {self.name}, id: {self.id}, known_for: {self.known_for}"
+
+
 class Movie:
     def __init__(self, id=None, title=None, release_year=None,
                  release_date=None, overview=None, runtime=None):
@@ -23,6 +46,34 @@ class Movie:
     def get_movie_list_by_title(cls, title):
         """Returns list of movies."""
         pass
+
+    @classmethod
+    def get_movie_list_by_person_id(cls, person_id):
+        """Gets list of movies based on data in person object.
+
+        Args:
+            person_id: Integer representing id of person in external databse.
+
+        Returns:
+            movie_list: List of items where each item contains movie data.
+
+        """
+        pass
+
+    @classmethod
+    def get_person_list_by_name_category(cls, name, known_for):
+        """Gets list of people based on person's name and known_for they have
+        worked in in the movie industry
+
+        Args:
+            name: String object representing person's name.
+            known_for: String object representing person's occupation.
+
+        Returns:
+            person_list: list of Person objects.
+        """
+        pass
+
 
     @classmethod
     def get_movie_info_by_id(cls, id):
@@ -42,6 +93,7 @@ class Movie:
         pass
 
 
+
 class TmdbMovie(Movie):
 
     # API info salient to getting data
@@ -59,7 +111,6 @@ class TmdbMovie(Movie):
 
 
         self.poster_full_url = poster_full_url
-
 
     @classmethod
     def get_movie_list_by_title(cls, title):
@@ -81,6 +132,156 @@ class TmdbMovie(Movie):
 
 
     @classmethod
+    def get_person_list_by_name_known_for(cls, name, known_for):
+        """Gets list of people based on person's name and known_for they have
+        worked in in the movie industry
+
+        Args:
+            name: String object representing person's name.
+            known_for: String object representing person's occupation.
+
+        Returns:
+            result:  A dictionary with three known_fors
+                success: True or False, depending on wheter movie found.
+                status_code: Status code of Http response
+                persons: List of Person objects; None if api call
+                returns nothing/could not get data.
+        """
+
+        # Setup return value
+        result = {'success': True, 'status_code': 200, 'persons':[]}
+
+        # Get persons data from TMDB
+        res = requests.get("https://api.themoviedb.org/3/search/person",
+                            params={"api_key": cls.api_key,
+                                    "query": name.strip()})
+
+        # Check response status
+        # Check whether movie found
+        if res.status_code != 200:
+            result['success'] = False
+            result['status_code'] = res.status_code
+            result['persons'] = None
+            return result
+
+        print("Extracting Person Data from from TMDB JSON response....")
+
+        # Deserialize JSON response object
+        tmdb_persons_data = res.json()
+
+        print(f"Number of tmdb person results found: {tmdb_persons_data['total_results']}")
+
+        if tmdb_persons_data["total_results"] == 0:
+            print(f"No data found for {name}, known for {known_for}.")
+            result['success'] = False
+            result['persons'] = None
+            return result
+
+        # Load persons data into Person objects and append them to list
+        persons = []
+
+        # Create Person object for all TMDB results or just those working
+        # in specified field.
+        if known_for == 'All':
+            for person_data in tmdb_persons_data['results']:
+                person = Person(id=person_data['id'],
+                                name=person_data['name'],
+                                known_for=person_data['known_for_department'])
+                persons.append(person)
+        else:
+            for person_data in tmdb_persons_data['results']:
+                if person_data['known_for_department'] == known_for:
+                    person = Person(id=person_data['id'],
+                                    name=person_data['name'],
+                                    known_for=person_data['known_for_department'])
+                    persons.append(person)
+
+        result['persons'] = persons
+
+        return result
+
+
+    @classmethod
+    def get_movie_list_by_person_id(cls, person_id):
+        # Setup return value
+        result = {'success': True, 'status_code': 200, 'cast':[], 'crew':[]}
+
+        # Get persons data from TMDB
+        res = requests.get(f"https://api.themoviedb.org/3/person/{person_id}/movie_credits",
+                            params={"api_key": cls.api_key})
+
+        # Check response status
+        # Check whether movie found
+        if res.status_code != 200:
+            result['success'] = False
+            result['status_code'] = res.status_code
+            result['movies'] = None
+            return result
+
+        print("Extracting movie credits from from TMDB JSON response....")
+
+        # Deserialize JSON response object
+        tmdb_filmography_data = res.json()
+
+        # Get movies where person was in the film
+        # count = 0
+        cast = []
+        for movie_credit in tmdb_filmography_data['cast']:
+            movie = Movie(id=movie_credit.get('id'),
+                          title=movie_credit.get('title'),
+                          release_date=movie_credit.get('release_date'))
+
+
+            character = movie_credit.get('character')
+            cast.append((movie, character))
+
+            # # Helpful for debugging purposes
+            # print(f"\n{count}", end="")
+            # print(movie)
+            # print(f"Character: {character}")
+            # count += 1
+
+        result['cast'] = cast
+
+        # # debug
+        # for elem in result['cast']:
+        #     print(elem[0])
+        #     print(elem[1])
+
+
+        # Get movies where person was part of the crew
+
+        crew = []
+        # count = 0
+        for movie_credit in tmdb_filmography_data['crew']:
+            movie = Movie(id=movie_credit.get('id'),
+                          title=movie_credit.get('title'),
+                          release_date=movie_credit.get('release_date'))
+
+            job = movie_credit.get('job')
+            crew.append((movie, job))
+
+            # # Helpful for debugging purposes
+            # print(f"\n{count}", end="")
+            # print(movie)
+            # print(f"Job: {job}")
+            # count += 1
+            
+        result['crew'] = crew
+
+        # # debug
+        # for elem in result['crew']:
+        #     print(elem[0])
+        #     print(elem[1])
+
+        return result
+
+
+
+        #return f"TMDB Booyah!! {person_id}"
+
+
+    @classmethod
     def get_movie_info_by_id(cls, id):
         """Get info from TMDB API to create instance.
 
@@ -88,10 +289,10 @@ class TmdbMovie(Movie):
             id: Integer representing TMDB movie id.
 
         Returns:
-            result: A dictionary with three fields
+            result: A dictionary with three known_fors
                 success: True or False, depending on wheter movie found.
                 status_code: Status code of Http response
-                movie: Movie object with all salient fields filled-in, or None
+                movie: Movie object with all salient known_fors filled-in, or None
                        if method could not get data.
         """
         # Setup return value

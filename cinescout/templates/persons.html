@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block body %}
+  <h1>Results</h1>
+
+  {% if persons %}
+    <ul>
+      {% for person in persons %}
+
+        <li>
+          <a href="{{ url_for('filmography', tmdb_person_id=person.id ) }}">
+            {{ person.name }} (Known for: {{ person.known_for }})
+          </a>
+        </li>
+
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p> No persons matching description found. </p>
+  {% endif %}
+
+{% endblock %}

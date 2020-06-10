@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block body %}
+  <h1>Filmography</h1>
+
+  {% if no_films %}
+    There are no films for this person.
+  {% endif %}
+
+  {% if cast is not none %}
+
+    <h2> Cast </h2>
+
+    <ul>
+
+    {% for cast_tuple in cast %}
+
+      <li>
+        <a href="{{ url_for('movie_info', tmdb_id=cast_tuple[0].id )}}">
+          {{ cast_tuple[0].title }} (Released {{ cast_tuple[0].release_date }},
+          Character: {{ cast_tuple[1] }})
+        </a>
+      </li>
+
+    {% endfor %}
+    </ul>
+  {% endif %}
+
+
+  {% if crew is not none %}
+    <h2> Crew </h2>
+
+    <ul>
+    {% for crew_tuple in crew %}
+      <li>
+        <a href="{{ url_for('movie_info', tmdb_id=crew_tuple[0].id )}}">
+          {{ crew_tuple[0].title }} (Released {{ crew_tuple[0].release_date }},
+          Job: {{ crew_tuple[1] }})
+        </a>
+      </li>
+    {% endfor %}
+    </ul>
+
+  {% endif %}
+
+{% endblock %}

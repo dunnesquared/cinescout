@@ -1,6 +1,8 @@
 import os
 import time
 import json
+from datetime import datetime
+
 import requests
 from textwrap import dedent
 
@@ -227,9 +229,15 @@ class TmdbMovie(Movie):
         # count = 0
         cast = []
         for movie_credit in tmdb_filmography_data['cast']:
+
+            release_date = movie_credit.get('release_date')
+
+            if movie_credit.get('release_date') == None or movie_credit.get('release_date') == '':
+                release_date = '0001-01-01'
+
             movie = Movie(id=movie_credit.get('id'),
                           title=movie_credit.get('title'),
-                          release_date=movie_credit.get('release_date'))
+                          release_date=release_date)
 
 
             character = movie_credit.get('character')
@@ -241,6 +249,9 @@ class TmdbMovie(Movie):
             # print(f"Character: {character}")
             # count += 1
 
+        # Sort movies by release date, descending order
+        cast.sort(key=lambda x: datetime.strptime(x[0].release_date, '%Y-%m-%d'),
+                 reverse=True)
         result['cast'] = cast
 
         # # debug
@@ -254,9 +265,15 @@ class TmdbMovie(Movie):
         crew = []
         # count = 0
         for movie_credit in tmdb_filmography_data['crew']:
+
+            release_date = movie_credit.get('release_date')
+
+            if movie_credit.get('release_date') == None or movie_credit.get('release_date') == '':
+                release_date = '0001-01-01'
+
             movie = Movie(id=movie_credit.get('id'),
                           title=movie_credit.get('title'),
-                          release_date=movie_credit.get('release_date'))
+                          release_date=release_date)
 
             job = movie_credit.get('job')
             crew.append((movie, job))
@@ -266,7 +283,10 @@ class TmdbMovie(Movie):
             # print(movie)
             # print(f"Job: {job}")
             # count += 1
-            
+
+        crew.sort(key=lambda x: datetime.strptime(x[0].release_date, '%Y-%m-%d'),
+                 reverse=True)
+
         result['crew'] = crew
 
         # # debug

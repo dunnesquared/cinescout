@@ -13,12 +13,12 @@
 
     <ul>
 
-    {% for cast_tuple in cast %}
+    {% for cast_item in cast %}
 
       <li>
-        <a href="{{ url_for('movie_info', tmdb_id=cast_tuple[0].id )}}">
-          {{ cast_tuple[0].title }} (Released {{ cast_tuple[0].release_date }},
-          Character: {{ cast_tuple[1] }})
+        <a href="{{ url_for('movie_info', tmdb_id=cast_item['movie'].id )}}">
+          {{ cast_item['movie'].title }} (Released {{ cast_item['movie'].release_date }},
+          Character: {{ cast_item['character'] }})
         </a>
       </li>
 
@@ -31,11 +31,11 @@
     <h2> Crew </h2>
 
     <ul>
-    {% for crew_tuple in crew %}
+    {% for crew_item in crew %}
       <li>
-        <a href="{{ url_for('movie_info', tmdb_id=crew_tuple[0].id )}}">
-          {{ crew_tuple[0].title }} (Released {{ crew_tuple[0].release_date }},
-          Job: {{ crew_tuple[1] }})
+        <a href="{{ url_for('movie_info', tmdb_id=crew_item['movie'].id )}}">
+          {{ crew_item['movie'].title }} (Released {{ crew_item['movie'].release_date }},
+          Job: {{ crew_item['job'] }})
         </a>
       </li>
     {% endfor %}

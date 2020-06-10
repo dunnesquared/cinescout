@@ -241,7 +241,7 @@ class TmdbMovie(Movie):
 
 
             character = movie_credit.get('character')
-            cast.append((movie, character))
+            cast.append({'movie': movie, 'character': character})
 
             # # Helpful for debugging purposes
             # print(f"\n{count}", end="")
@@ -250,7 +250,7 @@ class TmdbMovie(Movie):
             # count += 1
 
         # Sort movies by release date, descending order
-        cast.sort(key=lambda x: datetime.strptime(x[0].release_date, '%Y-%m-%d'),
+        cast.sort(key=lambda x: datetime.strptime(x['movie'].release_date, '%Y-%m-%d'),
                  reverse=True)
         result['cast'] = cast
 
@@ -276,7 +276,7 @@ class TmdbMovie(Movie):
                           release_date=release_date)
 
             job = movie_credit.get('job')
-            crew.append((movie, job))
+            crew.append({'movie': movie, 'job': job})
 
             # # Helpful for debugging purposes
             # print(f"\n{count}", end="")
@@ -284,7 +284,7 @@ class TmdbMovie(Movie):
             # print(f"Job: {job}")
             # count += 1
 
-        crew.sort(key=lambda x: datetime.strptime(x[0].release_date, '%Y-%m-%d'),
+        crew.sort(key=lambda x: datetime.strptime(x['movie'].release_date, '%Y-%m-%d'),
                  reverse=True)
 
         result['crew'] = crew

@@ -3,6 +3,8 @@
 {% block body %}
   <h1>Results</h1>
 
+
+  {% if movies is not none %}
   <ul>
   {% for movie in movies %}
 
@@ -14,6 +16,9 @@
 
   {% endfor %}
   </ul>
+  {% else %}
+    <p> There are no movies matching that title. </p>
+  {% endif %}
 
 {% endblock %}
 

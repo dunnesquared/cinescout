@@ -124,7 +124,7 @@ class TmdbMovie(Movie):
         tmdb_data = res.json()
 
         if tmdb_data["total_results"] == 0:
-            return "<em> TMDB: No results matching that query. </em>"
+            return None
 
         if tmdb_data["total_results"] >= 1:
             # Get results for each movie

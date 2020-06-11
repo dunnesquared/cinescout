@@ -442,8 +442,8 @@ class NytMovieReview(MovieReview):
             print("No NYT review found☹️")
 
             nyt_status = "No review found."
-            nyt_critics_pick = "N/A"
-            nyt_summary_short = "N/A"
+            nyt_critics_pick = "No review found."
+            nyt_summary_short = "No review found."
 
             # Check case where year in NYT db and TMBD don't match.
             print("Checking to see whether release year in TMDB and NYT don't match....")
@@ -526,9 +526,9 @@ class NytMovieReview(MovieReview):
                     break
 
             if not nyt_review_already_found:
-                nyt_status = "ERROR: More than one review found in same year with no exact name match. Unable to choose review."
-                nyt_critics_pick = "N/A"
-                nyt_summary_short = "N/A"
+                nyt_status = "More than one review found in same year with no exact name match. Unable to choose review."
+                nyt_critics_pick = "No review found."
+                nyt_summary_short = "No review found."
                 result['success'] = False
 
         if  nyt_data["num_results"] == 1:

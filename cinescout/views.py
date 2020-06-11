@@ -187,7 +187,9 @@ def search_results_title():
         return render_template("results.html", movies=movies)
 
     # In case users GET the page, or the data is invalid
-    return render_template("search.html", title_form=form)
+    return render_template("search.html",
+                           title_form=form,
+						   person_form=SearchByPersonForm())
 
 
 @app.route("/person-search-results", methods=["POST"])
@@ -217,7 +219,9 @@ def search_results_person():
 
 
     # In case users GET the page, or the data is invalid
-    return render_template("search.html", title_form=form)
+    return render_template("search.html",
+							person_form=form,
+							title_form=SearchByTitleForm())
 
 
 @app.route("/person/<int:tmdb_person_id>", methods=["GET"])

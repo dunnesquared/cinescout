@@ -242,16 +242,6 @@ def filmography(tmdb_person_id):
 								 no_films=False)
 
 
-
-
-	# return TmdbMovie.get_movie_list_by_person_id(tmdb_person_id)
-	# return f"Booyah! {tmdb_person_id}."
-
-
-
-
-
-
 @app.route("/movie/<int:tmdb_id>", methods=["GET"])
 def movie_info(tmdb_id):
 
@@ -263,7 +253,7 @@ def movie_info(tmdb_id):
             abort(404)
         else:
             err_message = f"TMDB API query failed; HTTP response = {result['status_code']}"
-            return render_template("misc-error.html", err_message=err_message)
+            return render_template("errors/misc-error.html", err_message=err_message)
     else:
         print("Tmdb data retrieved :-)!")
 
@@ -275,7 +265,7 @@ def movie_info(tmdb_id):
 
     if not result['success']:
         err_message = f"NYT API query failed; HTTP response = {result['status_code']}  description={result['message']}"
-        return render_template("misc-error.html", err_message=err_message)
+        return render_template("errors/misc-error.html", err_message=err_message)
     else:
         print("Nyt review data retrieved :-)!")
 

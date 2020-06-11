@@ -183,8 +183,17 @@ def search_results_title():
     form = SearchByTitleForm()
 
     if form.validate_on_submit():
-        movies = TmdbMovie.get_movie_list_by_title(form.title.data.strip())
-        return render_template("results.html", movies=movies)
+        result = TmdbMovie.get_movie_list_by_title(form.title.data.strip())
+
+        if not result['success']:
+            if result['status_code'] != 200:
+                abort(result['status_code'])
+            else:
+				# No movies found for given title
+                return render_template("results.html", movies=None)
+
+
+        return render_template("results.html", movies=result['movies'])
 
     # In case users GET the page, or the data is invalid
     return render_template("search.html",

@@ -116,22 +116,53 @@ class TmdbMovie(Movie):
 
     @classmethod
     def get_movie_list_by_title(cls, title):
-        """Returns list of movies."""
-        # Get JSON response from New York Times
+        """Returns list of movies based on title."""
+
+        # Setup return value
+        result = {'success': True, 'status_code': 200, 'movies': None}
+
         res = requests.get("https://api.themoviedb.org/3/search/movie",
                             params={"api_key": cls.api_key, "query": title.strip()})
+
+        # Check response status
+        # Check whether movie found
+        if res.status_code != 200:
+            result['success'] = False
+            result['status_code'] = res.status_code
+            result['movies'] = None
+            return result
 
         tmdb_data = res.json()
 
         if tmdb_data["total_results"] == 0:
-            return None
+            result['success'] = False
+            result['movies'] = None
+            return result
 
         if tmdb_data["total_results"] >= 1:
-            # Get results for each movie
-            movies = tmdb_data["results"]
+            movies = []
 
-        return movies
+            for movie in tmdb_data["results"]:
+                release_date = movie.get('release_date')
 
+                if movie.get('release_date') == None or movie.get('release_date') == '':
+                    release_date = '0001-01-01'
+
+                movie = Movie(id=movie.get('id'),
+                              title=movie.get('title'),
+                              overview=movie.get('overview'),
+                              release_date=release_date)
+
+                movies.append(movie)
+
+            # Sort movies by release date, descending order
+            movies.sort(key=lambda x: datetime.strptime(x.release_date, '%Y-%m-%d'),
+                     reverse=True)
+
+            # Ready to send
+            result['movies'] = movies
+            return result
+            
 
     @classmethod
     def get_person_list_by_name_known_for(cls, name, known_for):

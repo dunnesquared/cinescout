@@ -9,8 +9,8 @@
   {% for movie in movies %}
 
     <li>
-      <a href="{{ url_for('movie_info', tmdb_id=movie['id'] )}}">
-        {{ movie['title'] }} (Released {{ movie['release_date'] }})
+      <a href="{{ url_for('movie_info', tmdb_id=movie.id )}}">
+        {{ movie.title }} (Released {{ movie.release_date }})
       </a>
     </li>
 

@@ -509,10 +509,27 @@ class NytMovieReview(MovieReview):
 
         if nyt_data["num_results"] > 1 and not nyt_review_already_found:
 
-            nyt_status = "ERROR: More than one review found. Unable to choose."
-            nyt_critics_pick = "N/A"
-            nyt_summary_short = "N/A"
-            result['success'] = False
+            # Try looking for exact title in results
+            for index, movie in enumerate(nyt_data['results']):
+
+                if movie['display_title'].strip().lower() == title.strip().lower():
+                    nyt_status = "OK"
+                    nyt_critics_pick = nyt_data['results'][index]['critics_pick']
+                    nyt_summary_short = nyt_data['results'][index]['summary_short']
+
+                    if nyt_summary_short is not None:
+                        if nyt_summary_short.strip() == "":
+                            nyt_summary_short = "No summary review provided."
+
+                    nyt_review_already_found = True
+
+                    break
+
+            if not nyt_review_already_found:
+                nyt_status = "ERROR: More than one review found in same year with no exact name match. Unable to choose review."
+                nyt_critics_pick = "N/A"
+                nyt_summary_short = "N/A"
+                result['success'] = False
 
         if  nyt_data["num_results"] == 1:
             nyt_status = "OK"

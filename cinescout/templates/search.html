@@ -5,13 +5,15 @@
 
 <section>
   <h2> By title </h2>
-  <div>Please enter a title of a movie to search</div>
 
   <form action="{{ url_for('search_results_title') }}" method="post">
     {# Add token to prevent CRSF attacks #}
      {{ title_form.hidden_tag() }}
 
-     {{ title_form.title(size=32) }}<br>
+     <p>
+       {{ title_form.title.label }}<br>
+       {{ title_form.title(size=32) }}
+     </p>
 
      {% for error in title_form.title.errors %}
        <span style="color: red;">[{{ error }}]</span>

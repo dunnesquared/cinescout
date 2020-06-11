@@ -10,7 +10,12 @@
 
     <li>
       <a href="{{ url_for('movie_info', tmdb_id=movie.id )}}">
-        {{ movie.title }} (Released {{ movie.release_date }})
+        {{ movie.title }}
+        {% if movie.release_date != '0001-01-01' %}
+          (Release date: {{ movie.release_date }})
+        {% else %}
+          (Release date: Unknown)
+        {% endif %}
       </a>
     </li>
 

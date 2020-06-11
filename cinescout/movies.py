@@ -359,7 +359,10 @@ class TmdbMovie(Movie):
             tmdb_movie_data = res.json()
 
             # Get year movie was released
-            release_year = int(tmdb_movie_data['release_date'].split('-')[0].strip()) or None
+            if tmdb_movie_data.get('release_date'):
+                release_year = int(tmdb_movie_data['release_date'].split('-')[0].strip())
+            else:
+                release_year = None
 
             # Build full url for movie poster
             poster_full_url = None
@@ -367,8 +370,8 @@ class TmdbMovie(Movie):
                 poster_full_url = cls.poster_base_url + cls.poster_size + tmdb_movie_data['poster_path']
 
             movie = cls(id=id, title=tmdb_movie_data['title'],
-                        release_year = release_year,
-                        release_date=tmdb_movie_data['release_date'],
+                        release_year=release_year,
+                        release_date=tmdb_movie_data.get('release_date'),
                         overview=tmdb_movie_data['overview'],
                         runtime=tmdb_movie_data['runtime'],
                         poster_full_url=poster_full_url)

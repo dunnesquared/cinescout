@@ -260,8 +260,13 @@ def movie_info(tmdb_id):
     movie = result['movie']
 
     # Get NYT movie review
-    result = NytMovieReview.get_review_by_title_and_year(title=movie.title,
-     													 year=movie.release_year)
+    if movie.release_year is not None:
+	    result = NytMovieReview.get_review_by_title_and_year(title=movie.title, year=movie.release_year)
+    else:
+        return render_template("movie.html",
+	                            movie=movie,
+	                            review=None,
+	                            on_user_list=None)
 
     if not result['success'] and result['status_code'] != 200:
         err_message = f"NYT API query failed; HTTP response = {result['status_code']}  description={result['message']}"

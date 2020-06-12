@@ -236,6 +236,9 @@ def search_results_person():
 @app.route("/person/<int:tmdb_person_id>", methods=["GET"])
 def filmography(tmdb_person_id):
 
+	name = request.args.get("name")
+	print(f"Getting filmography data for {name}...")
+
 	filmography_data = TmdbMovie.get_movie_list_by_person_id(tmdb_person_id)
 
 	if not filmography_data['success']:
@@ -252,7 +255,8 @@ def filmography(tmdb_person_id):
 		return render_template("filmography.html",
 								 cast=filmography_data.get('cast'),
 								 crew=filmography_data.get('crew'),
-								 no_films=False)
+								 no_films=False,
+								 name=name)
 
 
 @app.route("/movie/<int:tmdb_id>", methods=["GET"])

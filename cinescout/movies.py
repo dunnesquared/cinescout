@@ -237,7 +237,8 @@ class TmdbMovie(Movie):
     @classmethod
     def get_movie_list_by_person_id(cls, person_id):
         # Setup return value
-        result = {'success': True, 'status_code': 200, 'cast':[], 'crew':[]}
+        result = {'success': True, 'status_code': 200, 'cast':[], 'crew':[],
+                 'name': None}
 
         # Get persons data from TMDB
         res = requests.get(f"https://api.themoviedb.org/3/person/{person_id}/movie_credits",

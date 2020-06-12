@@ -8,7 +8,7 @@
       {% for person in persons %}
 
         <li>
-          <a href="{{ url_for('filmography', tmdb_person_id=person.id ) }}">
+          <a href="{{ url_for('filmography', tmdb_person_id=person.id, name=person.name ) }}">
             {{ person.name }} (Known for: {{ person.known_for }})
           </a>
         </li>

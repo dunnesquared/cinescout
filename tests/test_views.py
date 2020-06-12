@@ -215,17 +215,23 @@ class RouteTests(unittest.TestCase):
 		self.assertIn(b'Password must be at least 8 characters long.', response.data)
 
 
-	# *** SEARCH ***
-	def test_search_page(self):
+	# *** SEARCH - title search ***
+	def test_search_page_title(self):
 		response = self.app.get('/search', follow_redirects=True)
 		self.assertEqual(response.status_code, 200)
-		self.assertIn(b'Search', response.data)
+		self.assertIn(b'By title', response.data)
 
-	def test_search_title(self):
+	def test_search_title_exists(self):
 		response = self.app.post(
 			'/title-search-results',
 			data=dict(title="Mulholland Drive"), follow_redirects=True)
-		self.assertIn(b'Mulholland Drive (Released 2001-09-08)', response.data)
+		self.assertIn(b'Mulholland Drive', response.data)
+
+	def test_search_title_not_exist(self):
+		response = self.app.post(
+			'/title-search-results',
+			data=dict(title="43543nkjerhtrehtkreture+rew"), follow_redirects=True)
+		self.assertIn(b'There are no movies matching that title.', response.data)
 
 	def test_search_title_blank(self):
 		response = self.app.post(
@@ -238,8 +244,63 @@ class RouteTests(unittest.TestCase):
 			data=dict(title=None), follow_redirects=True)
 		self.assertIn(b'This field is required.', response.data)
 
+	# *** SEARCH - person search ***
+	def test_search_page_person(self):
+		response = self.app.get('/search', follow_redirects=True)
+		self.assertEqual(response.status_code, 200)
+		self.assertIn(b'By person', response.data)
 
+	def test_search_person_exists(self):
+		response = self.app.post(
+			'/person-search-results',
+			data=dict(name="Gabriel Byrne", known_for="Acting",
+					follow_redirects=True))
+		self.assertIn(b'Gabriel Byrne', response.data)
 
+	def test_search_person_not_exist(self):
+		response = self.app.post(
+			'/person-search-results',
+			data=dict(name="433u5h6krbtrbhtertkejb56k5363", known_for="All",
+					 follow_redirects=True))
+		self.assertIn(b'No persons matching description found.', response.data)
 
+	def test_search_person_blank(self):
+		response = self.app.post(
+			'/person-search-results',
+			data=dict(name="\t\n\r    ", known_for="All",
+					 follow_redirects=True))
+		self.assertIn(b'This field is required.', response.data)
+
+	def test_search_person_valid_id(self):
+		id = 1 # George Lucas
+		response = self.app.get(f'/person/{id}')
+		self.assertIn(b'Star Wars', response.data)
+
+	def test_search_person_invalid_id_01(self):
+		id = -1
+		response = self.app.get(f'/person/{id}')
+		self.assertIn(b'404: Page Not Found', response.data)
+
+	def test_search_person_invalid_id_02(self):
+		id = 123445465465765767687687980879686787567744566765756
+		response = self.app.get(f'/person/{id}')
+		self.assertIn(b'404: Page Not Found', response.data)
+
+	def test_search_person_invalid_id_03(self):
+		id = "sdjkfdkbgkfdbgkfdsjgb"
+		response = self.app.get(f'/person/{id}')
+		self.assertIn(b'404: Page Not Found', response.data)
+
+	def test_search_person_no_id(self):
+		id = None
+		response = self.app.get(f'/person/{id}')
+		self.assertIn(b'404: Page Not Found', response.data)
+
+	def test_search_person_blank_id(self):
+		id = "\n\t    \r    "
+		response = self.app.get(f'/person/{id}')
+		self.assertIn(b'404: Page Not Found', response.data)
+
+	
 if __name__ == "__main__":
 	unittest.main()

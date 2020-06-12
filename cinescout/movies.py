@@ -602,8 +602,17 @@ class NytMovieReview(MovieReview):
                     if diff > 0:
                         shortlist.append(diff)
 
-                result_index = shortlist.index(min(shortlist))
-                print(nyt_years[result_index])
+                if shortlist:
+                    result_index = shortlist.index(min(shortlist))
+                    print(nyt_years[result_index])
+                else:
+                    print("FAILED!")
+                    print("All reviews made prior to release year of film.")
+                    print("There are really no reviews for this movie. Sorry😭")
+                    result['success'] = False
+                    result['status_code'] = res.status_code
+                    result['message'] = "No review found for this film."
+                    return result
 
                 print("Getting review information. Hopefully right review picked🙏!")
                 nyt_critics_pick = nyt_data['results'][result_index]['critics_pick']

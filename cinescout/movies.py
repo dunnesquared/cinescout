@@ -409,7 +409,6 @@ class TmdbMovie(Movie):
 
             result['movie'] = movie
 
-
         return result
 
 
@@ -578,37 +577,32 @@ class NytMovieReview(MovieReview):
                 return result
 
 
-
-
-
             if nyt_data["num_results"] > 1:
-                print("More than one review found🤔")
+                print("Multiple reviews found🤔")
+                print(f"Number of reviews found: {nyt_data['num_results']}")
                 print("Using heuristic that NYT reviewed film at closest date AFTER TMDB's release date....")
-
                 print("Analyzing NYT review results...")
 
                 # Get critics pick data and summary short for review that has years closest to TMDBs
-                years = []
-
-                for result in nyt_data['results']:
+                nyt_years = []
+                for movie_result in nyt_data['results']:
                     # Extract year
                     print("Extacting NYT release or publcation year...", end="")
-                    nyt_date = result['opening_date'] if result['opening_date'] else result['publication_date']
+                    nyt_date = movie_result['opening_date'] if movie_result['opening_date'] else movie_result['publication_date']
                     nyt_year = nyt_date.split('-')[0].strip()
                     print(nyt_year)
-
-                    years.append(nyt_year)
+                    nyt_years.append(nyt_year)
 
                 print("Getting NYT year closest to TMDB year...", end="")
                 shortlist = []
 
-                for year in years:
-                    diff = int(year) - int(release_year)
+                for review_year in nyt_years:
+                    diff = int(review_year) - int(year)
                     if diff > 0:
                         shortlist.append(diff)
 
                 result_index = shortlist.index(min(shortlist))
-                print(years[result_index])
+                print(nyt_years[result_index])
 
                 print("Getting review information. Hopefully right review picked🙏!")
                 nyt_critics_pick = nyt_data['results'][result_index]['critics_pick']
@@ -617,7 +611,28 @@ class NytMovieReview(MovieReview):
                 # So we don't overwrite the found review results with the logic below
                 nyt_review_already_found = True
 
+                if nyt_summary_short is not None:
+                    if nyt_summary_short.strip() == "":
+                        nyt_summary_short = "No summary review provided."
 
+                nyt_status = "OK"
+                print(f"NYT_STATUS: {nyt_status}")
+
+                # Build review object
+                review = cls(title=title, year=year,
+                             text=nyt_summary_short,
+                             publication_date=nyt_data['results'][0].get('publication_date'),
+                             critics_pick=nyt_critics_pick)
+                result['message'] = nyt_status
+                result['review'] = review
+
+                print(result)
+
+                return result
+
+
+
+        # More than one movie with same title in smame year!
         if nyt_data["num_results"] > 1 and not nyt_review_already_found:
 
             # Try looking for exact title in results
@@ -658,6 +673,8 @@ class NytMovieReview(MovieReview):
         review = cls(title=title, year=year, text=nyt_summary_short, critics_pick=nyt_critics_pick)
         result['message'] = nyt_status
         result['review'] = review
+
+
 
         return result
 

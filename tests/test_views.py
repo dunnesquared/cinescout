@@ -215,7 +215,7 @@ class RouteTests(unittest.TestCase):
 		self.assertIn(b'Password must be at least 8 characters long.', response.data)
 
 
-	# *** SEARCH - title search ***
+	# *** SEARCH - Title Search ***
 	def test_search_page_title(self):
 		response = self.app.get('/search', follow_redirects=True)
 		self.assertEqual(response.status_code, 200)
@@ -244,7 +244,7 @@ class RouteTests(unittest.TestCase):
 			data=dict(title=None), follow_redirects=True)
 		self.assertIn(b'This field is required.', response.data)
 
-	# *** SEARCH - person search ***
+	# *** SEARCH - Person Search ***
 	def test_search_page_person(self):
 		response = self.app.get('/search', follow_redirects=True)
 		self.assertEqual(response.status_code, 200)
@@ -301,6 +301,8 @@ class RouteTests(unittest.TestCase):
 		response = self.app.get(f'/person/{id}')
 		self.assertIn(b'404: Page Not Found', response.data)
 
-	
+
+
+
 if __name__ == "__main__":
 	unittest.main()

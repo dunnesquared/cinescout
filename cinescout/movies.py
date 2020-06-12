@@ -510,6 +510,7 @@ class NytMovieReview(MovieReview):
                 print("There are really no reviews for this movie. Sorry😭")
                 result['success'] = False
                 result['status_code'] = res.status_code
+                result['message'] = "No reviews found."
                 return result
 
             if nyt_data["num_results"] == 1:

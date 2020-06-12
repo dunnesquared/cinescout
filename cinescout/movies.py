@@ -162,7 +162,7 @@ class TmdbMovie(Movie):
             # Ready to send
             result['movies'] = movies
             return result
-            
+
 
     @classmethod
     def get_person_list_by_name_known_for(cls, name, known_for):
@@ -416,10 +416,11 @@ class TmdbMovie(Movie):
 
 class MovieReview:
 
-    def __init__(self, title=None, year=None, text=None):
+    def __init__(self, title=None, year=None, text=None, publication_date=None):
         self.title = title
         self.year = year
         self.text = text
+        self.publication_date=publication_date
 
 
     @classmethod
@@ -436,8 +437,9 @@ class NytMovieReview(MovieReview):
     api_key = os.getenv('NYT_API_KEY')
     delay = 3
 
-    def __init__(self, title=None, year=None, text=None, critics_pick=None):
-        MovieReview.__init__(self, title, year, text)
+    def __init__(self, title=None, year=None, text=None, publication_date=None,
+                critics_pick=None):
+        MovieReview.__init__(self, title, year, text, publication_date)
         self.critics_pick = critics_pick
 
 
@@ -453,56 +455,131 @@ class NytMovieReview(MovieReview):
     	# Flag in case NYT review info already found
         nyt_review_already_found = False
 
-        print(f"RELEASE YEAR = {year}")
+        print(f"Starting process to get review for {title}, {year}")
 
         opening_date_start = f"{year}-01-01"
         opening_date_end = f"{year}-12-31"
 
+        print("Making request to NYT Movie Review API...", end="")
         res = requests.get("https://api.nytimes.com/svc/movies/v2/reviews/search.json",
                                 params={"api-key": cls.api_key,
                                         "opening-date": f"{opening_date_start};{opening_date_end}",
                                         "query": title.strip()})
 
         if res.status_code != 200:
+            print(f"FAILED! Http response status code = {res.status_code}")
             result['success'] = False
             result['status_code'] = res.status_code
             return result
+
+        print("SUCCESS!")
 
         # Unpack review data
         nyt_data = res.json()
 
         # Check whether a review was written for a movie. Watch out for special cases.
         if nyt_data["num_results"] == 0:
-            print("No NYT review found☹️")
+
+            print("No NYT review found for given title and year☹️")
 
             nyt_status = "No review found."
             nyt_critics_pick = "No review found."
             nyt_summary_short = "No review found."
 
             # Check case where year in NYT db and TMBD don't match.
-            print("Checking to see whether release year in TMDB and NYT don't match....")
+            print("Checking to see whether given release year and NYT year don't match....")
 
             print(f"Delaying next NYT API call by {cls.delay} seconds...")
             time.sleep(cls.delay)
 
-            print("Making second request to NYT with TMDB release year unspecified...")
+            print("Making second request to NYT API with given release year unspecified...", end="")
             res = requests.get("https://api.nytimes.com/svc/movies/v2/reviews/search.json",
                                     params={"api-key": cls.api_key,
                                             "query": title.strip()})
 
             if res.status_code != 200:
+                print(f"FAILED! Http response status code = {res.status_code}")
                 result['success'] = False
                 result['status_code'] = res.status_code
                 return result
 
-            print("Request successful. Counting number of reviews returned...")
+            print("SUCCESS!")
+            print("Counting number of reviews returned...")
             nyt_data = res.json()
 
             if nyt_data["num_results"] == 0:
                 print("There are really no reviews for this movie. Sorry😭")
+                result['success'] = False
+                result['status_code'] = res.status_code
+                return result
 
             if nyt_data["num_results"] == 1:
-                print("One review found. Hopefully this is it🙏🏻!")
+                print("One review found.")
+                print("Beginning verification process...")
+
+                # Extract year
+                print("Extacting NYT release or publcation year...", end="")
+
+                if nyt_data['results'][0].get('opening_date'):
+                    nyt_date = nyt_data['results'][0].get('opening_date')
+                else:
+                    nyt_date = nyt_data['results'][0].get('publication_date')
+
+                nyt_year = nyt_date.split('-')[0].strip()
+
+                print(nyt_year)
+
+                print(f"Comparing given and NYT release years...{year} vs. {nyt_year}")
+
+                if year > int(nyt_year):
+                    print("Film cannot have been reviewed prior to its release.")
+                    print("There are really no reviews for this movie. Sorry😭")
+                    result['success'] = False
+                    result['status_code'] = res.status_code
+                    result['message'] = "No review found for this film."
+                    return result
+
+
+                nyt_title = nyt_data['results'][0].get('display_title').strip()
+
+                print(f"Comparing given title with NYT title: {title} vs {nyt_title}")
+                if title.strip() != nyt_title:
+                    print("Titles do not match.")
+                    print("There are really no reviews for this movie. Sorry😭")
+                    result['success'] = False
+                    result['status_code'] = res.status_code
+                    result['message'] = "No review found for this film."
+                    return result
+
+
+                print("Heuristic verification complete.")
+                print("There is no way to be sure whether this " \
+                        "is really the review for the movie.")
+                print("Appending warning to review....")
+
+                nyt_status = "WARNING"
+                nyt_critics_pick = nyt_data['results'][0]['critics_pick']
+                nyt_summary_short = nyt_data['results'][0]['summary_short']
+
+                if nyt_summary_short is not None:
+                    if nyt_summary_short.strip() == "":
+                        nyt_summary_short = "No summary review provided."
+
+                print(f"NYT_STATUS: {nyt_status}")
+
+                # Build review object
+                review = cls(title=title, year=year,
+                             text=nyt_summary_short,
+                             publication_date=nyt_data['results'][0].get('publication_date'),
+                             critics_pick=nyt_critics_pick)
+                result['message'] = nyt_status
+                result['review'] = review
+
+                return result
+
+
+
+
 
             if nyt_data["num_results"] > 1:
                 print("More than one review found🤔")

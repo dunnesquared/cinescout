@@ -30,21 +30,42 @@
       <td> {{ movie.overview }} </td>
     </tr>
 
+    {% if review is not none %}
+      <tr>
+        <th>NYT Critics Pick:</th>
+        <td>
+        {% if review_warning %}
+          <span class='red'>
+            (WARNING! This review may be referring to a later movie with the same title.
+            Review publised {{ review.publication_date }}).
+          </span><br>
+        {% endif %}
+        {% if review.critics_pick == 1 %}
+          Yes!
+        {% elif review.critics_pick == 0 %}
+           No.
+        {% else %}
+           No review found.
+        {% endif %}
+          </td>
 
-    <tr>
-      <th>NYT Critics Pick:</th>
-      {% if review.critics_pick == 1 %}
-        <td> Yes! </td>
-      {% elif review.critics_pick == 0 %}
-        <td> No. </td>
-      {% else %}
-        <td> No review found. </td>
-      {% endif %}
-    </tr>
-    <tr>
-      <th>NYT Review Summary</th>
-      <td> {{ review.text }} </td>
-    </tr>
+
+      </tr>
+      <tr>
+        <th>NYT Review Summary</th>
+        <td> {% if review_warning %}
+          <span class='red'>
+            (WARNING! This review may be referring to a later movie with the same title.
+            Review publised {{ review.publication_date }}).
+          </span><br>
+        {% endif %}
+          {{ review.text }} </td>
+      </tr>
+    {% else %}
+
+    <p> A movie review could not be found for this movie. </p>
+
+    {% endif %}
 
   </table>
 

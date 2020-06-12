@@ -285,8 +285,6 @@ def movie_info(tmdb_id):
         err_message = f"NYT API query failed; HTTP response = {result['status_code']}  description={result['message']}"
         return render_template("errors/misc-error.html", err_message=err_message)
 
-    print("NYT movie review query completed successfully...")
-
     review = result['review']
 
     # Assess whether movie is already on user's list.
@@ -296,7 +294,12 @@ def movie_info(tmdb_id):
         on_user_list = True if film else False
         print(f"On user list? {on_user_list}, id: {film_list_item_id}")
 
+    # Check whether review has been flagged as being potentially wrong.
+    print(result['message'])
+    review_warning = True if result['message'].strip() == 'WARNING' else False
+
     return render_template("movie.html",
                             movie=movie,
                             review=review,
-                            on_user_list=on_user_list)
+                            on_user_list=on_user_list,
+							review_warning=review_warning)

@@ -73,7 +73,7 @@ class SearchByTitleForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired()])
     submit = SubmitField('Search')
 
-
+# Different departments that people in the movie industry might work in 
 TMDB_DEPARTMENTS = ["Art", "Acting", "Camera", "Costume & Make-Up", "Crew",
                     "Editing",  "Directing", "Lighting", "Production",
                     "Visual Effects", "Writing"]
@@ -86,8 +86,7 @@ def value_label_list():
     return tuple_list
 
 class SearchByPersonForm(FlaskForm):
-    """Form to search for movie by title keywords"""
-
+    """Form to search for movie by person's name."""
     name = StringField('Name', validators=[DataRequired()])
     known_for = SelectField('Known For',
                              choices=value_label_list(),

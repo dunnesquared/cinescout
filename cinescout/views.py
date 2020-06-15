@@ -166,7 +166,7 @@ def browse():
 
 @app.route("/search")
 def search():
-    """Renders search forms"""
+    """Renders search forms."""
     title_form = SearchByTitleForm()
     person_form = SearchByPersonForm()
     return render_template("search.html",
@@ -174,28 +174,29 @@ def search():
                             person_form=person_form)
 
 
-
-
 @app.route("/title-search-results", methods=["POST"])
 def search_results_title():
-    """Gets movie results from the TMDB based on title supplied."""
+    """Renders list of movies from the external movie API based on
+	title supplied."""
 
     form = SearchByTitleForm()
 
     if form.validate_on_submit():
+		# Gets list of movies based on given title.
         result = TmdbMovie.get_movie_list_by_title(form.title.data.strip())
 
+		# Something went wrong...
         if not result['success']:
+			# Bad HTTP response from API call or...
             if result['status_code'] != 200:
                 abort(result['status_code'])
             else:
-				# No movies found for given title
+				# No movies found for given title.
                 return render_template("results.html", movies=None)
-
 
         return render_template("results.html", movies=result['movies'])
 
-    # In case users GET the page, or the data is invalid
+    # In case users GET this route, or the form data is invalid.
     return render_template("search.html",
                            title_form=form,
 						   person_form=SearchByPersonForm())
@@ -203,7 +204,9 @@ def search_results_title():
 
 @app.route("/person-search-results", methods=["POST"])
 def search_results_person():
-    """Renders list of people in their associated fields."""
+    """Renders list of people in their associated fields in the movie
+	industry.
+	"""
 
     form = SearchByPersonForm()
 
@@ -214,49 +217,52 @@ def search_results_person():
                                                          known_for=known_for)
 
         if not result['success']:
+			# Bad HTTP response from API call or...
             if result['status_code'] != 200:
                 abort(result['status_code'])
             else:
-                # No people to display
-                no_persons = True
+                # No people to display.
                 return render_template("persons.html",
                                          persons=result['persons'])
-        else:
-            print("Tmdb person data retrieved :-)!")
 
         return render_template("persons.html", persons=result['persons'])
 
-
-    # In case users GET the page, or the data is invalid
+    # In case users GET this route, or the form data is invalid.
     return render_template("search.html",
 							person_form=form,
 							title_form=SearchByTitleForm())
 
 
-@app.route("/person/<int:tmdb_person_id>", methods=["GET"])
-def filmography(tmdb_person_id):
+@app.route("/person/<int:person_id>", methods=["GET"])
+def filmography(person_id):
+	"""Renders movie credits of a person in the movie industry.
+
+	Args:
+		person_id: Id in external database of person sought for.
+	"""
 
 	name = request.args.get("name")
+
 	print(f"Getting filmography data for {name}...")
 
-	filmography_data = TmdbMovie.get_movie_list_by_person_id(tmdb_person_id)
+	filmography_data = TmdbMovie.get_movie_list_by_person_id(person_id)
 
 	if not filmography_data['success']:
+		# Bad HTTP response from API call or...
 		if filmography_data['status_code'] != 200:
 			abort(filmography_data['status_code'])
 		else:
-			# No films to display
+			# No films to display.
 			return render_template("filmography.html",
 									 cast=None,
 									 crew=None,
 									 no_films=True)
-	else:
-		print("Tmdb filmography data retrieved :-)!")
-		return render_template("filmography.html",
-								 cast=filmography_data.get('cast'),
-								 crew=filmography_data.get('crew'),
-								 no_films=False,
-								 name=name)
+
+	return render_template("filmography.html",
+							 cast=filmography_data.get('cast'),
+							 crew=filmography_data.get('crew'),
+							 no_films=False,
+							 name=name)
 
 
 @app.route("/movie/<int:tmdb_id>", methods=["GET"])

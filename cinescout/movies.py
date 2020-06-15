@@ -11,29 +11,33 @@ from textwrap import dedent
 # from cinescout import app
 
 class Person:
-    """Class representing a person in the film industry
+    """Class representing a person in the film industry.
 
     Attributes:
         id: Integer representing person in external database.
         name: String representing person's name
         known_for: what the person is best known for in the movie industry.
     """
-
     def __init__(self, id, name, known_for):
         self.id = id
         self.name = name
         self.known_for = known_for
-
-    # def add_known_for(self, known_for):
-    #     """Insert known_for person has worked in"""
-    #     self.known_fors.append(known_for)
-    #     print(self.known_fors)
 
     def __str__(self):
         return f"name: {self.name}, id: {self.id}, known_for: {self.known_for}"
 
 
 class Movie:
+    """Class representing a film.
+
+    Attributes:
+        id: Integer representing movie in external database.
+        title: String representing film's title.
+        release_year: Integer representing year movie released.
+        release_date: String representing date movie released.
+        overview: String containing summary of movie's premise.
+        runtime: Integer representing runtime of movie in minutes.
+    """
     def __init__(self, id=None, title=None, release_year=None,
                  release_date=None, overview=None, runtime=None):
                  self.id = id
@@ -46,42 +50,30 @@ class Movie:
 
     @classmethod
     def get_movie_list_by_title(cls, title):
-        """Returns list of movies."""
+        """Returns data structure containing list of movies and extra
+        metadata if needed.
+        """
         pass
 
     @classmethod
     def get_movie_list_by_person_id(cls, person_id):
-        """Gets list of movies based on data in person object.
-
-        Args:
-            person_id: Integer representing id of person in external databse.
-
-        Returns:
-            movie_list: List of items where each item contains movie data.
-
+        """Returns data structure containing list of movies and metadata
+        based on id of person in external database.
         """
         pass
 
     @classmethod
-    def get_person_list_by_name_category(cls, name, known_for):
-        """Gets list of people based on person's name and known_for they have
-        worked in in the movie industry
-
-        Args:
-            name: String object representing person's name.
-            known_for: String object representing person's occupation.
-
-        Returns:
-            person_list: list of Person objects.
+    def get_person_list_by_name_known_for(cls, name, known_for):
+        """Returns data structure containing list of people and metadata
+        based on person's name and field they have worked in in the movie
+        industry.
         """
         pass
-
 
     @classmethod
     def get_movie_info_by_id(cls, id):
         """Builds Movie object with id to search external api db."""
         pass
-
 
     def __str__(self):
         return dedent(f"""
@@ -92,13 +84,35 @@ class Movie:
         overview = {self.overview} runtime = {self.runtime} min.""")
 
     def __repr__(self):
-        pass
-
+        return dedent(f"""
+        api-db id = {self.id}
+        title = '{self.title}'
+        release year = {self.release_year}
+        release date = {self.release_date}
+        overview = {self.overview} runtime = {self.runtime} min.""")
 
 
 class TmdbMovie(Movie):
+    """Class representing a film, with data from tmdb.org.
 
-    # API info salient to getting data
+    Class Attributes:
+        api_key: String representing API key required to access tmdb's API.
+        poster_base_url: String representing prefix url to access images of
+                        movie posters.
+        poster_size: String representing size of poster image.
+        delay: Integer representing delay before calling tmdb api.
+
+    Attributes:
+        id: Integer representing movie in external database.
+        title: String representing film's title.
+        release_year: Integer representing year movie released.
+        release_date: String representing date movie released.
+        overview: String containing summary of movie's premise.
+        runtime: Integer representing runtime of movie in minutes.
+        poster_full_url: String representing complete url to access image of
+                         a movie's poster should it exist.
+    """
+    # Class attributes
     api_key = os.getenv('TMDB_API_KEY')
     poster_base_url = "http://image.tmdb.org/t/p/"
     poster_size = "w300"
@@ -107,41 +121,57 @@ class TmdbMovie(Movie):
     def __init__(self, id=None, title=None, release_year=None,
                  release_date=None, overview=None, runtime=None,
                  poster_full_url=None):
-
         Movie.__init__(self, id, title, release_year, release_date,
                         overview, runtime)
-
-
         self.poster_full_url = poster_full_url
 
     @classmethod
     def get_movie_list_by_title(cls, title):
-        """Returns list of movies based on title."""
+        """Returns dictionary containing list of movies and metadata.
+
+        Args:
+            title: String representing movie's title.
+
+        Returns:
+            result: Dictionary containing three fields.
+                success: Boolean to whether movies found based on given title.
+                status code: Http response code of tmdb API call.
+                movies: List of Movie objects; None if no API data found.
+        """
 
         # Setup return value
         result = {'success': True, 'status_code': 200, 'movies': None}
 
+        # Make API call
+        print(f"Calling tmdb API...", end="")
         res = requests.get("https://api.themoviedb.org/3/search/movie",
-                            params={"api_key": cls.api_key, "query": title.strip()})
+                            params={"api_key": cls.api_key,
+                                    "query": title.strip()})
 
-        # Check response status
-        # Check whether movie found
+        # Check response status; check whether movie found
         if res.status_code != 200:
+            print("FAILED!")
             result['success'] = False
             result['status_code'] = res.status_code
             result['movies'] = None
             return result
 
+        print("SUCCESS!")
         tmdb_data = res.json()
 
+        # No dice.
         if tmdb_data["total_results"] == 0:
+            print(f"No movies found for movie titled '{title}'😭")
             result['success'] = False
             result['movies'] = None
             return result
 
+        # Movies found!
         if tmdb_data["total_results"] >= 1:
+            print("Movies found!")
             movies = []
 
+            # Process tmdb data to create Movie objects. Add them to list.
             for movie in tmdb_data["results"]:
                 release_date = movie.get('release_date')
 
@@ -159,32 +189,35 @@ class TmdbMovie(Movie):
             movies.sort(key=lambda x: datetime.strptime(x.release_date, '%Y-%m-%d'),
                      reverse=True)
 
-            # Ready to send
+            # Ready to send!
             result['movies'] = movies
             return result
 
 
     @classmethod
     def get_person_list_by_name_known_for(cls, name, known_for):
-        """Gets list of people based on person's name and known_for they have
-        worked in in the movie industry
+        """Returns data structure containing list of people and metadata
+        based on person's name and field they have worked in in the movie
+        industry.
 
         Args:
             name: String object representing person's name.
             known_for: String object representing person's occupation.
 
         Returns:
-            result:  A dictionary with three known_fors
+            result: A dictionary with three fields:
                 success: True or False, depending on wheter movie found.
-                status_code: Status code of Http response
+                status_code: Status code of Http response of api call.
                 persons: List of Person objects; None if api call
-                returns nothing/could not get data.
+                         returns nothing/could not get data.
         """
 
         # Setup return value
         result = {'success': True, 'status_code': 200, 'persons':[]}
 
-        # Get persons data from TMDB
+        # Get people data from TMDB
+        print(f"Requesting person data from TMDB api for '{name}', '{known_for}'...",
+              end="")
         res = requests.get("https://api.themoviedb.org/3/search/person",
                             params={"api_key": cls.api_key,
                                     "query": name.strip()})
@@ -192,12 +225,14 @@ class TmdbMovie(Movie):
         # Check response status
         # Check whether movie found
         if res.status_code != 200:
+            print(f"FAILED! status_code={res.status_code}")
             result['success'] = False
             result['status_code'] = res.status_code
             result['persons'] = None
             return result
 
-        print("Extracting Person Data from from TMDB JSON response....")
+        print("SUCCESS!")
+        print("Extracting person data from from TMDB JSON response....")
 
         # Deserialize JSON response object
         tmdb_persons_data = res.json()
@@ -205,7 +240,7 @@ class TmdbMovie(Movie):
         print(f"Number of tmdb person results found: {tmdb_persons_data['total_results']}")
 
         if tmdb_persons_data["total_results"] == 0:
-            print(f"No data found for {name}, known for {known_for}.")
+            print(f"No results found for '{name}', '{known_for}'.")
             result['success'] = False
             result['persons'] = None
             return result
@@ -215,13 +250,16 @@ class TmdbMovie(Movie):
 
         # Create Person object for all TMDB results or just those working
         # in specified field.
+        print("Building person list...")
         if known_for == 'All':
+            # Add everyone.
             for person_data in tmdb_persons_data['results']:
                 person = Person(id=person_data['id'],
                                 name=person_data['name'],
                                 known_for=person_data['known_for_department'])
                 persons.append(person)
         else:
+            # Add only those with matching work field.
             for person_data in tmdb_persons_data['results']:
                 if person_data['known_for_department'] == known_for:
                     person = Person(id=person_data['id'],
@@ -236,34 +274,56 @@ class TmdbMovie(Movie):
 
     @classmethod
     def get_movie_list_by_person_id(cls, person_id):
-        # Setup return value
-        result = {'success': True, 'status_code': 200, 'cast':[], 'crew':[],
-                 'name': None}
+        """Returns data structure containing list of movies and metadata
+        based on id of person in external database.
 
-        # Get persons data from TMDB
+        Args:
+            person_id: Integer representing id of person in TMDB database.
+
+        Returns:
+            result: A dictionary with four fields fields:
+                success: True or False, depending on wheter person found.
+                status_code: Status code of Http response of api call.
+                cast: List of movies which given person acted in. Each entry
+                      is a dictionary referring to Movie object and character
+                      name (string). Returns empty list if no roles found.
+                crew: List of movies which given person worked in some
+                      acting capacity. Each entry is a dictionary referring to
+                      Movie object and job title (string).
+                      Returns empty list if no such jobs are found.
+        """
+        # Setup return value
+        result = {'success': True, 'status_code': 200, 'cast':[], 'crew':[]}
+
+        # Get person data from TMDB
+        print(f"Requesting person data from TMDB api with person_id={person_id}...",
+                end="")
         res = requests.get(f"https://api.themoviedb.org/3/person/{person_id}/movie_credits",
                             params={"api_key": cls.api_key})
 
         # Check response status
         # Check whether movie found
         if res.status_code != 200:
+            print(f"FAILED! status_code={res.status_code}")
             result['success'] = False
             result['status_code'] = res.status_code
             result['movies'] = None
             return result
 
-        print("Extracting movie credits from from TMDB JSON response....")
+        print("SUCCESS!")
+        print("Extracting movie credits for person from TMDB JSON response....")
 
         # Deserialize JSON response object
         tmdb_filmography_data = res.json()
 
         # Get movies where person was in the film
-        # count = 0
+        print("Building movie list...")
         cast = []
         for movie_credit in tmdb_filmography_data['cast']:
-
             release_date = movie_credit.get('release_date')
 
+            # Put in placeholder release date if none found in TMDB data.
+            # Useful for sorting later on.
             if movie_credit.get('release_date') == None or movie_credit.get('release_date') == '':
                 release_date = '0001-01-01'
 
@@ -271,15 +331,9 @@ class TmdbMovie(Movie):
                           title=movie_credit.get('title'),
                           release_date=release_date)
 
-
+            # Add name of character portrayed in film.
             character = movie_credit.get('character')
             cast.append({'movie': movie, 'character': character})
-
-            # # Helpful for debugging purposes
-            # print(f"\n{count}", end="")
-            # print(movie)
-            # print(f"Character: {character}")
-            # count += 1
 
         # Sort movies by release date, descending order
         cast.sort(key=lambda x: datetime.strptime(x['movie'].release_date, '%Y-%m-%d'),
@@ -287,20 +341,13 @@ class TmdbMovie(Movie):
 
         result['cast'] = cast
 
-        # # debug
-        # for elem in result['cast']:
-        #     print(elem[0])
-        #     print(elem[1])
-
-
-        # Get movies where person was part of the crew
-
+        # Get movies where person was part of the crew.
         crew = []
-        # count = 0
         for movie_credit in tmdb_filmography_data['crew']:
-
             release_date = movie_credit.get('release_date')
 
+            # Put in placeholder release date if none found in TMDB data.
+            # Useful for sorting later on.
             if movie_credit.get('release_date') == None or movie_credit.get('release_date') == '':
                 release_date = '0001-01-01'
 
@@ -308,99 +355,89 @@ class TmdbMovie(Movie):
                           title=movie_credit.get('title'),
                           release_date=release_date)
 
+            # Add person's job associated with film.
             job = movie_credit.get('job')
             crew.append({'movie': movie, 'job': job})
-
-            # # Helpful for debugging purposes
-            # print(f"\n{count}", end="")
-            # print(movie)
-            # print(f"Job: {job}")
-            # count += 1
 
         crew.sort(key=lambda x: datetime.strptime(x['movie'].release_date, '%Y-%m-%d'),
                  reverse=True)
 
-        # Eliminate duplicate movies, but combine jobs
+        # A person may have had several jobs on a film (e.g. Director/Producer)
+        # To avoid having Movie objects for the same film but different jobs,
+        # search duplicate movies, combine jobs into single object and
+        # delete the duplicates.
+
+        # Index of film in crew list being looked at.
         curr = 0
+        # Index of film in crew list that is being compared with film at curr.
         next = curr + 1
 
+        # Carry out search, merge and deletion of duplicate data.
         while curr < len(crew) and next < len(crew):
-            # # DEBUG
-            # print(f"len={len(crew)}")
-            # print(f'curr={curr}')
-            # print(f'next={next}')
-
             # In a sorted list, two movies with the same title are next
             # to each other.
             if crew[curr]['movie'].title != crew[next]['movie'].title:
                 curr += 1
                 next = curr + 1
             else:
-                # print(f"DUPLICATE! {crew[next]['movie'].title}")
-
-                # Add job name from duplicate to original
+                # Add job name from duplicate to original.
                 crew[curr]['job'] += ", " + crew[next]['job']
 
-                # print(crew[curr].get('job'))
-
-                # Delete the duplicate
+                # Delete the duplicate.
                 del crew[next]
-
 
         result['crew'] = crew
 
-        # # debug
-        # for elem in result['crew']:
-        #     print(elem[0])
-        #     print(elem[1])
-
         return result
-
-
-
-        #return f"TMDB Booyah!! {person_id}"
-
 
     @classmethod
     def get_movie_info_by_id(cls, id):
-        """Get info from TMDB API to create instance.
+        """Returns data structure contiaining Movie object and metadata based
+        on movie id.
 
         Args:
-            id: Integer representing TMDB movie id.
+            id: Integer representing a movie in TMDB database.
 
         Returns:
-            result: A dictionary with three known_fors
+            result: A dictionary with three fields
                 success: True or False, depending on wheter movie found.
-                status_code: Status code of Http response
-                movie: Movie object with all salient known_fors filled-in, or None
-                       if method could not get data.
+                status_code: Status code of Http response.
+                movie: Movie object with all salient attributes filled-in;
+                      None if api call returns no data.
         """
         # Setup return value
         result = {'success': True, 'status_code': 200, 'movie': None}
 
         # Get movie info TMDB database
+        print(f"Requesting movie data from TMDB api with movie_id={id}...",
+                end="")
         res = requests.get(f"https://api.themoviedb.org/3/movie/{id}",
                             params={"api_key": cls.api_key})
 
         # Check whether movie found
         if res.status_code != 200:
+            print(f"FAILED! status_code={res.status_code}")
             result['success'] = False
             result['status_code'] = res.status_code
         else:
+            print("SUCCESS!")
+
             # Deserialize JSON response object
+            print("Extracting movie data from TMDB JSON response....")
             tmdb_movie_data = res.json()
 
-            # Get year movie was released
+            # Get year movie was released.
             if tmdb_movie_data.get('release_date'):
                 release_year = int(tmdb_movie_data['release_date'].split('-')[0].strip())
             else:
                 release_year = None
 
-            # Build full url for movie poster
+            # Build full url for movie poster.
             poster_full_url = None
             if tmdb_movie_data['poster_path']:
                 poster_full_url = cls.poster_base_url + cls.poster_size + tmdb_movie_data['poster_path']
 
+            print("Building Movie object...")
             movie = cls(id=id, title=tmdb_movie_data['title'],
                         release_year=release_year,
                         release_date=tmdb_movie_data.get('release_date'),
@@ -413,8 +450,16 @@ class TmdbMovie(Movie):
         return result
 
 
-
 class MovieReview:
+    """Class representing a movie review.
+
+    Attributes:
+        title: Striing representing the title of movie reviewed.
+        year: Integer representing the release year of the movie.
+        text: String containing summary of movie review.
+        publication_date: String representing date review was published.
+    """
+
 
     def __init__(self, title=None, year=None, text=None, publication_date=None):
         self.title = title
@@ -425,6 +470,8 @@ class MovieReview:
 
     @classmethod
     def get_review_by_title_and_year(cls, title, year):
+        """Returns data structure containing review and metadata based on
+        title of film and year film was released."""
         pass
 
     def __str__(self):
@@ -433,7 +480,21 @@ class MovieReview:
 
 
 class NytMovieReview(MovieReview):
+    """Class representing a movie review from the New York Times.
 
+    Class Attributes:
+        api_key: String representing API key required to access NYT's API.
+        delay: Integer representing delay before calling NYT api.
+
+    Attributes:
+        title: Striing representing the title of movie reviewed.
+        year: Integer representing the release year of the movie.
+        text: String containing summary of movie review.
+        publication_date: String representing date review was published.
+        critics_pick: Boolean representing whether movie is NYT critic's pick.
+    """
+
+    # Class Attributes
     api_key = os.getenv('NYT_API_KEY')
     delay = 3
 
@@ -442,21 +503,25 @@ class NytMovieReview(MovieReview):
         MovieReview.__init__(self, title, year, text, publication_date)
         self.critics_pick = critics_pick
 
-
     @classmethod
     def get_review_by_title_and_year(cls, title, year):
-        # Setup return value
+        """Returns data structure containing NYT review summary and metadata
+        based on title of film and year film was released."""
+
+        # Setup return value.
         result = {'success': True,
                   'status_code': 200,
                   'message': None,
                   'review': None}
 
-        # Get review info from NYT
     	# Flag in case NYT review info already found
         nyt_review_already_found = False
 
-        print(f"Starting process to get review for {title}, {year}")
+        print(f"Starting process to get review for '{title}, {year}' via NYT api...")
 
+        # The dates on which a movie is released and reviewed likely differ.
+        # Most movies will have been reviewed in the same year they were
+        # released, however.
         opening_date_start = f"{year}-01-01"
         opening_date_end = f"{year}-12-31"
 
@@ -477,18 +542,24 @@ class NytMovieReview(MovieReview):
         # Unpack review data
         nyt_data = res.json()
 
+        print("Analyzing NYT review response data...")
+
         # Check whether a review was written for a movie. Watch out for special cases.
         if nyt_data["num_results"] == 0:
 
-            print("No NYT review found for given title and year☹️")
+            print("No NYT review found for given movie title and year☹️")
 
             nyt_status = "No review found."
             nyt_critics_pick = "No review found."
             nyt_summary_short = "No review found."
 
-            # Check case where year in NYT db and TMBD don't match.
+            # Check case where movie year in NYT db and movie's release year
+            # don't match. This happens somewhat frequently as a lot of films
+            # shown at festivals before having a general release.
             print("Checking to see whether given release year and NYT year don't match....")
 
+            # You don't want to call the NYT api too fast a second time or the
+            # app might get blocked from using it.
             print(f"Delaying next NYT API call by {cls.delay} seconds...")
             time.sleep(cls.delay)
 
@@ -507,6 +578,8 @@ class NytMovieReview(MovieReview):
             print("Counting number of reviews returned...")
             nyt_data = res.json()
 
+            # If the title of a movie on its own doesn't return a single
+            # result, it probably wasn't reviewed by the NYT.
             if nyt_data["num_results"] == 0:
                 print("There are really no reviews for this movie. Sorry😭")
                 result['success'] = False
@@ -514,11 +587,19 @@ class NytMovieReview(MovieReview):
                 result['message'] = "No reviews found."
                 return result
 
+            # One review found, but is it the one the you want? It could
+            # be a title with similar keywords, or a remake of the film.
             if nyt_data["num_results"] == 1:
                 print("One review found.")
                 print("Beginning verification process...")
 
-                # Extract year
+                # Test # 1: Look at the movie's release year and publication
+                # year. Since it is reasonable to assume that a movie
+                # can only have been reviewed after its release, then any
+                # review in which the publication year is greater than the
+                # release year, can't be the one we want. Conversely, we
+                # can only hope that the review is the right one if the review
+                # year comes after the publishing year.
                 print("Extacting NYT release or publcation year...", end="")
 
                 if nyt_data['results'][0].get('opening_date'):
@@ -540,19 +621,22 @@ class NytMovieReview(MovieReview):
                     result['message'] = "No review found for this film."
                     return result
 
-
+                # Title of movie reviewed by NYT.
                 nyt_title = nyt_data['results'][0].get('display_title').strip()
 
+                # Test #2: The titles in the review and of the sought movie
+                # should be an exact match.
                 print(f"Comparing given title with NYT title: {title} vs {nyt_title}")
                 if title.strip() != nyt_title:
-                    print("Titles do not match.")
+                    print("Given movie title and NYT movie title do not match.")
                     print("There are really no reviews for this movie. Sorry😭")
                     result['success'] = False
                     result['status_code'] = res.status_code
                     result['message'] = "No review found for this film."
                     return result
 
-
+                # If both tests passed, accept the review, but add a warning
+                # that it might not match the movie sought for.
                 print("Heuristic verification complete.")
                 print("There is no way to be sure whether this " \
                         "is really the review for the movie.")
@@ -562,6 +646,8 @@ class NytMovieReview(MovieReview):
                 nyt_critics_pick = nyt_data['results'][0]['critics_pick']
                 nyt_summary_short = nyt_data['results'][0]['summary_short']
 
+                # In case NYT has the movie in its db, but didn't write
+                # a review summary for it.
                 if nyt_summary_short is not None:
                     if nyt_summary_short.strip() == "":
                         nyt_summary_short = "No summary review provided."
@@ -578,15 +664,23 @@ class NytMovieReview(MovieReview):
 
                 return result
 
-
+            # Multiple reviews retrieved. This is likely to happen since
+            # searching just by movie title broadens the serach considerably.
             if nyt_data["num_results"] > 1:
                 print("Multiple reviews found🤔")
-                print(f"Number of reviews found: {nyt_data['num_results']}")
-                print("Using heuristic that NYT reviewed film at closest date AFTER TMDB's release date....")
+                print(f"Qty: {nyt_data['num_results']}")
+
+                # To determine which review of the several might be the right
+                # one, pick the review published the soonest after the film
+                # was released. No guarantee, but better than nothing.
+                print("Using heuristic that the  NYT review  that was " \
+                      "closest to the film's release date is likey the review " \
+                      "sought after.")
                 print("Analyzing NYT review results...")
 
-                # Get critics pick data and summary short for review that has years closest to TMDBs
+                # List of years each review was published.
                 nyt_years = []
+
                 for movie_result in nyt_data['results']:
                     # Extract year
                     print("Extacting NYT release or publcation year...", end="")
@@ -595,7 +689,11 @@ class NytMovieReview(MovieReview):
                     print(nyt_year)
                     nyt_years.append(nyt_year)
 
-                print("Getting NYT year closest to TMDB year...", end="")
+                print("Getting NYT year closest to movie release year...",
+                      end="")
+
+                # Some reviews are dated after the movie's release date.
+                # These should excluded as viable contenders.
                 shortlist = []
 
                 for review_year in nyt_years:
@@ -603,6 +701,7 @@ class NytMovieReview(MovieReview):
                     if diff > 0:
                         shortlist.append(diff)
 
+                # Pick the closest year.
                 if shortlist:
                     result_index = shortlist.index(min(shortlist))
                     print(nyt_years[result_index])
@@ -615,17 +714,23 @@ class NytMovieReview(MovieReview):
                     result['message'] = "No review found for this film."
                     return result
 
+                # There is slight risk that this might not be the right review...
                 print("Getting review information. Hopefully right review picked🙏!")
+
                 nyt_critics_pick = nyt_data['results'][result_index]['critics_pick']
                 nyt_summary_short = nyt_data['results'][result_index]['summary_short']
 
-                # So we don't overwrite the found review results with the logic below
+                # So we don't overwrite the found review results with the logic below.
                 nyt_review_already_found = True
 
+                # In case NYT has the movie in its db, but didn't write
+                # a review summary for it.
                 if nyt_summary_short is not None:
                     if nyt_summary_short.strip() == "":
                         nyt_summary_short = "No summary review provided."
 
+                # Accept as a valid review. If you want to warn the user that
+                # this might be the wrong review, change status to "WARNING".
                 nyt_status = "OK"
                 print(f"NYT_STATUS: {nyt_status}")
 
@@ -637,19 +742,24 @@ class NytMovieReview(MovieReview):
                 result['message'] = nyt_status
                 result['review'] = review
 
-                print(result)
-
                 return result
 
 
-
-        # More than one movie with same title in smame year!
+        # More than one movie with same title in the same year!
         if nyt_data["num_results"] > 1 and not nyt_review_already_found:
 
-            # Try looking for exact title in results
+            print("More than one NYT review for found given movie title and year!")
+
+            # Try looking for exact title in results.
+
+            # Try to zero-in on right review by comparing titles.
+
+            print("Comparing title of movie in review with given title...")
             for index, movie in enumerate(nyt_data['results']):
 
                 if movie['display_title'].strip().lower() == title.strip().lower():
+                    print("Match found! Extracting review data...")
+
                     nyt_status = "OK"
                     nyt_critics_pick = nyt_data['results'][index]['critics_pick']
                     nyt_summary_short = nyt_data['results'][index]['summary_short']
@@ -662,13 +772,18 @@ class NytMovieReview(MovieReview):
 
                     break
 
+            # Unable to tell which review is the right one.
             if not nyt_review_already_found:
                 nyt_status = "More than one review found in same year with no exact name match. Unable to choose review."
                 nyt_critics_pick = "No review found."
                 nyt_summary_short = "No review found."
                 result['success'] = False
 
+
+        # Exact match with title and release year. Ideal scenario.
         if  nyt_data["num_results"] == 1:
+            print("NYT review found for given title and release year on first shot😆")
+
             nyt_status = "OK"
             nyt_critics_pick = nyt_data['results'][0]['critics_pick']
             nyt_summary_short = nyt_data['results'][0]['summary_short']
@@ -685,20 +800,9 @@ class NytMovieReview(MovieReview):
         result['message'] = nyt_status
         result['review'] = review
 
-
-
         return result
 
 
-
-
 if __name__ == "__main__":
-    # movie = TmdbMovie(123, "Cat Game", "1992", "1992-03-07", "Cat chases mouse.",
-    #                 "107", "/csrw/01")
-    # print(movie)
-    # print(movie.poster_full_url)
-    result = TmdbMovie.get_movie_info_by_id(id=88)
-    print(result['movie'])
-
-    result = NytMovieReview.get_review_by_title_and_year(title="Dirty Dancing", year="1987")
-    print(result['review'])
+    # Placeholder main section to play around with classes if desired.
+    pass

@@ -75,6 +75,21 @@
 
       {% endif %}
 
+
+      <tr>
+        <th>IMDB Link</th>
+        <td>
+          {% if movie.imdb_full_url %}
+            <a href="{{ movie.imdb_full_url }}" target="_blank">
+              {{ movie.imdb_full_url }}
+            </a>
+          {% else %}
+            <p> There is no IMDB link for this film. </p>
+          {% endif %}
+        </td>
+      </tr>
+
+
     </table>
   </div>
   <!-- Data values required to add/remove film -->

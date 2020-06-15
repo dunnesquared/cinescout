@@ -101,6 +101,8 @@ class TmdbMovie(Movie):
                         movie posters.
         poster_size: String representing size of poster image.
         delay: Integer representing delay before calling tmdb api.
+        imdb_base_url: String representing prefix url to access IMDB movie
+                       page.
 
     Attributes:
         id: Integer representing movie in external database.
@@ -111,19 +113,23 @@ class TmdbMovie(Movie):
         runtime: Integer representing runtime of movie in minutes.
         poster_full_url: String representing complete url to access image of
                          a movie's poster should it exist.
+        imdb_full_url: String representing complete url to access IMDB movie
+                       page, should it exist.
     """
     # Class attributes
     api_key = os.getenv('TMDB_API_KEY')
     poster_base_url = "http://image.tmdb.org/t/p/"
     poster_size = "w300"
     delay = 1
+    imdb_base_url = "https://www.imdb.com/title/"
 
     def __init__(self, id=None, title=None, release_year=None,
                  release_date=None, overview=None, runtime=None,
-                 poster_full_url=None):
+                 poster_full_url=None, imdb_full_url=None):
         Movie.__init__(self, id, title, release_year, release_date,
                         overview, runtime)
         self.poster_full_url = poster_full_url
+        self.imdb_full_url = imdb_full_url
 
     @classmethod
     def get_movie_list_by_title(cls, title):
@@ -437,13 +443,22 @@ class TmdbMovie(Movie):
             if tmdb_movie_data['poster_path']:
                 poster_full_url = cls.poster_base_url + cls.poster_size + tmdb_movie_data['poster_path']
 
+            # Build full url for IMDB
+            imdb_full_url = None
+            if tmdb_movie_data['imdb_id']:
+                imdb_full_url = cls.imdb_base_url + tmdb_movie_data['imdb_id']
+
+            print(imdb_full_url)
+
+
             print("Building Movie object...")
             movie = cls(id=id, title=tmdb_movie_data['title'],
                         release_year=release_year,
                         release_date=tmdb_movie_data.get('release_date'),
                         overview=tmdb_movie_data['overview'],
                         runtime=tmdb_movie_data['runtime'],
-                        poster_full_url=poster_full_url)
+                        poster_full_url=poster_full_url,
+                        imdb_full_url=imdb_full_url)
 
             result['movie'] = movie
 

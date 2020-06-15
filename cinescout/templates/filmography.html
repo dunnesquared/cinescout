@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block body %}
+  <h1>Filmography: {{ name }}</h1>
+
+  {% if no_films %}
+    There are no films for this person.
+  {% endif %}
+
+  {% if cast is not none %}
+
+    <h2> Cast </h2>
+
+    <ul>
+
+    {% for cast_item in cast %}
+
+      <li>
+        <a href="{{ url_for('movie_info', tmdb_id=cast_item['movie'].id )}}">
+          {{ cast_item['movie'].title }}
+          {% if cast_item['movie'].release_date != '0001-01-01' %}
+            (Release date: {{ cast_item['movie'].release_date }},
+          {% else %}
+            (Release date: Unknown,
+          {% endif %}
+          Character: {{ cast_item['character'] }})
+        </a>
+      </li>
+
+    {% endfor %}
+    </ul>
+  {% endif %}
+
+
+  {% if crew is not none %}
+    <h2> Crew </h2>
+
+    <ul>
+    {% for crew_item in crew %}
+      <li>
+        <a href="{{ url_for('movie_info', tmdb_id=crew_item['movie'].id )}}">
+          {{ crew_item['movie'].title }}
+          {% if crew_item['movie'].release_date != '0001-01-01' %}
+            (Release date: {{ crew_item['movie'].release_date }},
+          {% else %}
+            (Release date: Unknown,
+          {% endif %}
+          Job: {{ crew_item['job'] }})
+        </a>
+      </li>
+    {% endfor %}
+    </ul>
+
+  {% endif %}
+
+{% endblock %}

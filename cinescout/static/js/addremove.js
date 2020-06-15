@@ -116,7 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (data.success) {
         console.log("Film addedd to list!");
-        alert("Film added to list!")
+        // alert("Film added to list!")
 
         // Remove add button
         console.log("Removing Add button...");
@@ -141,6 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       }else{
         console.log("Error: film could not be added to list.");
+        alert("Error: film could not be added to list. This film may already be on your list. Refresh the page and try again.");
       }
 
     };
@@ -174,7 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const data = JSON.parse(request.responseText);
 
       if (data.success){
-        alert("Film removed from your list!!");
+        // alert("Film removed from your list!!");
 
         // Delete remove button and replace with add button
         remove_button.remove();
@@ -197,7 +198,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
       }else{
-        alert("Error: could not remove film from list.");
+        console.log("Error: could not remove film from list.");
+        alert("Error: could not remove film from list. This film may already be off your list. Refresh the page and try again.");
       }
 
     };

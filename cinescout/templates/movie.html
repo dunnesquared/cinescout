@@ -31,6 +31,13 @@
   <br>
   <div>
     <table class="table table-sm table-borderless table-striped">
+
+      <!--To set width of columns-->
+      <colgroup>
+        <col span=1 id="header-column">
+        <col span=1 id="content-column">
+      </colgroup>
+
       <tr>
         <th>Release Date:</th>
         {% if movie.release_date %}
@@ -48,7 +55,7 @@
       <tr>
         <th>Runtime</th>
           {% if movie.runtime %}
-            <td> {{ movie.runtime }} minutes </td>
+            <td> {{ movie.runtime }} min </td>
           {% else %}
             <td> Runtime unknown for this movie. </td>
           {% endif %}

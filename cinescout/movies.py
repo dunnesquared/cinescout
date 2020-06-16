@@ -668,7 +668,7 @@ class NytMovieReview(MovieReview):
                 # Test #2: The titles in the review and of the sought movie
                 # should be an exact match.
                 print(f"Comparing given title with NYT title: {title} vs {nyt_title}")
-                if title.strip() != nyt_title:
+                if title.strip().lower() != nyt_title.lower():
                     print("Given movie title and NYT movie title do not match.")
                     print("There are really no reviews for this movie. Sorry😭")
                     result['success'] = False

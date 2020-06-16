@@ -518,6 +518,32 @@ class NytMovieReview(MovieReview):
         MovieReview.__init__(self, title, year, text, publication_date)
         self.critics_pick = critics_pick
 
+    @staticmethod
+    def clean_review_text(review_text):
+        """Removes unwanted characters that may appear in NYT review text
+
+        Args:
+            review_text: String representing text of movie review.
+
+        Returns:
+            cleaned_text: String representing text with offending characters
+                          removed.
+        """
+        # Use intermediate variable for your cleaning.
+        # If string is empty, don't bother doing anything.
+        if review_text:
+            temp_text = review_text.strip()
+        else:
+            return None
+
+        # Remove &quot; characters from review text should they exist;
+        # replace them with reqular quotes.
+        temp_text = temp_text.replace('&quot;', '"')
+
+        cleaned_text = temp_text
+        return cleaned_text
+
+
     @classmethod
     def get_review_by_title_and_year(cls, title, year):
         """Returns data structure containing NYT review summary and metadata
@@ -671,7 +697,7 @@ class NytMovieReview(MovieReview):
 
                 # Build review object
                 review = cls(title=title, year=year,
-                             text=nyt_summary_short,
+                             text=cls.clean_review_text(nyt_summary_short),
                              publication_date=nyt_data['results'][0].get('publication_date'),
                              critics_pick=nyt_critics_pick)
                 result['message'] = nyt_status
@@ -751,7 +777,7 @@ class NytMovieReview(MovieReview):
 
                 # Build review object
                 review = cls(title=title, year=year,
-                             text=nyt_summary_short,
+                             text=cls.clean_review_text(nyt_summary_short),
                              publication_date=nyt_data['results'][0].get('publication_date'),
                              critics_pick=nyt_critics_pick)
                 result['message'] = nyt_status
@@ -812,7 +838,8 @@ class NytMovieReview(MovieReview):
 
         # Build review object
         review = cls(title=title, year=year,
-                     text=nyt_summary_short, critics_pick=nyt_critics_pick,
+                     text=cls.clean_review_text(nyt_summary_short),
+                     critics_pick=nyt_critics_pick,
                      publication_date=nyt_data['results'][0].get('publication_date'))
         result['message'] = nyt_status
         result['review'] = review

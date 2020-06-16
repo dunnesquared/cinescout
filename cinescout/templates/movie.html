@@ -8,7 +8,13 @@
   <h1><i>{{ movie.title }}</i></h1>
 
   <div>
-    <img src="{{ movie.poster_full_url }}"></img>
+    {% if movie.poster_full_url %}
+      <img src="{{ movie.poster_full_url }}"></img>
+    {% else %}
+      <p>No poster available for this movie</p>
+    {% endif %}
+
+
   </div>
 
   <br>
@@ -26,8 +32,12 @@
   <div>
     <table class="table table-sm table-borderless table-striped">
       <tr>
-        <th>Opening Date:</th>
-        <td> {{ movie.release_date }} </td>
+        <th>Release Date:</th>
+        {% if movie.release_date %}
+          <td> {{ movie.release_date }} </td>
+        {% else %}
+          <td> Release date unknown for this movie. </td>
+        {% endif %}
       </tr>
 
       <tr>
@@ -37,7 +47,11 @@
 
       <tr>
         <th>Runtime</th>
-        <td> {{ movie.runtime }} minutes </td>
+          {% if movie.runtime %}
+            <td> {{ movie.runtime }} minutes </td>
+          {% else %}
+            <td> Runtime unknown for this movie. </td>
+          {% endif %}
       </tr>
 
       {% if review is not none %}
@@ -47,7 +61,7 @@
           {% if review_warning %}
             <span class='red'>
               (WARNING! This review may be referring to a later movie with the same title.
-              Review publised {{ review.publication_date }}).
+              Review published {{ review.publication_date }}).
             </span><br>
           {% endif %}
           {% if review.critics_pick == 1 %}
@@ -64,7 +78,7 @@
           <td> {% if review_warning %}
             <span class='red'>
               (WARNING! This review may be referring to a later movie with the same title.
-              Review publised {{ review.publication_date }}).
+              Review published {{ review.publication_date }}).
             </span><br>
           {% endif %}
             {{ review.text }} </td>

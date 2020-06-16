@@ -6,7 +6,6 @@
 }
 */
 
-
 .red {
   color: red;
 }
@@ -17,4 +16,13 @@
 
 #content-column {
   width: 90%;
+}
+
+.publication {
+  font-size: 80%;
+  font-weight: 600;
+  font-family: sans-serif;
+}
+
+.review-text {
 }

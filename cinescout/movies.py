@@ -811,7 +811,9 @@ class NytMovieReview(MovieReview):
         print(f"NYT_STATUS: {nyt_status}")
 
         # Build review object
-        review = cls(title=title, year=year, text=nyt_summary_short, critics_pick=nyt_critics_pick)
+        review = cls(title=title, year=year,
+                     text=nyt_summary_short, critics_pick=nyt_critics_pick,
+                     publication_date=nyt_data['results'][0].get('publication_date'))
         result['message'] = nyt_status
         result['review'] = review
 

@@ -40,14 +40,16 @@ class Movie:
         overview: String containing summary of movie's premise.
         runtime: Integer representing runtime of movie in minutes.
     """
-    def __init__(self, id=None, title=None, release_year=None,
-                 release_date=None, overview=None, runtime=None):
+    def __init__(self, id=None, title=None,
+                release_year=None, release_date=None, overview=None,
+                runtime=None, original_title=None):
                  self.id = id
                  self.title = title
                  self.release_year = release_year
                  self.release_date = release_date
                  self.overview = overview
                  self.runtime = runtime
+                 self.original_title = original_title
 
 
     @classmethod
@@ -109,6 +111,8 @@ class TmdbMovie(Movie):
     Attributes:
         id: Integer representing movie in external database.
         title: String representing film's title.
+        original_title: String representing film's orginal title, most likely
+                        in the case of non-English language film.
         release_year: Integer representing year movie released.
         release_date: String representing date movie released.
         overview: String containing summary of movie's premise.
@@ -125,11 +129,11 @@ class TmdbMovie(Movie):
     delay = 1
     imdb_base_url = "https://www.imdb.com/title/"
 
-    def __init__(self, id=None, title=None, release_year=None,
-                 release_date=None, overview=None, runtime=None,
-                 poster_full_url=None, imdb_full_url=None):
+    def __init__(self, id=None, title=None,
+                 release_year=None, release_date=None, overview=None,
+                 runtime=None, original_title=None, poster_full_url=None, imdb_full_url=None):
         Movie.__init__(self, id, title, release_year, release_date,
-                        overview, runtime)
+                        overview, runtime, original_title)
         self.poster_full_url = poster_full_url
         self.imdb_full_url = imdb_full_url
 
@@ -188,6 +192,7 @@ class TmdbMovie(Movie):
 
                 movie = Movie(id=movie.get('id'),
                               title=movie.get('title'),
+                              original_title=movie.get('original_title'),
                               overview=movie.get('overview'),
                               release_date=release_date)
 
@@ -337,6 +342,7 @@ class TmdbMovie(Movie):
 
             movie = Movie(id=movie_credit.get('id'),
                           title=movie_credit.get('title'),
+                          original_title=movie_credit.get('original_title'),
                           release_date=release_date)
 
             # Add name of character portrayed in film.
@@ -361,6 +367,7 @@ class TmdbMovie(Movie):
 
             movie = Movie(id=movie_credit.get('id'),
                           title=movie_credit.get('title'),
+                          original_title=movie_credit.get('original_title'),
                           release_date=release_date)
 
             # Add person's job associated with film.
@@ -450,8 +457,6 @@ class TmdbMovie(Movie):
             if tmdb_movie_data['imdb_id']:
                 imdb_full_url = cls.imdb_base_url + tmdb_movie_data['imdb_id']
 
-            print(imdb_full_url)
-
 
             print("Building Movie object...")
             movie = cls(id=id, title=tmdb_movie_data['title'],
@@ -459,8 +464,10 @@ class TmdbMovie(Movie):
                         release_date=tmdb_movie_data.get('release_date'),
                         overview=tmdb_movie_data['overview'],
                         runtime=tmdb_movie_data['runtime'],
+                        original_title=tmdb_movie_data.get('original_title'),
                         poster_full_url=poster_full_url,
                         imdb_full_url=imdb_full_url)
+
 
             result['movie'] = movie
 
@@ -590,9 +597,24 @@ class NytMovieReview(MovieReview):
             return False
 
     @classmethod
-    def get_review_by_title_and_year(cls, title, year):
+    def get_review_by_title_and_year(cls, title, year, movie_obj=None):
         """Returns data structure containing NYT review summary and metadata
-        based on title of film and year film was released."""
+        based on title of film and year film was released.
+
+        Args:
+            title: String representing title of film, likely its English form.
+            year: Integer representing year movie was released.
+            movie_obj: Movie object (optional) if more information about the film
+                       is required.
+
+        Returns:
+            result: A dictionary with three fields
+                success: True or False, depending on wheter movie found.
+                status_code: Integer repr. status code of Http response.
+                message: String repr. description of status.
+                review: Review object containing salient data. None if
+                        no review could be found.
+        """
 
         # Setup return value.
         result = {'success': True,
@@ -631,6 +653,8 @@ class NytMovieReview(MovieReview):
         print("Analyzing NYT review response data...")
 
         # Check whether a review was written for a movie. Watch out for special cases.
+
+        # No reviews found on initial query. Try again.
         if nyt_data["num_results"] == 0:
 
             print("No NYT review found for given movie title and year☹️")
@@ -839,7 +863,8 @@ class NytMovieReview(MovieReview):
 
 
         # More than one movie with same title in the same year!
-        # e.g. Black Rain (Japanese film vs Michael Douglas film)
+        # Rare but can happen.
+        # e.g. Black Rain, 1989 (Japanese film vs Michael Douglas film)
         if nyt_data["num_results"] > 1 and not nyt_review_already_found:
 
             print("More than one NYT review for found given movie title and year!")
@@ -876,7 +901,17 @@ class NytMovieReview(MovieReview):
 
         # Exact match with title and release year. Ideal scenario.
         if  nyt_data["num_results"] == 1:
-            print("NYT review found for given title and release year on first shot😆")
+            print("NYT review found for given title and release year on first shot😆.")
+
+            # print("Checking to see whether release and critics date are an exact match...")
+            #
+            # # Get openning date, should it exist
+            # if nyt_data['results'][0].get('opening_date'):
+            #     nyt_opening_date = nyt_data['results'][0].get('opening_date')
+            #
+            #
+            # else:
+            #     publication_date = nyt_data['results'][0].get('publication_date')
 
             nyt_status = "OK"
             nyt_critics_pick = nyt_data['results'][0]['critics_pick']

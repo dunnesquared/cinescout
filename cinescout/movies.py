@@ -633,7 +633,7 @@ class NytMovieReview(MovieReview):
         opening_date_start = f"{year}-01-01"
         opening_date_end = f"{year}-12-31"
 
-        print("Making request to NYT Movie Review API...", end="")
+        print("Making initial request to NYT Movie Review API...", end="")
         res = requests.get("https://api.nytimes.com/svc/movies/v2/reviews/search.json",
                                 params={"api-key": cls.api_key,
                                         "opening-date": f"{opening_date_start};{opening_date_end}",

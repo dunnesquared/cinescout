@@ -282,10 +282,16 @@ def movie_info(tmdb_id):
 
     # Get NYT movie review
     if movie.release_year is not None:
-        print(movie.release_year)
         result = NytMovieReview.get_review_by_title_and_year(title=movie.title,
                                                             year=movie.release_year,
                                                             movie_obj=movie)
+
+		# Review may be under film's original language title.
+        if not result['review'] and movie.original_title is not None:
+            print("Trying get review with film's original title...")
+            result = NytMovieReview.get_review_by_title_and_year(title=movie.original_title,
+	                                                            year=movie.release_year,
+	                                                            movie_obj=movie)
     else:
         return render_template("movie.html",
 	                            movie=movie,

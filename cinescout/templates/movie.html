@@ -47,6 +47,13 @@
         {% endif %}
       </tr>
 
+      {% if movie.title != movie.original_title and movie.original_title is not none %}
+      <tr>
+        <th>Original Title</th>
+          <td> {{ movie.original_title }} </td>
+      </tr>
+      {% endif %}
+
       <tr>
         <th>Overview</th>
         <td> {{ movie.overview }} </td>

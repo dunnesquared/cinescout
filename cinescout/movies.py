@@ -6,6 +6,8 @@ from datetime import datetime
 import requests
 from textwrap import dedent
 
+from fuzzywuzzy import fuzz
+
 # Get API key info
 # N.B. Use app.config['TMDB_KEY'] to set key below once class has been set up
 # from cinescout import app
@@ -507,11 +509,19 @@ class NytMovieReview(MovieReview):
         text: String containing summary of movie review.
         publication_date: String representing date review was published.
         critics_pick: Boolean representing whether movie is NYT critic's pick.
+        threshold: Integer of [0, 100] representing the Levenshtein distance
+                   ratio as a result of fuzzy string comparison.
     """
 
     # Class Attributes
     api_key = os.getenv('NYT_API_KEY')
+
+    # Number of seconds to wait before making next call to NYT api
     delay = 3
+
+    # Percentage the likelihood that two strings match per Levenshtein distance
+    # ratio. An arbitrary value that seems reasnoable.
+    threshold = 80
 
     def __init__(self, title=None, year=None, text=None, publication_date=None,
                 critics_pick=None):
@@ -543,6 +553,41 @@ class NytMovieReview(MovieReview):
         cleaned_text = temp_text
         return cleaned_text
 
+    @classmethod
+    def good_enough_match(cls, extdb_title, nyt_title):
+        """Determines whether the movie titles from the external database and
+        NYT review are similar enough to be considered equivalent.
+
+        Args:
+            extdb_title: String representing title of movie per external
+            database.
+            nyt_title: String representing title of movie per NYT movie review.
+
+        Raises:
+            ValueError: In the case where an empty string or None object passed.
+
+        Return:
+            True: if titles are similar enough to guess they refer to the same
+                  film
+            False: if title are not similar enough to guess they refer to the
+                   same film.
+        """
+        if not extdb_title or not nyt_title:
+            raise ValueError("Titles cannot be blank or None type.")
+
+        ratio = fuzz.ratio(extdb_title.strip().lower(),
+                           nyt_title.strip().lower())
+
+        partial_ratio = fuzz.partial_ratio(extdb_title.strip().lower(),
+                           nyt_title.strip().lower())
+
+        print(f"Levenshtein similarity ratio, full = {ratio}")
+        print(f"Levenshtein similarity ratio, partial = {partial_ratio}")
+
+        if ratio >= cls.threshold or partial_ratio >= cls.threshold:
+            return True
+        else:
+            return False
 
     @classmethod
     def get_review_by_title_and_year(cls, title, year):
@@ -666,9 +711,16 @@ class NytMovieReview(MovieReview):
                 nyt_title = nyt_data['results'][0].get('display_title').strip()
 
                 # Test #2: The titles in the review and of the sought movie
-                # should be an exact match.
-                print(f"Comparing given title with NYT title: {title} vs {nyt_title}")
-                if title.strip().lower() != nyt_title.lower():
+                # should either be an exact match or good enough, i.e.
+                # meets or surpasses fuzzy search threshold
+                print(f"Doing fuzzy string comparison of given title with NYT title: {title} vs {nyt_title}")
+
+                good_enough = cls.good_enough_match(title.strip().lower(),
+                                                    nyt_title.strip().lower())
+
+                print(f"Good enough? {good_enough}.")
+
+                if not good_enough:
                     print("Given movie title and NYT movie title do not match.")
                     print("There are really no reviews for this movie. Sorry😭")
                     result['success'] = False
@@ -706,7 +758,7 @@ class NytMovieReview(MovieReview):
                 return result
 
             # Multiple reviews retrieved. This is likely to happen since
-            # searching just by movie title broadens the serach considerably.
+            # searching just by movie title broadens the search considerably.
             if nyt_data["num_results"] > 1:
                 print("Multiple reviews found🤔")
                 print(f"Qty: {nyt_data['num_results']}")
@@ -778,7 +830,7 @@ class NytMovieReview(MovieReview):
                 # Build review object
                 review = cls(title=title, year=year,
                              text=cls.clean_review_text(nyt_summary_short),
-                             publication_date=nyt_data['results'][0].get('publication_date'),
+                             publication_date=nyt_data['results'][result_index].get('publication_date'),
                              critics_pick=nyt_critics_pick)
                 result['message'] = nyt_status
                 result['review'] = review
@@ -787,6 +839,7 @@ class NytMovieReview(MovieReview):
 
 
         # More than one movie with same title in the same year!
+        # e.g. Black Rain (Japanese film vs Michael Douglas film)
         if nyt_data["num_results"] > 1 and not nyt_review_already_found:
 
             print("More than one NYT review for found given movie title and year!")

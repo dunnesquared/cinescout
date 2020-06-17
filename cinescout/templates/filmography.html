@@ -18,6 +18,11 @@
       <li>
         <a href="{{ url_for('movie_info', tmdb_id=cast_item['movie'].id )}}">
           {{ cast_item['movie'].title }}
+
+          {% if cast_item['movie'].title != cast_item['movie'].original_title and cast_item['movie'].original_title is not none %}
+             [Original title: {{ cast_item['movie'].original_title }}]
+          {% endif %}
+
           {% if cast_item['movie'].release_date != '0001-01-01' %}
             (Release date: {{ cast_item['movie'].release_date }},
           {% else %}
@@ -40,6 +45,11 @@
       <li>
         <a href="{{ url_for('movie_info', tmdb_id=crew_item['movie'].id )}}">
           {{ crew_item['movie'].title }}
+
+          {% if crew_item['movie'].title != crew_item['movie'].original_title and crew_item['movie'].original_title is not none %}
+             [Original title: {{ crew_item['movie'].original_title }}]
+          {% endif %}
+
           {% if crew_item['movie'].release_date != '0001-01-01' %}
             (Release date: {{ crew_item['movie'].release_date }},
           {% else %}

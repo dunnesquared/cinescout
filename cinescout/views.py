@@ -277,14 +277,15 @@ def movie_info(tmdb_id):
         else:
             err_message = f"TMDB API query failed; HTTP response = {result['status_code']}"
             return render_template("errors/misc-error.html", err_message=err_message)
-    else:
-        print("Tmdb data retrieved :-)!")
 
     movie = result['movie']
 
     # Get NYT movie review
     if movie.release_year is not None:
-	    result = NytMovieReview.get_review_by_title_and_year(title=movie.title, year=movie.release_year)
+        print(movie.release_year)
+        result = NytMovieReview.get_review_by_title_and_year(title=movie.title,
+                                                            year=movie.release_year,
+                                                            movie_obj=movie)
     else:
         return render_template("movie.html",
 	                            movie=movie,

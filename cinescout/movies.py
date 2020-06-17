@@ -509,6 +509,10 @@ class NytMovieReview(MovieReview):
     Class Attributes:
         api_key: String representing API key required to access NYT's API.
         delay: Integer representing delay before calling NYT api.
+        threshold: Integer of [0, 100] representing the Levenshtein distance
+                   ratio as a result of fuzzy string comparison.
+        max_year_gap: Integer representing the max number of years between
+                      the release of a movie and it being reviewed.
 
     Attributes:
         title: Striing representing the title of movie reviewed.
@@ -516,8 +520,7 @@ class NytMovieReview(MovieReview):
         text: String containing summary of movie review.
         publication_date: String representing date review was published.
         critics_pick: Boolean representing whether movie is NYT critic's pick.
-        threshold: Integer of [0, 100] representing the Levenshtein distance
-                   ratio as a result of fuzzy string comparison.
+
     """
 
     # Class Attributes
@@ -529,6 +532,10 @@ class NytMovieReview(MovieReview):
     # Percentage the likelihood that two strings match per Levenshtein distance
     # ratio. An arbitrary value that seems reasnoable.
     threshold = 80
+
+    # Max number of years between when a movie was released and its review
+    # published.
+    max_year_gap = 5
 
     def __init__(self, title=None, year=None, text=None, publication_date=None,
                 critics_pick=None):
@@ -738,12 +745,12 @@ class NytMovieReview(MovieReview):
 
                 # Test 1.1. There can be considerable lag between
                 # when a film is released and when its reviewed.
-                # If the difference is 10 years plus, you can probably
+                # If the difference is X years plus, you can probably
                 # safely assume the review and the movie don't go together.
-                print("Film review ten years or older? ", end="")
-                if (nyt_year - year) >= 10:
+                print(f"Film review {cls.max_year_gap} year(s) or older? ", end="")
+                if (nyt_year - year) >= cls.max_year_gap:
                     print("Yes!")
-                    print("10+ years between review and release years.")
+                    print(f"{cls.max_year_gap}+ years between review and release years.")
                     print("Unlikely film has been reviewed by the NYT.")
                     print("Unable to find a review for this movie. Sorry😭")
                     result['success'] = False
@@ -780,9 +787,16 @@ class NytMovieReview(MovieReview):
                 print("Heuristic verification complete.")
                 print("There is no way to be sure whether this " \
                         "is really the review for the movie.")
-                print("Appending warning to review....")
 
-                nyt_status = "WARNING"
+                if (nyt_year - year) != 0:
+                    print("More than a year difference between release and review years...")
+                    print("Appending warning to review....")
+                    nyt_status = "WARNING"
+                else:
+                    print("Film released and reviewed in same year. Probably okay, but maybe not (e.g. 'Black Rain')")
+                    print("Setting status to OK...")
+                    nyt_status = "OK"
+
                 nyt_critics_pick = nyt_data['results'][0]['critics_pick']
                 nyt_summary_short = nyt_data['results'][0]['summary_short']
 
@@ -823,7 +837,7 @@ class NytMovieReview(MovieReview):
 
                 for movie_result in nyt_data['results']:
                     # Extract year
-                    print("Extacting NYT release or publcation year...", end="")
+                    print("Extracting NYT release or publcation year...", end="")
                     nyt_date = movie_result['opening_date'] if movie_result['opening_date'] else movie_result['publication_date']
                     nyt_year = nyt_date.split('-')[0].strip()
                     print(nyt_year)
@@ -846,10 +860,10 @@ class NytMovieReview(MovieReview):
                     result_index = shortlist.index(min(shortlist))
                     print(nyt_years[result_index])
 
-                    # If the difference is 10 years plus, you can probably
+                    # If the difference is X years plus, you can probably
                     # safely assume the review and the movie don't go together.
-                    if (int(nyt_years[result_index]) - year) >= 10:
-                        print("10+ years between review and release years.")
+                    if (int(nyt_years[result_index]) - year) >= cls.max_year_gap:
+                        print(f"{cls.max_year_gap}+ years between review and release years.")
                         print("Unlikely film has been reviewed by the NYT.")
                         print("Unable to find a review for this movie. Sorry😭")
                         result['success'] = False
@@ -883,7 +897,7 @@ class NytMovieReview(MovieReview):
 
                 # Accept as a valid review. If you want to warn the user that
                 # this might be the wrong review, change status to "WARNING".
-                nyt_status = "OK"
+                nyt_status = "WARNING"
                 print(f"NYT_STATUS: {nyt_status}")
 
                 # Build review object
@@ -937,16 +951,6 @@ class NytMovieReview(MovieReview):
         # Exact match with title and release year. Ideal scenario.
         if  nyt_data["num_results"] == 1:
             print("NYT review found for given title and release year on first shot😆.")
-
-            # print("Checking to see whether release and critics date are an exact match...")
-            #
-            # # Get openning date, should it exist
-            # if nyt_data['results'][0].get('opening_date'):
-            #     nyt_opening_date = nyt_data['results'][0].get('opening_date')
-            #
-            #
-            # else:
-            #     publication_date = nyt_data['results'][0].get('publication_date')
 
             nyt_status = "OK"
             nyt_critics_pick = nyt_data['results'][0]['critics_pick']

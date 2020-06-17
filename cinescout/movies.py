@@ -513,6 +513,9 @@ class NytMovieReview(MovieReview):
                    ratio as a result of fuzzy string comparison.
         max_year_gap: Integer representing the max number of years between
                       the release of a movie and it being reviewed.
+        exceptions: Dictionary containing titles (string) and years (int) of
+                    movies who need cannot be queried the usual way.
+
 
     Attributes:
         title: Striing representing the title of movie reviewed.
@@ -536,6 +539,10 @@ class NytMovieReview(MovieReview):
     # Max number of years between when a movie was released and its review
     # published.
     max_year_gap = 5
+
+    # Movies that cannot be queried the usual way, probably because two movies
+    # of the same title came out the same year.
+    exceptions = { "Black Rain": 1989 }
 
     def __init__(self, title=None, year=None, text=None, publication_date=None,
                 critics_pick=None):
@@ -603,6 +610,73 @@ class NytMovieReview(MovieReview):
         else:
             return False
 
+
+    @classmethod
+    def process_exceptions(cls, title, year, movie_obj):
+        """Processes special cases where film review exists but is otherwise
+        impossible to find given current algorithms:
+
+        Args:
+            title: String representing title of film, likely its English form.
+            year: Integer representing year movie was released.
+            movie_obj: Movie object (optional) if more information about the film
+                       is required.
+
+        Raises:
+            ValueError: if processing a film that is not an exception.
+
+        Returns:
+            Dictionary: Two fields
+                'status_code': Integer representing Http response code.
+                'review': Review object. None is no review is to be found.
+         """
+        print("Processing exceptions...")
+        # Black Rain, 1989
+        # The Japanese film's original title is in Japanese.
+        if title.lower().strip() == 'black rain' and year == 1989:
+            if movie_obj.title != movie_obj.original_title:
+                print(f"{title}, {year} => Japanese version!")
+                print("Review does exist in NYT database.")
+                return {'status_code': 200, 'review': None}
+            else:
+                print(f"{title}, {year} => Michael Douglas version!")
+                print("Getting review for film!")
+
+                # The dates on which a movie is released and reviewed likely differ.
+                # Most movies will have been reviewed in the same year they were
+                # released, however.
+                opening_date_start = f"{year}-01-01"
+                opening_date_end = f"{year}-12-31"
+
+                print("Making initial request to NYT Movie Review API...", end="")
+                res = requests.get("https://api.nytimes.com/svc/movies/v2/reviews/search.json",
+                                        params={"api-key": cls.api_key,
+                                                "opening-date": f"{opening_date_start};{opening_date_end}",
+                                                "query": title.strip()})
+
+                if res.status_code != 200:
+                    print(f"FAILED! Http response status code = {res.status_code}")
+                    return {'status_code': res.status_code, 'review': None}
+                    # result['success'] = False
+                    # result['status_code'] = res.status_code
+                    # return result
+
+                print("SUCCESS!")
+
+                nyt_data = res.json()
+
+                review = cls(title=title, year=year,
+                             text=cls.clean_review_text(nyt_data['results'][0].get('summary_short')),
+                             publication_date=nyt_data['results'][0].get('publication_date'),
+                             critics_pick=nyt_data['results'][0].get('critics_pick'))
+
+                return {'status_code': res.status_code, 'review': review}
+        else:
+            raise ValueError("Film that is not a special case being processed as one!")
+
+
+
+
     @classmethod
     def get_review_by_title_and_year(cls, title, year, movie_obj=None):
         """Returns data structure containing NYT review summary and metadata
@@ -628,6 +702,27 @@ class NytMovieReview(MovieReview):
                   'status_code': 200,
                   'message': None,
                   'review': None}
+
+        # Check to see whether movie queried is a special exception.
+        print("Checking to see whether is queried film is a special case...", end="")
+        if cls.exceptions.get(title) == year:
+            print("Yes!")
+            review = cls.process_exceptions(title, year, movie_obj)
+
+            if review['status_code'] != 200:
+                result['success'] = False
+                result['status_code'] = review['status_code']
+                result['message'] = 'No review found for film.'
+            elif review['review'] is None:
+                result['success'] = False
+                result['message'] = 'No review found for film.'
+            else:
+                result['review'] = review['review']
+                result['message'] = 'OK'
+
+            return result
+
+        print("No!")
 
     	# Flag in case NYT review info already found
         nyt_review_already_found = False

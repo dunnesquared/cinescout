@@ -928,15 +928,26 @@ class NytMovieReview(MovieReview):
                 print("Analyzing NYT review results...")
 
                 # List of years each review was published.
-                nyt_years = []
+                nyt_reviews = []
 
                 for movie_result in nyt_data['results']:
-                    # Extract year
-                    print("Extracting NYT publcation or release year...", end="")
-                    nyt_date = movie_result['publication_date'] if movie_result['publication_date'] else movie_result['opening_date']
-                    nyt_year = nyt_date.split('-')[0].strip()
-                    print(nyt_year)
-                    nyt_years.append(nyt_year)
+                    # Check that film's title is a good enough match
+                    nyt_title = movie_result['display_title']
+                    print(f"Doing fuzzy string comparison of given title with NYT title: '{title}' vs '{nyt_title}'")
+
+                    good_enough = cls.good_enough_match(title.strip().lower(),
+                                                        nyt_title.strip().lower())
+
+                    print(f"Good enough? {good_enough}.")
+
+                    # Extract year if title matches...
+                    if good_enough:
+                        print("Extracting NYT publcation or release year...", end="")
+                        nyt_date = movie_result['publication_date'] if movie_result['publication_date'] else movie_result['opening_date']
+                        nyt_year = nyt_date.split('-')[0].strip()
+                        print(nyt_year)
+                        nyt_reviews.append({'year': nyt_year,
+                                          'index': nyt_data['results'].index(movie_result)})
 
                 print("Getting NYT year closest to movie release year...",
                       end="")
@@ -945,19 +956,23 @@ class NytMovieReview(MovieReview):
                 # These should excluded as viable contenders.
                 shortlist = []
 
-                for review_year in nyt_years:
-                    diff = int(review_year) - int(year)
+                # Calculate the number of years between review and release date
+                # Only add differences if the review was done in the same year
+                # or later wrt the release year.
+                for review in nyt_reviews:
+                    diff = int(review['year']) - int(year)
                     if diff >= 0:
                         shortlist.append(diff)
 
                 # Pick the closest year.
                 if shortlist:
-                    result_index = shortlist.index(min(shortlist))
-                    print(nyt_years[result_index])
+                    shortlist_index = shortlist.index(min(shortlist))
+                    result_index = nyt_reviews[shortlist_index].get('index')
+                    print(nyt_reviews[shortlist_index].get('year'))
 
                     # If the difference is X years plus, you can probably
                     # safely assume the review and the movie don't go together.
-                    if (int(nyt_years[result_index]) - year) >= cls.max_year_gap:
+                    if (int(nyt_reviews[shortlist_index].get('year')) - year) >= cls.max_year_gap:
                         print(f"{cls.max_year_gap}+ years between review and release years.")
                         print("Unlikely film has been reviewed by the NYT.")
                         print("Unable to find a review for this movie. Sorry😭")
@@ -974,6 +989,7 @@ class NytMovieReview(MovieReview):
                     result['status_code'] = res.status_code
                     result['message'] = "No review found for this film."
                     return result
+
 
                 # There is slight risk that this might not be the right review...
                 print("Getting review information. Hopefully right review picked🙏!")

@@ -56,7 +56,13 @@
 
       <tr>
         <th>Overview</th>
-        <td> {{ movie.overview }} </td>
+        <td>
+        {% if movie.overview %}
+          {{ movie.overview }}
+        {% else %}
+          <span>A summary for this film could not be found.</span> 
+        {% endif %}
+        </td>
       </tr>
 
       <tr>

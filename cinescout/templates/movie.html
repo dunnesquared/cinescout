@@ -60,7 +60,7 @@
         {% if movie.overview %}
           {{ movie.overview }}
         {% else %}
-          <span>A summary for this film could not be found.</span> 
+          <span>A summary for this film could not be found.</span>
         {% endif %}
         </td>
       </tr>
@@ -97,6 +97,19 @@
           </div>
           {% endif %}
         </td>
+
+      <tr>
+        <th>TMDB Link</th>
+        <td>
+          {% if movie.tmdb_full_url %}
+            <a href="{{ movie.tmdb_full_url }}" target="_blank">
+              {{ movie.tmdb_full_url }}
+            </a>
+          {% else %}
+            <span> There is no TMDB link for this film. </span>
+          {% endif %}
+        </td>
+      </tr>
 
       <tr>
         <th>IMDB Link</th>

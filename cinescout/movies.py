@@ -107,6 +107,8 @@ class TmdbMovie(Movie):
         delay: Integer representing delay before calling tmdb api.
         imdb_base_url: String representing prefix url to access IMDB movie
                        page.
+        tmdb_base_url: String representing prefix url to access TMDB movie
+                       page.
 
     Attributes:
         id: Integer representing movie in external database.
@@ -128,14 +130,17 @@ class TmdbMovie(Movie):
     poster_size = "w300"
     delay = 1
     imdb_base_url = "https://www.imdb.com/title/"
+    tmdb_base_url = "https://www.themoviedb.org/movie/"
 
     def __init__(self, id=None, title=None,
                  release_year=None, release_date=None, overview=None,
-                 runtime=None, original_title=None, poster_full_url=None, imdb_full_url=None):
+                 runtime=None, original_title=None, poster_full_url=None,
+                 imdb_full_url=None, tmdb_full_url=None):
         Movie.__init__(self, id, title, release_year, release_date,
                         overview, runtime, original_title)
         self.poster_full_url = poster_full_url
         self.imdb_full_url = imdb_full_url
+        self.tmdb_full_url = tmdb_full_url
 
     @classmethod
     def get_movie_list_by_title(cls, title):
@@ -457,6 +462,8 @@ class TmdbMovie(Movie):
             if tmdb_movie_data['imdb_id']:
                 imdb_full_url = cls.imdb_base_url + tmdb_movie_data['imdb_id']
 
+            # Build full url for TMDB
+            tmdb_full_url = cls.tmdb_base_url + str(id)
 
             print("Building Movie object...")
             movie = cls(id=id, title=tmdb_movie_data['title'],
@@ -466,7 +473,8 @@ class TmdbMovie(Movie):
                         runtime=tmdb_movie_data['runtime'],
                         original_title=tmdb_movie_data.get('original_title'),
                         poster_full_url=poster_full_url,
-                        imdb_full_url=imdb_full_url)
+                        imdb_full_url=imdb_full_url,
+                        tmdb_full_url=tmdb_full_url)
 
 
             result['movie'] = movie

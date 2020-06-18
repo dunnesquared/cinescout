@@ -102,11 +102,21 @@ def movie_list():
 @app.route('/add-to-list', methods=['POST'])
 @login_required
 def add_to_list():
-    """Adds movies to user's list"""
-    print("Request received to add film to list...")
-    tmdb_id = int(request.form.get("tmdb_id"))
-    title = request.form.get("title")
-    year = int(request.form.get("year"))
+    """Adds movies to user's list."""
+
+    try:
+	    print("Request received to add film to list...")
+	    print("Retrieving POST data...", end="")
+	    tmdb_id = int(request.form.get("tmdb_id"))
+	    title = request.form.get("title")
+	    year = int(request.form.get("year"))
+    except (ValueError, TypeError) as err:
+        # Possible non-integer values passed for id or year; NoneType also.
+        print("FAILED!")
+        print("Fatal Error: {0}".format(err))
+        return jsonify({"success": False})
+
+    print("Success!")
 
     # See whether movie is in user list
     film = FilmListItem.query.filter_by(user_id=current_user.id, tmdb_id=tmdb_id).first()

@@ -146,20 +146,37 @@ def add_to_list():
 @app.route('/remove-from-list', methods=["POST"])
 @login_required
 def remove_from_list():
-    #Check that film is on list
-    print("REMOVE METHOD ACCESSED!!!")
-    tmdb_id = int(request.form.get('tmdb_id'))
-    print(tmdb_id)
+    """Removes film from user's list."""
 
+    #Check that film is on list
+    print("Request received to remove film...")
+
+    print("Retrieving POST data...", end="")
+
+    try:
+        tmdb_id = int(request.form.get('tmdb_id'))
+
+        if tmdb_id < 1:
+            raise ValueError("tmdb_id must be positive.")
+
+    except (ValueError, TypeError) as err:
+        print("FAILED!")
+        print("Fatal Error: {0}".format(err))
+        return jsonify({"success": False})
+
+    print("Success!")
+
+    # See whether film is on list. Can't be removed otherwise.
+    print("Checking to see whether film is on list...")
     film = FilmListItem.query.filter_by(tmdb_id=tmdb_id, user_id=current_user.id).first()
-    print(film)
 
     if film:
+        print(f"Deleting film '{film.title}' from database...")
         db.session.delete(film)
         db.session.commit()
         return jsonify({"success": True})
-
     else:
+        print("Film not on list. Unable to remove something that is not there.")
         return jsonify({"success": False})
 
 

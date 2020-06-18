@@ -21,9 +21,9 @@
   {% if current_user.is_authenticated %}
     <div id="button-container">
     {% if not on_user_list %}
-        <button id="add-button" type="submit"><h2>➕ Add film to list</h2></button>
+        <button id="add-button" type="submit"><h2>Add to list</h2></button>
     {% else %}
-        <button id="remove-button" type="submit"><h2>➖ Remove film from list</h2></button>
+        <button id="remove-button" type="submit"><h2>Remove from list</h2></button>
     {% endif %}
     </div>
   {% endif %}

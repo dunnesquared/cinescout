@@ -128,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
         removeButton.id = 'remove-button';
         removeButton.type = 'submit';
         // removeButton.value =
-        removeButton.innerHTML = '<h2>➖ Remove film from list </h2>';
+        removeButton.innerHTML = '<h2>Remove film from list</h2>';
         buttonContainer.append(removeButton);
 
         // Updata remove_button state
@@ -186,7 +186,7 @@ document.addEventListener('DOMContentLoaded', () => {
         addButton.id = 'add-button';
         addButton.type = 'submit';
         // removeButton.value =
-        addButton.innerHTML = '<h2>➕ Add film to list</h2>';
+        addButton.innerHTML = '<h2>Add to list</h2>';
         buttonContainer.append(addButton);
 
         // Updata remove_button state

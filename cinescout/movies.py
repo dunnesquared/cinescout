@@ -932,8 +932,8 @@ class NytMovieReview(MovieReview):
 
                 for movie_result in nyt_data['results']:
                     # Extract year
-                    print("Extracting NYT release or publcation year...", end="")
-                    nyt_date = movie_result['opening_date'] if movie_result['opening_date'] else movie_result['publication_date']
+                    print("Extracting NYT publcation or release year...", end="")
+                    nyt_date = movie_result['publication_date'] if movie_result['publication_date'] else movie_result['opening_date']
                     nyt_year = nyt_date.split('-')[0].strip()
                     print(nyt_year)
                     nyt_years.append(nyt_year)
@@ -947,7 +947,7 @@ class NytMovieReview(MovieReview):
 
                 for review_year in nyt_years:
                     diff = int(review_year) - int(year)
-                    if diff > 0:
+                    if diff >= 0:
                         shortlist.append(diff)
 
                 # Pick the closest year.
@@ -992,7 +992,14 @@ class NytMovieReview(MovieReview):
 
                 # Accept as a valid review. If you want to warn the user that
                 # this might be the wrong review, change status to "WARNING".
-                nyt_status = "WARNING"
+                publication_date = nyt_data['results'][result_index].get('publication_date')
+
+                # Only reasonable to warn users if the dates don't match.
+                if publication_date and publication_date == movie_obj.release_date:
+                    nyt_status = "OK"
+                else:
+                    nyt_status = "WARNING"
+
                 print(f"NYT_STATUS: {nyt_status}")
 
                 # Build review object

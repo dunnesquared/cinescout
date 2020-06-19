@@ -344,8 +344,10 @@ class RouteTests(unittest.TestCase):
     def test_movie_page_add_ok(self):
         self.login("Alex", "123")
         response = self.app.post('/add-to-list',
-                data=dict(tmdb_id="1018", title="Mulholland Drive", year="2001",
-                        follow_redirects=True))
+                data=dict(tmdb_id="1018", title="Mulholland Drive",
+                        year="2001", date="2001-09-08",
+                        original_title="Mulholland Drive",
+ 						follow_redirects=True))
         data = json.loads(response.get_data(as_text=True))
         self.assertTrue(data['success'])
 
@@ -354,15 +356,19 @@ class RouteTests(unittest.TestCase):
         self.login("Alex", "123")
         # Add film.
         response = self.app.post('/add-to-list',
-                data=dict(tmdb_id="1018", title="Mulholland Drive", year="2001",
- 						follow_redirects=True))
+                data=dict(tmdb_id="1018", title="Mulholland Drive",
+                        year="2001", date="2001-09-08",
+                        original_title="Mulholland Drive",
+                        follow_redirects=True))
         data = json.loads(response.get_data(as_text=True))
         self.assertTrue(data['success'])
 
         # Try adding same film again.
         response = self.app.post('/add-to-list',
-                   data=dict(tmdb_id="1018", title="Mulholland Drive", year="2001",
-                   follow_redirects=True))
+                   data=dict(tmdb_id="1018", title="Mulholland Drive",
+                           year="2001", date="2001-09-08",
+                           original_title="Mulholland Drive",
+                           follow_redirects=True))
         data = json.loads(response.get_data(as_text=True))
         self.assertFalse(data['success'])
 
@@ -372,7 +378,9 @@ class RouteTests(unittest.TestCase):
 
          # White space
         response = self.app.post('/add-to-list',
-                 data=dict(tmdb_id="", title=" ", year=" ",
+                 data=dict(tmdb_id="", title=" ",
+                         year=" ", date="",
+                         original_title="  ",
                          follow_redirects=True))
         data = json.loads(response.get_data(as_text=True))
         self.assertFalse(data['success'])
@@ -380,6 +388,7 @@ class RouteTests(unittest.TestCase):
         # None types
         response = self.app.post('/add-to-list',
                 data=dict(tmdb_id=None, title=None, year=None,
+                        original_title=None, date=None,
                         follow_redirects=True))
         data = json.loads(response.get_data(as_text=True))
         self.assertFalse(data['success'])
@@ -390,8 +399,10 @@ class RouteTests(unittest.TestCase):
         # Add film: Note that the id for this film is negative
         movie_id = "-1018"
         response = self.app.post('/add-to-list',
-                data=dict(tmdb_id=movie_id, title="Mulholland Drive", year="2001",
-                follow_redirects=True))
+                data=dict(tmdb_id=movie_id, title="Mulholland Drive",
+                        year="2001", date="2001-09-08",
+                        original_title="Mulholland Drive",
+                        follow_redirects=True))
         data = json.loads(response.get_data(as_text=True))
         self.assertFalse(data['success'])
 
@@ -399,8 +410,10 @@ class RouteTests(unittest.TestCase):
         movie_id = "1018"
         year = "-2001"
         response = self.app.post('/add-to-list',
-                data=dict(tmdb_id=movie_id, title="Mulholland Drive", year=year,
-                follow_redirects=True))
+                data=dict(tmdb_id=movie_id, title="Mulholland Drive",
+                        year=year, date="2001-09-08",
+                        original_title="Mulholland Drive",
+                        follow_redirects=True))
         data = json.loads(response.get_data(as_text=True))
         self.assertFalse(data['success'])
 
@@ -419,8 +432,10 @@ class RouteTests(unittest.TestCase):
 
       	# Add ok
       	self.app.post('/add-to-list', data=dict(tmdb_id="1018",
-      				title="Mulholland Drive", year="2001",
-                    follow_redirects=True))
+      				title="Mulholland Drive",
+                            year="2001", date="2001-09-08",
+                            original_title="Mulholland Drive",
+                            follow_redirects=True))
 
       	response = self.app.post('/remove-from-list',
               data=dict(tmdb_id="1018",
@@ -447,8 +462,10 @@ class RouteTests(unittest.TestCase):
 
         # Add ok
         self.app.post('/add-to-list', data=dict(tmdb_id="1018",
-                    title="Mulholland Drive", year="2001",
-                    follow_redirects=True))
+                    title="Mulholland Drive",
+                            year="2001", date="2001-09-08",
+                            original_title="Mulholland Drive",
+                            follow_redirects=True))
 
         # Blank data
         response = self.app.post('/remove-from-list',
@@ -470,8 +487,10 @@ class RouteTests(unittest.TestCase):
 
         # Add ok
         self.app.post('/add-to-list', data=dict(tmdb_id="1018",
-                    title="Mulholland Drive", year="2001",
-                    follow_redirects=True))
+                    title="Mulholland Drive",
+                            year="2001", date="2001-09-08",
+                            original_title="Mulholland Drive",
+                           follow_redirects=True))
 
         # Bad id
         response = self.app.post('/remove-from-list',

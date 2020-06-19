@@ -1,9 +1,32 @@
 
 
-table, th, td {
-  border: 1px solid black;
+/* table, th, td {
+   border: 1px solid black;
+  border-collapse: collapse;
 }
+*/
 
 .red {
   color: red;
+}
+
+#header-column {
+  width: 10%;
+}
+
+#content-column {
+  width: 90%;
+}
+
+.publication {
+  font-size: 80%;
+  font-weight: 600;
+  font-family: sans-serif;
+}
+
+.review-text {
+}
+
+#review-warning {
+  font-size: 80%;
 }

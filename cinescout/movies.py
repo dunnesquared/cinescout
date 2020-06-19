@@ -6,6 +6,8 @@ from datetime import datetime
 import requests
 from textwrap import dedent
 
+from fuzzywuzzy import fuzz
+
 # Get API key info
 # N.B. Use app.config['TMDB_KEY'] to set key below once class has been set up
 # from cinescout import app
@@ -38,14 +40,16 @@ class Movie:
         overview: String containing summary of movie's premise.
         runtime: Integer representing runtime of movie in minutes.
     """
-    def __init__(self, id=None, title=None, release_year=None,
-                 release_date=None, overview=None, runtime=None):
+    def __init__(self, id=None, title=None,
+                release_year=None, release_date=None, overview=None,
+                runtime=None, original_title=None):
                  self.id = id
                  self.title = title
                  self.release_year = release_year
                  self.release_date = release_date
                  self.overview = overview
                  self.runtime = runtime
+                 self.original_title = original_title
 
 
     @classmethod
@@ -101,29 +105,42 @@ class TmdbMovie(Movie):
                         movie posters.
         poster_size: String representing size of poster image.
         delay: Integer representing delay before calling tmdb api.
+        imdb_base_url: String representing prefix url to access IMDB movie
+                       page.
+        tmdb_base_url: String representing prefix url to access TMDB movie
+                       page.
 
     Attributes:
         id: Integer representing movie in external database.
         title: String representing film's title.
+        original_title: String representing film's orginal title, most likely
+                        in the case of non-English language film.
         release_year: Integer representing year movie released.
         release_date: String representing date movie released.
         overview: String containing summary of movie's premise.
         runtime: Integer representing runtime of movie in minutes.
         poster_full_url: String representing complete url to access image of
                          a movie's poster should it exist.
+        imdb_full_url: String representing complete url to access IMDB movie
+                       page, should it exist.
     """
     # Class attributes
     api_key = os.getenv('TMDB_API_KEY')
     poster_base_url = "http://image.tmdb.org/t/p/"
     poster_size = "w300"
     delay = 1
+    imdb_base_url = "https://www.imdb.com/title/"
+    tmdb_base_url = "https://www.themoviedb.org/movie/"
 
-    def __init__(self, id=None, title=None, release_year=None,
-                 release_date=None, overview=None, runtime=None,
-                 poster_full_url=None):
+    def __init__(self, id=None, title=None,
+                 release_year=None, release_date=None, overview=None,
+                 runtime=None, original_title=None, poster_full_url=None,
+                 imdb_full_url=None, tmdb_full_url=None):
         Movie.__init__(self, id, title, release_year, release_date,
-                        overview, runtime)
+                        overview, runtime, original_title)
         self.poster_full_url = poster_full_url
+        self.imdb_full_url = imdb_full_url
+        self.tmdb_full_url = tmdb_full_url
 
     @classmethod
     def get_movie_list_by_title(cls, title):
@@ -180,6 +197,7 @@ class TmdbMovie(Movie):
 
                 movie = Movie(id=movie.get('id'),
                               title=movie.get('title'),
+                              original_title=movie.get('original_title'),
                               overview=movie.get('overview'),
                               release_date=release_date)
 
@@ -329,6 +347,7 @@ class TmdbMovie(Movie):
 
             movie = Movie(id=movie_credit.get('id'),
                           title=movie_credit.get('title'),
+                          original_title=movie_credit.get('original_title'),
                           release_date=release_date)
 
             # Add name of character portrayed in film.
@@ -353,6 +372,7 @@ class TmdbMovie(Movie):
 
             movie = Movie(id=movie_credit.get('id'),
                           title=movie_credit.get('title'),
+                          original_title=movie_credit.get('original_title'),
                           release_date=release_date)
 
             # Add person's job associated with film.
@@ -437,13 +457,25 @@ class TmdbMovie(Movie):
             if tmdb_movie_data['poster_path']:
                 poster_full_url = cls.poster_base_url + cls.poster_size + tmdb_movie_data['poster_path']
 
+            # Build full url for IMDB
+            imdb_full_url = None
+            if tmdb_movie_data['imdb_id']:
+                imdb_full_url = cls.imdb_base_url + tmdb_movie_data['imdb_id']
+
+            # Build full url for TMDB
+            tmdb_full_url = cls.tmdb_base_url + str(id)
+
             print("Building Movie object...")
             movie = cls(id=id, title=tmdb_movie_data['title'],
                         release_year=release_year,
                         release_date=tmdb_movie_data.get('release_date'),
                         overview=tmdb_movie_data['overview'],
                         runtime=tmdb_movie_data['runtime'],
-                        poster_full_url=poster_full_url)
+                        original_title=tmdb_movie_data.get('original_title'),
+                        poster_full_url=poster_full_url,
+                        imdb_full_url=imdb_full_url,
+                        tmdb_full_url=tmdb_full_url)
+
 
             result['movie'] = movie
 
@@ -467,7 +499,6 @@ class MovieReview:
         self.text = text
         self.publication_date=publication_date
 
-
     @classmethod
     def get_review_by_title_and_year(cls, title, year):
         """Returns data structure containing review and metadata based on
@@ -478,13 +509,18 @@ class MovieReview:
         return f"'{self.title}' ({self.year}): {self.text}"
 
 
-
 class NytMovieReview(MovieReview):
     """Class representing a movie review from the New York Times.
 
     Class Attributes:
         api_key: String representing API key required to access NYT's API.
         delay: Integer representing delay before calling NYT api.
+        threshold: Integer of [0, 100] representing the Levenshtein distance
+                   ratio as a result of fuzzy string comparison.
+        max_year_gap: Integer representing the max number of years between
+                      the release of a movie and it being reviewed.
+        exceptions: Dictionary containing titles (string) and years (int) of
+                    movies who need cannot be queried the usual way.
 
     Attributes:
         title: Striing representing the title of movie reviewed.
@@ -495,18 +531,183 @@ class NytMovieReview(MovieReview):
     """
 
     # Class Attributes
+
+    # New York Times API movie review key
     api_key = os.getenv('NYT_API_KEY')
+
+    # Number of seconds to wait before making next call to NYT api
     delay = 3
+
+    # Percentage the likelihood that two strings match per Levenshtein distance
+    # ratio. An arbitrary value that seems reasnoable.
+    threshold = 80
+
+    # Max number of years between when a movie was released and its review
+    # published.
+    max_year_gap = 5
+
+    # Movies that cannot be queried the usual way, probably because two movies
+    # of the same title came out the same year.
+    exceptions = { "Black Rain": 1989 }
 
     def __init__(self, title=None, year=None, text=None, publication_date=None,
                 critics_pick=None):
         MovieReview.__init__(self, title, year, text, publication_date)
         self.critics_pick = critics_pick
 
+    @staticmethod
+    def clean_review_text(review_text):
+        """Removes unwanted characters that may appear in NYT review text
+
+        Args:
+            review_text: String representing text of movie review.
+
+        Returns:
+            cleaned_text: String representing text with offending characters
+                          removed.
+        """
+        # Use intermediate variable for your cleaning.
+        # If string is empty, don't bother doing anything.
+        if review_text:
+            temp_text = review_text.strip()
+        else:
+            return None
+
+        # Remove &quot; characters from review text should they exist;
+        # replace them with reqular quotes.
+        temp_text = temp_text.replace('&quot;', '"')
+
+        cleaned_text = temp_text
+        return cleaned_text
+
     @classmethod
-    def get_review_by_title_and_year(cls, title, year):
+    def good_enough_match(cls, extdb_title, nyt_title):
+        """Determines whether the movie titles from the external database and
+        NYT review are similar enough to be considered equivalent.
+
+        Args:
+            extdb_title: String representing title of movie per external
+            database.
+            nyt_title: String representing title of movie per NYT movie review.
+
+        Raises:
+            ValueError: In the case where an empty string or None object passed.
+
+        Return:
+            True: if titles are similar enough to guess they refer to the same
+                  film
+            False: if title are not similar enough to guess they refer to the
+                   same film.
+        """
+        # Check arguments.
+        if not extdb_title or not nyt_title:
+            raise ValueError("Titles cannot be blank or None type.")
+
+        # Calculate Levenshtein similarity ratios.
+        ratio = fuzz.ratio(extdb_title.strip().lower(),
+                           nyt_title.strip().lower())
+
+        partial_ratio = fuzz.partial_ratio(extdb_title.strip().lower(),
+                           nyt_title.strip().lower())
+
+        print(f"Levenshtein similarity ratio, full = {ratio}")
+        print(f"Levenshtein similarity ratio, partial = {partial_ratio}")
+
+        # Are the two title similar enough to be confident they refer to same
+        # movie?
+        if ratio >= cls.threshold or partial_ratio >= cls.threshold:
+            return True
+        else:
+            return False
+
+    @classmethod
+    def process_exceptions(cls, title, year, movie_obj):
+        """Processes special cases where film review exists but is otherwise
+        impossible to find given current algorithms.
+
+        Args:
+            title: String representing title of film, likely its English form.
+            year: Integer representing year movie was released.
+            movie_obj: Movie object (optional) if more information about the film
+                       is required.
+
+        Raises:
+            ValueError: if processing a film that is not an exception.
+
+        Returns:
+            Dictionary: Two fields
+                'status_code': Integer representing Http response code.
+                'review': Review object. None is no review is to be found.
+         """
+        print("Processing exceptions...")
+
+        # Black Rain, 1989
+        # The Japanese film's original title is in Japanese.
+        if title.lower().strip() == 'black rain' and year == 1989:
+
+            # The Michael Douglas movie has same main and original title.
+            if movie_obj.title != movie_obj.original_title:
+                print(f"{title}, {year} => Japanese version!")
+                print("Review does exist in NYT database.")
+                return {'status_code': 200, 'review': None}
+            else:
+                print(f"{title}, {year} => Michael Douglas version!")
+                print("Getting review for film!")
+
+                # The dates on which a movie is released and reviewed likely differ.
+                # Most movies will have been reviewed in the same year they were
+                # released, however.
+                opening_date_start = f"{year}-01-01"
+                opening_date_end = f"{year}-12-31"
+
+                print("Making initial request to NYT Movie Review API...", end="")
+                res = requests.get("https://api.nytimes.com/svc/movies/v2/reviews/search.json",
+                                        params={"api-key": cls.api_key,
+                                                "opening-date": f"{opening_date_start};{opening_date_end}",
+                                                "query": title.strip()})
+
+                # Request to NYT failed...
+                if res.status_code != 200:
+                    print(f"FAILED! Http response status code = {res.status_code}")
+                    return {'status_code': res.status_code, 'review': None}
+
+                print("SUCCESS!")
+
+                # All good. Extract data.
+                nyt_data = res.json()
+
+                # Build review object.
+                review = cls(title=title, year=year,
+                             text=cls.clean_review_text(nyt_data['results'][0].get('summary_short')),
+                             publication_date=nyt_data['results'][0].get('publication_date'),
+                             critics_pick=nyt_data['results'][0].get('critics_pick'))
+
+                return {'status_code': res.status_code, 'review': review}
+        else:
+            raise ValueError("Film that is not a special case being processed as one!")
+
+
+
+
+    @classmethod
+    def get_review_by_title_and_year(cls, title, year, movie_obj=None):
         """Returns data structure containing NYT review summary and metadata
-        based on title of film and year film was released."""
+        based on title of film and year film was released.
+
+        Args:
+            title: String representing title of film, likely its English form.
+            year: Integer representing year movie was released.
+            movie_obj: Movie object (optional) if more information about the
+            film is required.
+
+        Returns:
+            result: A dictionary with three fields
+                success: True or False, depending on wheter movie found.
+                status_code: Integer repr. status code of Http response.
+                message: String repr. description of status.
+                review: Review object containing salient data. None if
+                        no review could be found.
+        """
 
         # Setup return value.
         result = {'success': True,
@@ -514,23 +715,49 @@ class NytMovieReview(MovieReview):
                   'message': None,
                   'review': None}
 
+        # Check to see whether movie queried is a special exception.
+        print("Checking to see whether is queried film is a special case...", end="")
+
+        if cls.exceptions.get(title) == year:
+            print("Yes!")
+            review = cls.process_exceptions(title, year, movie_obj)
+
+            if review['status_code'] != 200:
+                result['success'] = False
+                result['status_code'] = review['status_code']
+                result['message'] = 'No review found for film.'
+            elif review['review'] is None:
+                result['success'] = False
+                result['message'] = 'No review found for film.'
+            else:
+                result['review'] = review['review']
+                result['message'] = 'OK'
+
+            return result
+
+        print("No!")
+
+        # Proceed with normal NYT review retrieval.
+
     	# Flag in case NYT review info already found
         nyt_review_already_found = False
 
         print(f"Starting process to get review for '{title}, {year}' via NYT api...")
 
-        # The dates on which a movie is released and reviewed likely differ.
-        # Most movies will have been reviewed in the same year they were
-        # released, however.
+        # The dates on which a movie is released and reviewed likely differ, but
+        # will often have been reviewed in the same _year_.
+
+        # Need these to NYT request to limit results.
         opening_date_start = f"{year}-01-01"
         opening_date_end = f"{year}-12-31"
 
-        print("Making request to NYT Movie Review API...", end="")
+        print("Making initial request to NYT Movie Review API...", end="")
         res = requests.get("https://api.nytimes.com/svc/movies/v2/reviews/search.json",
                                 params={"api-key": cls.api_key,
                                         "opening-date": f"{opening_date_start};{opening_date_end}",
                                         "query": title.strip()})
 
+        # NYT request failed.
         if res.status_code != 200:
             print(f"FAILED! Http response status code = {res.status_code}")
             result['success'] = False
@@ -539,12 +766,14 @@ class NytMovieReview(MovieReview):
 
         print("SUCCESS!")
 
-        # Unpack review data
+        # Unpack review data.
         nyt_data = res.json()
 
         print("Analyzing NYT review response data...")
 
         # Check whether a review was written for a movie. Watch out for special cases.
+
+        # No reviews found on initial query. Try again.
         if nyt_data["num_results"] == 0:
 
             print("No NYT review found for given movie title and year☹️")
@@ -600,20 +829,25 @@ class NytMovieReview(MovieReview):
                 # release year, can't be the one we want. Conversely, we
                 # can only hope that the review is the right one if the review
                 # year comes after the publishing year.
-                print("Extacting NYT release or publcation year...", end="")
+                print("Extracting NYT review publication year...", end="")
 
-                if nyt_data['results'][0].get('opening_date'):
-                    nyt_date = nyt_data['results'][0].get('opening_date')
-                else:
+                if nyt_data['results'][0].get('publication_date'):
                     nyt_date = nyt_data['results'][0].get('publication_date')
+                else:
+                    print("NYT review does not have publication date")
+                    print("Unable to determine review for this movie. Sorry😭")
+                    result['success'] = False
+                    result['status_code'] = res.status_code
+                    result['message'] = "No review found for this film."
+                    return result
 
-                nyt_year = nyt_date.split('-')[0].strip()
+                # Get year review was published.
+                nyt_year = int(nyt_date.split('-')[0].strip())
 
                 print(nyt_year)
 
-                print(f"Comparing given and NYT release years...{year} vs. {nyt_year}")
-
-                if year > int(nyt_year):
+                print(f"Comparing release and review publication year...{year} vs. {nyt_year}")
+                if year > nyt_year:
                     print("Film cannot have been reviewed prior to its release.")
                     print("There are really no reviews for this movie. Sorry😭")
                     result['success'] = False
@@ -621,13 +855,38 @@ class NytMovieReview(MovieReview):
                     result['message'] = "No review found for this film."
                     return result
 
+                # Test 1.1. There can be considerable lag between
+                # when a film is released and when its reviewed.
+                # If the difference is X years plus, you can probably
+                # safely assume the review and the movie don't go together.
+                print(f"Film review {cls.max_year_gap} year(s) or older? ", end="")
+                if (nyt_year - year) >= cls.max_year_gap:
+                    print("Yes!")
+                    print(f"{cls.max_year_gap}+ years between review and release years.")
+                    print("Unlikely film has been reviewed by the NYT.")
+                    print("Unable to find a review for this movie. Sorry😭")
+                    result['success'] = False
+                    result['status_code'] = res.status_code
+                    result['message'] = "No review found for this film."
+                    return result
+
+                print("No!")
+
+                # Test #2: The titles in the review and of the sought movie
+                # should either be an exact match or good enough, i.e.
+                # meets or surpasses fuzzy search threshold
+
                 # Title of movie reviewed by NYT.
                 nyt_title = nyt_data['results'][0].get('display_title').strip()
 
-                # Test #2: The titles in the review and of the sought movie
-                # should be an exact match.
-                print(f"Comparing given title with NYT title: {title} vs {nyt_title}")
-                if title.strip() != nyt_title:
+                print(f"Doing fuzzy string comparison of given title with NYT title: {title} vs {nyt_title}")
+
+                good_enough = cls.good_enough_match(title.strip().lower(),
+                                                    nyt_title.strip().lower())
+
+                print(f"Good enough? {good_enough}.")
+
+                if not good_enough:
                     print("Given movie title and NYT movie title do not match.")
                     print("There are really no reviews for this movie. Sorry😭")
                     result['success'] = False
@@ -640,9 +899,16 @@ class NytMovieReview(MovieReview):
                 print("Heuristic verification complete.")
                 print("There is no way to be sure whether this " \
                         "is really the review for the movie.")
-                print("Appending warning to review....")
 
-                nyt_status = "WARNING"
+                if (nyt_year - year) != 0:
+                    print("More than a year difference between release and review years...")
+                    print("Appending warning to review....")
+                    nyt_status = "WARNING"
+                else:
+                    print("Film released and reviewed in same year. Probably okay, but maybe not (e.g. 'Black Rain')")
+                    print("Setting status to OK...")
+                    nyt_status = "OK"
+
                 nyt_critics_pick = nyt_data['results'][0]['critics_pick']
                 nyt_summary_short = nyt_data['results'][0]['summary_short']
 
@@ -656,7 +922,7 @@ class NytMovieReview(MovieReview):
 
                 # Build review object
                 review = cls(title=title, year=year,
-                             text=nyt_summary_short,
+                             text=cls.clean_review_text(nyt_summary_short),
                              publication_date=nyt_data['results'][0].get('publication_date'),
                              critics_pick=nyt_critics_pick)
                 result['message'] = nyt_status
@@ -665,7 +931,7 @@ class NytMovieReview(MovieReview):
                 return result
 
             # Multiple reviews retrieved. This is likely to happen since
-            # searching just by movie title broadens the serach considerably.
+            # searching just by movie title broadens the search considerably.
             if nyt_data["num_results"] > 1:
                 print("Multiple reviews found🤔")
                 print(f"Qty: {nyt_data['num_results']}")
@@ -673,21 +939,32 @@ class NytMovieReview(MovieReview):
                 # To determine which review of the several might be the right
                 # one, pick the review published the soonest after the film
                 # was released. No guarantee, but better than nothing.
-                print("Using heuristic that the  NYT review  that was " \
-                      "closest to the film's release date is likey the review " \
+                print("Using heuristic that the  NYT review year that is " \
+                      "closest to the film's release year is likey the review " \
                       "sought after.")
                 print("Analyzing NYT review results...")
 
                 # List of years each review was published.
-                nyt_years = []
+                nyt_reviews = []
 
                 for movie_result in nyt_data['results']:
-                    # Extract year
-                    print("Extacting NYT release or publcation year...", end="")
-                    nyt_date = movie_result['opening_date'] if movie_result['opening_date'] else movie_result['publication_date']
-                    nyt_year = nyt_date.split('-')[0].strip()
-                    print(nyt_year)
-                    nyt_years.append(nyt_year)
+                    # Check that film's title is a good enough match
+                    nyt_title = movie_result['display_title']
+                    print(f"Doing fuzzy string comparison of given title with NYT title: '{title}' vs '{nyt_title}'")
+
+                    good_enough = cls.good_enough_match(title.strip().lower(),
+                                                        nyt_title.strip().lower())
+
+                    print(f"Good enough? {good_enough}.")
+
+                    # Extract year if title matches...
+                    if good_enough:
+                        print("Extracting NYT publcation or release year...", end="")
+                        nyt_date = movie_result['publication_date'] if movie_result['publication_date'] else movie_result['opening_date']
+                        nyt_year = nyt_date.split('-')[0].strip()
+                        print(nyt_year)
+                        nyt_reviews.append({'year': nyt_year,
+                                          'index': nyt_data['results'].index(movie_result)})
 
                 print("Getting NYT year closest to movie release year...",
                       end="")
@@ -696,15 +973,31 @@ class NytMovieReview(MovieReview):
                 # These should excluded as viable contenders.
                 shortlist = []
 
-                for review_year in nyt_years:
-                    diff = int(review_year) - int(year)
-                    if diff > 0:
+                # Calculate the number of years between review and release date
+                # Only add differences if the review was done in the same year
+                # or later wrt the release year.
+                for review in nyt_reviews:
+                    diff = int(review['year']) - int(year)
+                    if diff >= 0:
                         shortlist.append(diff)
 
                 # Pick the closest year.
                 if shortlist:
-                    result_index = shortlist.index(min(shortlist))
-                    print(nyt_years[result_index])
+                    shortlist_index = shortlist.index(min(shortlist))
+                    result_index = nyt_reviews[shortlist_index].get('index')
+                    print(nyt_reviews[shortlist_index].get('year'))
+
+                    # If the difference is X years plus, you can probably
+                    # safely assume the review and the movie don't go together.
+                    if (int(nyt_reviews[shortlist_index].get('year')) - year) >= cls.max_year_gap:
+                        print(f"{cls.max_year_gap}+ years between review and release years.")
+                        print("Unlikely film has been reviewed by the NYT.")
+                        print("Unable to find a review for this movie. Sorry😭")
+                        result['success'] = False
+                        result['status_code'] = res.status_code
+                        result['message'] = "No review found for this film."
+                        return result
+
                 else:
                     print("FAILED!")
                     print("All reviews made prior to release year of film.")
@@ -713,6 +1006,7 @@ class NytMovieReview(MovieReview):
                     result['status_code'] = res.status_code
                     result['message'] = "No review found for this film."
                     return result
+
 
                 # There is slight risk that this might not be the right review...
                 print("Getting review information. Hopefully right review picked🙏!")
@@ -731,13 +1025,20 @@ class NytMovieReview(MovieReview):
 
                 # Accept as a valid review. If you want to warn the user that
                 # this might be the wrong review, change status to "WARNING".
-                nyt_status = "OK"
+                publication_date = nyt_data['results'][result_index].get('publication_date')
+
+                # Only reasonable to warn users if the dates don't match.
+                if publication_date and publication_date == movie_obj.release_date:
+                    nyt_status = "OK"
+                else:
+                    nyt_status = "WARNING"
+
                 print(f"NYT_STATUS: {nyt_status}")
 
                 # Build review object
                 review = cls(title=title, year=year,
-                             text=nyt_summary_short,
-                             publication_date=nyt_data['results'][0].get('publication_date'),
+                             text=cls.clean_review_text(nyt_summary_short),
+                             publication_date=nyt_data['results'][result_index].get('publication_date'),
                              critics_pick=nyt_critics_pick)
                 result['message'] = nyt_status
                 result['review'] = review
@@ -746,6 +1047,8 @@ class NytMovieReview(MovieReview):
 
 
         # More than one movie with same title in the same year!
+        # Rare but can happen.
+        # e.g. Black Rain, 1989 (Japanese film vs Michael Douglas film)
         if nyt_data["num_results"] > 1 and not nyt_review_already_found:
 
             print("More than one NYT review for found given movie title and year!")
@@ -782,7 +1085,7 @@ class NytMovieReview(MovieReview):
 
         # Exact match with title and release year. Ideal scenario.
         if  nyt_data["num_results"] == 1:
-            print("NYT review found for given title and release year on first shot😆")
+            print("NYT review found for given title and release year on first shot😆.")
 
             nyt_status = "OK"
             nyt_critics_pick = nyt_data['results'][0]['critics_pick']
@@ -796,7 +1099,10 @@ class NytMovieReview(MovieReview):
         print(f"NYT_STATUS: {nyt_status}")
 
         # Build review object
-        review = cls(title=title, year=year, text=nyt_summary_short, critics_pick=nyt_critics_pick)
+        review = cls(title=title, year=year,
+                     text=cls.clean_review_text(nyt_summary_short),
+                     critics_pick=nyt_critics_pick,
+                     publication_date=nyt_data['results'][0].get('publication_date'))
         result['message'] = nyt_status
         result['review'] = review
 

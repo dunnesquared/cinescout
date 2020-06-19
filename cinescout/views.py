@@ -102,52 +102,93 @@ def movie_list():
 @app.route('/add-to-list', methods=['POST'])
 @login_required
 def add_to_list():
-    """Adds movies to user's list"""
-    print("Request received to add film to list...")
-    tmdb_id = int(request.form.get("tmdb_id"))
-    title = request.form.get("title")
-    year = int(request.form.get("year"))
+    """Adds movies to user's list."""
 
-    # See whether movie is in user list
-    film = FilmListItem.query.filter_by(user_id=current_user.id, tmdb_id=tmdb_id).first()
+    try:
+        print("Request received to add film to list...")
+        print("Retrieving POST data...", end="")
 
+		# Get data.
+        tmdb_id = int(request.form.get("tmdb_id"))
+        title = request.form.get("title").strip()
+        year = int(request.form.get("year"))
+
+        # Check for bad values.
+        if year < 0:
+            raise ValueError("Year value must be non-negative.")
+        if tmdb_id < 1:
+            raise ValueError("tmdb_id must be positive.")
+        if title.strip() == "":
+            raise ValueError("Name cannot be blank.")
+
+    except (ValueError, TypeError) as err:
+        # Possible non-integer values passed for id or year; NoneType also.
+        print("FAILED!")
+        err_message = "Fatal Error: {0}".format(err)
+        print(err_message)
+        return jsonify({"success": False, "err_message": err_message})
+
+    print("Success!")
+
+    # See whether movie is in user list.
+    film = FilmListItem.query.filter_by(user_id=current_user.id,
+                                        tmdb_id=tmdb_id).first()
 
     if not film:
-
-        # Add film to list
+        # Film is not list: add it.
         new_film = FilmListItem(user_id=current_user.id,
                                 title=title,
                                 year=year,
                                 tmdb_id=tmdb_id)
-
         db.session.add(new_film)
         db.session.commit()
-
         return jsonify({"success": True})
-
     else:
-        return jsonify({"success": False})
+		# Film is on list. Send error message.
+        err_message = "Film already on list!"
+        print(err_message)
+        return jsonify({"success": False, "err_message": err_message})
 
 
 @app.route('/remove-from-list', methods=["POST"])
 @login_required
 def remove_from_list():
-    #Check that film is on list
-    print("REMOVE METHOD ACCESSED!!!")
-    tmdb_id = int(request.form.get('tmdb_id'))
-    print(tmdb_id)
+    """Removes film from user's list."""
 
+    print("Request received to remove film...")
+
+    try:
+		# Get id of film to be removed.
+        print("Retrieving POST data...", end="")
+        tmdb_id = int(request.form.get('tmdb_id'))
+
+		# Check for bad values.
+        if tmdb_id < 1:
+            raise ValueError("tmdb_id must be positive.")
+
+    except (ValueError, TypeError) as err:
+		# Bad id value or NoneType passed.
+        err_message = "Fatal Error: {0}".format(err)
+        print(err_message)
+        return jsonify({"success": False, "err_message": err_message})
+
+    print("Success!")
+
+    # See whether film is on list. Can't be removed otherwise.
+    print("Checking to see whether film is on list...")
     film = FilmListItem.query.filter_by(tmdb_id=tmdb_id, user_id=current_user.id).first()
-    print(film)
 
+	# Film is on list. Remove it.
     if film:
+        print(f"Deleting film '{film.title}' from database...")
         db.session.delete(film)
         db.session.commit()
         return jsonify({"success": True})
-
     else:
-        return jsonify({"success": False})
-
+		# Film is not on list. Send error message.
+        err_message = "Film not on list!"
+        print(err_message)
+        return jsonify({"success": False, "err_message": err_message})
 
 
 @app.route("/browse")
@@ -177,21 +218,21 @@ def search():
 @app.route("/title-search-results", methods=["POST"])
 def search_results_title():
     """Renders list of movies from the external movie API based on
-	title supplied."""
+    title supplied."""
 
     form = SearchByTitleForm()
 
     if form.validate_on_submit():
-		# Gets list of movies based on given title.
+        # Gets list of movies based on given title.
         result = TmdbMovie.get_movie_list_by_title(form.title.data.strip())
 
-		# Something went wrong...
+        # Something went wrong...
         if not result['success']:
-			# Bad HTTP response from API call or...
+            # Bad HTTP response from API call or...
             if result['status_code'] != 200:
                 abort(result['status_code'])
             else:
-				# No movies found for given title.
+                # No movies found for given title.
                 return render_template("results.html", movies=None)
 
         return render_template("results.html", movies=result['movies'])
@@ -199,14 +240,14 @@ def search_results_title():
     # In case users GET this route, or the form data is invalid.
     return render_template("search.html",
                            title_form=form,
-						   person_form=SearchByPersonForm())
+                           person_form=SearchByPersonForm())
 
 
 @app.route("/person-search-results", methods=["POST"])
 def search_results_person():
     """Renders list of people in their associated fields in the movie
-	industry.
-	"""
+    industry.
+    """
 
     form = SearchByPersonForm()
 
@@ -217,7 +258,7 @@ def search_results_person():
                                                          known_for=known_for)
 
         if not result['success']:
-			# Bad HTTP response from API call or...
+            # Bad HTTP response from API call or...
             if result['status_code'] != 200:
                 abort(result['status_code'])
             else:
@@ -229,76 +270,93 @@ def search_results_person():
 
     # In case users GET this route, or the form data is invalid.
     return render_template("search.html",
-							person_form=form,
-							title_form=SearchByTitleForm())
+                            person_form=form,
+                            title_form=SearchByTitleForm())
 
 
 @app.route("/person/<int:person_id>", methods=["GET"])
 def filmography(person_id):
-	"""Renders movie credits of a person in the movie industry.
+    """Renders movie credits of a person in the movie industry.
 
-	Args:
-		person_id: Id in external database of person sought for.
-	"""
+    Args:
+        person_id: Id in external database of person sought for.
+    """
 
-	name = request.args.get("name")
+    name = request.args.get("name")
 
-	print(f"Getting filmography data for {name}...")
+    print(f"Getting filmography data for {name}...")
 
-	filmography_data = TmdbMovie.get_movie_list_by_person_id(person_id)
+    filmography_data = TmdbMovie.get_movie_list_by_person_id(person_id)
 
-	if not filmography_data['success']:
-		# Bad HTTP response from API call or...
-		if filmography_data['status_code'] != 200:
-			abort(filmography_data['status_code'])
-		else:
-			# No films to display.
-			return render_template("filmography.html",
-									 cast=None,
-									 crew=None,
-									 no_films=True)
+    if not filmography_data['success']:
+        # Bad HTTP response from API call or...
+        if filmography_data['status_code'] != 200:
+            abort(filmography_data['status_code'])
+        else:
+            # No films to display.
+            return render_template("filmography.html",
+                                     cast=None,
+                                     crew=None,
+                                     no_films=True)
 
-	return render_template("filmography.html",
-							 cast=filmography_data.get('cast'),
-							 crew=filmography_data.get('crew'),
-							 no_films=False,
-							 name=name)
+    return render_template("filmography.html",
+                             cast=filmography_data.get('cast'),
+                             crew=filmography_data.get('crew'),
+                             no_films=False,
+                             name=name)
 
 
 @app.route("/movie/<int:tmdb_id>", methods=["GET"])
 def movie_info(tmdb_id):
+    """Renders salient movie data and review summary from external APIs."""
 
-    # Get movie info TMDB database
+    # Get movie info TMDB database.
     result = TmdbMovie.get_movie_info_by_id(tmdb_id)
 
+	# TMDB request failed.
     if not result['success']:
+		# Can't find movie referenced by id.
         if result['status_code'] == 404:
             abort(404)
         else:
+			# Some other error, e.g. 429: too many request.
             err_message = f"TMDB API query failed; HTTP response = {result['status_code']}"
             return render_template("errors/misc-error.html", err_message=err_message)
-    else:
-        print("Tmdb data retrieved :-)!")
 
+	# Collect movie object.
     movie = result['movie']
 
-    # Get NYT movie review
+    # Get NYT movie review.
     if movie.release_year is not None:
-	    result = NytMovieReview.get_review_by_title_and_year(title=movie.title, year=movie.release_year)
+		# Try first with film's 'main' English language title.
+        result = NytMovieReview.get_review_by_title_and_year(title=movie.title,
+                                                            year=movie.release_year,
+                                                            movie_obj=movie)
+
+        # Review may be under film's original language title.
+        if not result['review'] and movie.original_title is not None:
+            print("Trying get review with film's original title...")
+            result = NytMovieReview.get_review_by_title_and_year(title=movie.original_title,
+                                                                year=movie.release_year,
+                                                                movie_obj=movie)
     else:
         return render_template("movie.html",
-	                            movie=movie,
-	                            review=None,
-	                            on_user_list=None)
+                                movie=movie,
+                                review=None,
+                                on_user_list=None)
 
+	# NYT request failed.
     if not result['success'] and result['status_code'] != 200:
         err_message = f"NYT API query failed; HTTP response = {result['status_code']}  description={result['message']}"
         return render_template("errors/misc-error.html", err_message=err_message)
 
     review = result['review']
 
-    # Assess whether movie is already on user's list.
+    # See whether movie is already on user's list.
     on_user_list, film_list_item_id = None, None
+
+	# To check a user's list we need to who were checking, i.e. user must be
+	# logged in.
     if current_user.is_authenticated:
         film = FilmListItem.query.filter_by(tmdb_id=tmdb_id, user_id=current_user.id).first()
         on_user_list = True if film else False
@@ -312,4 +370,4 @@ def movie_info(tmdb_id):
                             movie=movie,
                             review=review,
                             on_user_list=on_user_list,
-							review_warning=review_warning)
+                            review_warning=review_warning)

@@ -7,68 +7,136 @@
 {% block body %}
   <h1><i>{{ movie.title }}</i></h1>
 
-  <img src="{{ movie.poster_full_url }}"></img>
+  <div>
+    {% if movie.poster_full_url %}
+      <img src="{{ movie.poster_full_url }}"></img>
+    {% else %}
+      <p>No poster available for this movie.</p>
+    {% endif %}
+
+
+  </div>
+
   <br>
   {% if current_user.is_authenticated %}
     <div id="button-container">
     {% if not on_user_list %}
-        <button id="add-button" type="submit"><h2>➕ Add film to list</h2></button>
+        <button id="add-button" type="submit"><h2>Add to list</h2></button>
     {% else %}
-        <button id="remove-button" type="submit"><h2>➖ Remove film from list</h2></button>
+        <button id="remove-button" type="submit"><h2>Remove from list</h2></button>
     {% endif %}
     </div>
-
   {% endif %}
-  <table>
-    <tr>
-      <th>Opening Date:</th>
-      <td> {{ movie.release_date }} </td>
-    </tr>
 
-    <tr>
-      <th>Overview:</th>
-      <td> {{ movie.overview }} </td>
-    </tr>
+  <br>
+  <div>
+    <table class="table table-sm table-borderless table-striped">
 
-    {% if review is not none %}
+      <!--To set width of columns-->
+      <colgroup>
+        <col span=1 id="header-column">
+        <col span=1 id="content-column">
+      </colgroup>
+
       <tr>
-        <th>NYT Critics Pick:</th>
-        <td>
-        {% if review_warning %}
-          <span class='red'>
-            (WARNING! This review may be referring to a later movie with the same title.
-            Review publised {{ review.publication_date }}).
-          </span><br>
-        {% endif %}
-        {% if review.critics_pick == 1 %}
-          Yes!
-        {% elif review.critics_pick == 0 %}
-           No.
+        <th>Release Date</th>
+        {% if movie.release_date %}
+          <td> {{ movie.release_date }} </td>
         {% else %}
-           No review found.
+          <td> Release date unknown for this movie. </td>
         {% endif %}
-          </td>
-
-
       </tr>
+
+      {% if movie.title != movie.original_title and movie.original_title is not none %}
       <tr>
-        <th>NYT Review Summary</th>
-        <td> {% if review_warning %}
-          <span class='red'>
-            (WARNING! This review may be referring to a later movie with the same title.
-            Review publised {{ review.publication_date }}).
-          </span><br>
-        {% endif %}
-          {{ review.text }} </td>
+        <th>Original Title</th>
+          <td> {{ movie.original_title }} </td>
       </tr>
-    {% else %}
+      {% endif %}
 
-    <p> A movie review could not be found for this movie. </p>
+      <tr>
+        <th>Overview</th>
+        <td>
+        {% if movie.overview %}
+          {{ movie.overview }}
+        {% else %}
+          <span>A summary for this film could not be found.</span>
+        {% endif %}
+        </td>
+      </tr>
 
+      <tr>
+        <th>Runtime</th>
+          {% if movie.runtime %}
+            <td> {{ movie.runtime }} min </td>
+          {% else %}
+            <td> Runtime unknown for this movie. </td>
+          {% endif %}
+      </tr>
+
+      <tr>
+        <th>Movie Review</th>
+        <td>
+          {% if review is not none %}
+          <div class="review">
+              <span class="review-text">
+                {{ review.text }}
+                {% if review.critics_pick == 1 %}
+                  <span title="Critic's Pick">⭐️</span>
+                {% endif %}
+              </span>
+              <br>
+              <span class="publication">
+                New York Times, {{ review.publication_date }}
+                  {% if review_warning %}
+                    <sup>☂︎</sup>
+                  {% endif %}
+              </span>
+            {% else %}
+              <span> A movie review could not be found for this movie. </span>
+          </div>
+          {% endif %}
+        </td>
+
+      <tr>
+        <th>TMDB Link</th>
+        <td>
+          {% if movie.tmdb_full_url %}
+            <a href="{{ movie.tmdb_full_url }}" target="_blank">
+              {{ movie.tmdb_full_url }}
+            </a>
+          {% else %}
+            <span> There is no TMDB link for this film. </span>
+          {% endif %}
+        </td>
+      </tr>
+
+      <tr>
+        <th>IMDB Link</th>
+        <td>
+          {% if movie.imdb_full_url %}
+            <a href="{{ movie.imdb_full_url }}" target="_blank">
+              {{ movie.imdb_full_url }}
+            </a>
+          {% else %}
+            <span> There is no IMDB link for this film. </span>
+          {% endif %}
+        </td>
+      </tr>
+    </table>
+
+    {% if review_warning %}
+      <p id="review-warning">
+        <sup>☂︎</sup>
+        <em>
+          Because of a difference between the release and review dates,
+          the movie review presented may be for another movie of the
+          same title.
+        </em>
+      </p>
     {% endif %}
 
-  </table>
-
+  </div>
   <!-- Data values required to add/remove film -->
   <input id="tmdb-id" type="hidden" value="{{ movie.id }}">
   <input id="title" type="hidden" value="{{ movie.title }}">

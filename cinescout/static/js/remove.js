@@ -39,7 +39,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
           if (data.success){
             alert("Film removed from your list!!");
-            button.parentElement.remove();
+            // console.log(button.parentElement);
+            // console.log(button.parentElement.parentElement);
+
+            // Removes row from table.
+            button.parentElement.parentElement.remove();
 
             console.log(document.querySelectorAll('.trash-button').length);
 

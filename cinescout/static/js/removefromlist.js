@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
           if (data.success){
-            alert("Film removed from your list!!");
+            console.log("Film removed from your list!!");
             // console.log(button.parentElement);
             // console.log(button.parentElement.parentElement);
 

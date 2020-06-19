@@ -499,7 +499,6 @@ class MovieReview:
         self.text = text
         self.publication_date=publication_date
 
-
     @classmethod
     def get_review_by_title_and_year(cls, title, year):
         """Returns data structure containing review and metadata based on
@@ -508,7 +507,6 @@ class MovieReview:
 
     def __str__(self):
         return f"'{self.title}' ({self.year}): {self.text}"
-
 
 
 class NytMovieReview(MovieReview):
@@ -524,17 +522,17 @@ class NytMovieReview(MovieReview):
         exceptions: Dictionary containing titles (string) and years (int) of
                     movies who need cannot be queried the usual way.
 
-
     Attributes:
         title: Striing representing the title of movie reviewed.
         year: Integer representing the release year of the movie.
         text: String containing summary of movie review.
         publication_date: String representing date review was published.
         critics_pick: Boolean representing whether movie is NYT critic's pick.
-
     """
 
     # Class Attributes
+
+    # New York Times API movie review key
     api_key = os.getenv('NYT_API_KEY')
 
     # Number of seconds to wait before making next call to NYT api
@@ -601,9 +599,11 @@ class NytMovieReview(MovieReview):
             False: if title are not similar enough to guess they refer to the
                    same film.
         """
+        # Check arguments.
         if not extdb_title or not nyt_title:
             raise ValueError("Titles cannot be blank or None type.")
 
+        # Calculate Levenshtein similarity ratios.
         ratio = fuzz.ratio(extdb_title.strip().lower(),
                            nyt_title.strip().lower())
 
@@ -613,16 +613,17 @@ class NytMovieReview(MovieReview):
         print(f"Levenshtein similarity ratio, full = {ratio}")
         print(f"Levenshtein similarity ratio, partial = {partial_ratio}")
 
+        # Are the two title similar enough to be confident they refer to same
+        # movie?
         if ratio >= cls.threshold or partial_ratio >= cls.threshold:
             return True
         else:
             return False
 
-
     @classmethod
     def process_exceptions(cls, title, year, movie_obj):
         """Processes special cases where film review exists but is otherwise
-        impossible to find given current algorithms:
+        impossible to find given current algorithms.
 
         Args:
             title: String representing title of film, likely its English form.
@@ -639,9 +640,12 @@ class NytMovieReview(MovieReview):
                 'review': Review object. None is no review is to be found.
          """
         print("Processing exceptions...")
+
         # Black Rain, 1989
         # The Japanese film's original title is in Japanese.
         if title.lower().strip() == 'black rain' and year == 1989:
+
+            # The Michael Douglas movie has same main and original title.
             if movie_obj.title != movie_obj.original_title:
                 print(f"{title}, {year} => Japanese version!")
                 print("Review does exist in NYT database.")
@@ -662,17 +666,17 @@ class NytMovieReview(MovieReview):
                                                 "opening-date": f"{opening_date_start};{opening_date_end}",
                                                 "query": title.strip()})
 
+                # Request to NYT failed...
                 if res.status_code != 200:
                     print(f"FAILED! Http response status code = {res.status_code}")
                     return {'status_code': res.status_code, 'review': None}
-                    # result['success'] = False
-                    # result['status_code'] = res.status_code
-                    # return result
 
                 print("SUCCESS!")
 
+                # All good. Extract data.
                 nyt_data = res.json()
 
+                # Build review object.
                 review = cls(title=title, year=year,
                              text=cls.clean_review_text(nyt_data['results'][0].get('summary_short')),
                              publication_date=nyt_data['results'][0].get('publication_date'),
@@ -693,8 +697,8 @@ class NytMovieReview(MovieReview):
         Args:
             title: String representing title of film, likely its English form.
             year: Integer representing year movie was released.
-            movie_obj: Movie object (optional) if more information about the film
-                       is required.
+            movie_obj: Movie object (optional) if more information about the
+            film is required.
 
         Returns:
             result: A dictionary with three fields
@@ -713,6 +717,7 @@ class NytMovieReview(MovieReview):
 
         # Check to see whether movie queried is a special exception.
         print("Checking to see whether is queried film is a special case...", end="")
+
         if cls.exceptions.get(title) == year:
             print("Yes!")
             review = cls.process_exceptions(title, year, movie_obj)
@@ -732,14 +737,17 @@ class NytMovieReview(MovieReview):
 
         print("No!")
 
+        # Proceed with normal NYT review retrieval.
+
     	# Flag in case NYT review info already found
         nyt_review_already_found = False
 
         print(f"Starting process to get review for '{title}, {year}' via NYT api...")
 
-        # The dates on which a movie is released and reviewed likely differ.
-        # Most movies will have been reviewed in the same year they were
-        # released, however.
+        # The dates on which a movie is released and reviewed likely differ, but
+        # will often have been reviewed in the same _year_.
+
+        # Need these to NYT request to limit results.
         opening_date_start = f"{year}-01-01"
         opening_date_end = f"{year}-12-31"
 
@@ -749,6 +757,7 @@ class NytMovieReview(MovieReview):
                                         "opening-date": f"{opening_date_start};{opening_date_end}",
                                         "query": title.strip()})
 
+        # NYT request failed.
         if res.status_code != 200:
             print(f"FAILED! Http response status code = {res.status_code}")
             result['success'] = False
@@ -757,7 +766,7 @@ class NytMovieReview(MovieReview):
 
         print("SUCCESS!")
 
-        # Unpack review data
+        # Unpack review data.
         nyt_data = res.json()
 
         print("Analyzing NYT review response data...")

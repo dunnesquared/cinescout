@@ -4,7 +4,7 @@
 
 document.addEventListener('DOMContentLoaded', () => {
 
-  console.log('remove.js');
+  console.log('removefromlist.js');
 
 
   buttons = document.querySelectorAll('.trash-button')

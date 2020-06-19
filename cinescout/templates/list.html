@@ -10,21 +10,55 @@
   {% if films %}
     <table class="table">
 
-    {% for film in films %}
-      <tr>
-        <td>
-          <a href="{{ url_for('movie_info', tmdb_id=film.tmdb_id )}}">
-            {{ film.title }} ({{ film.year }})
-          </a>
-        </td>
+      <colgroup>
+        <col span=1 class="userlist-col">
+        <col span=1 class="userlist-col">
+        <col span=1 class="userlist-col">
+        <col span=1 class="userlist-col">
+      </colgroup>
 
-        <td>
-          <button class="btn btn-secondary trash-button"
-                  name="remove" type="submit" value="{{ film.tmdb_id  }}"
-                  alt="remove item">Remove</button>
-        </td>
-      </tr>
-    {% endfor %}
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Release Date</th>
+          <th>Original Title</th>
+          <th>Remove?</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for film in films %}
+          <tr>
+            <td>
+              <a href="{{ url_for('movie_info', tmdb_id=film.tmdb_id )}}">
+                {{ film.title }}
+              </a>
+            </td>
+
+            <td>
+              {% if film.date is not none %}
+                {{ film.date }}
+              {% else %}
+               <span>Unknown</span>
+              {% endif %}
+            </td>
+
+            <td>
+              {% if film.title != film.original_title and film.original_title is not none %}
+                {{ film.original_title }}
+              {% else %}
+               <span>Idem.</span>
+              {% endif %}
+            </td>
+
+            <td>
+              <button class="btn btn-secondary trash-button"
+                      name="remove" type="submit" value="{{ film.tmdb_id  }}"
+                      alt="remove item">Remove</button>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
     </table>
 
   {% else %}

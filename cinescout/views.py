@@ -122,8 +122,9 @@ def add_to_list():
     except (ValueError, TypeError) as err:
         # Possible non-integer values passed for id or year; NoneType also.
         print("FAILED!")
-        print("Fatal Error: {0}".format(err))
-        return jsonify({"success": False})
+        err_message = "Fatal Error: {0}".format(err)
+        print(err_message)
+        return jsonify({"success": False, "err_message": err_message})
 
     print("Success!")
 
@@ -140,7 +141,9 @@ def add_to_list():
         db.session.commit()
         return jsonify({"success": True})
     else:
-        return jsonify({"success": False})
+        err_message = "Film already on list!"
+        print(err_message)
+        return jsonify({"success": False, "err_message": err_message})
 
 
 @app.route('/remove-from-list', methods=["POST"])
@@ -160,9 +163,9 @@ def remove_from_list():
             raise ValueError("tmdb_id must be positive.")
 
     except (ValueError, TypeError) as err:
-        print("FAILED!")
-        print("Fatal Error: {0}".format(err))
-        return jsonify({"success": False})
+        err_message = "Fatal Error: {0}".format(err)
+        print(err_message)
+        return jsonify({"success": False, "err_message": err_message})
 
     print("Success!")
 
@@ -176,8 +179,9 @@ def remove_from_list():
         db.session.commit()
         return jsonify({"success": True})
     else:
-        print("Film not on list. Unable to remove something that is not there.")
-        return jsonify({"success": False})
+        err_message = "Film not on list!"
+        print(err_message)
+        return jsonify({"success": False, "err_message": err_message})
 
 
 

@@ -128,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
         removeButton.id = 'remove-button';
         removeButton.type = 'submit';
         // removeButton.value =
-        removeButton.innerHTML = '<h2>Remove film from list</h2>';
+        removeButton.innerHTML = '<h2>Remove film</h2>';
         buttonContainer.append(removeButton);
 
         // Updata remove_button state
@@ -140,8 +140,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
       }else{
-        console.log("Error: film could not be added to list.");
-        alert("Error: film could not be added to list. This film may already be on your list. Refresh the page and try again.");
+        console.error(`Error: ${data.err_message}`);
+        alert(`Error: Add Film failed.\n${data.err_message}`);
       }
 
     };
@@ -198,8 +198,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
       }else{
-        console.log("Error: could not remove film from list.");
-        alert("Error: could not remove film from list. This film may already be off your list. Refresh the page and try again.");
+        console.error(`Error: ${data.err_message}`);
+        alert(`Error: Remove Film failed.\n${data.err_message}`);
       }
 
     };

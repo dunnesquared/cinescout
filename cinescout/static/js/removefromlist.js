@@ -6,7 +6,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   console.log('removefromlist.js');
 
-
   buttons = document.querySelectorAll('.trash-button')
 
   if (buttons.length !== 0){
@@ -56,7 +55,9 @@ document.addEventListener('DOMContentLoaded', () => {
             // button.previousElementSibling.remove();
             // button.remove();
           }else{
-            alert("Error: could not remove film from list.");
+            // Film could not be removed for some reason...
+            console.error(`Error: ${data.err_message}`);
+            alert(`Error: Remove Film failed.\n${data.err_message}`);
           }
 
         };

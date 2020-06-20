@@ -108,10 +108,12 @@ def add_to_list():
         print("Request received to add film to list...")
         print("Retrieving POST data...", end="")
 
-		# Get data.
+        # Get data.
         tmdb_id = int(request.form.get("tmdb_id"))
         title = request.form.get("title").strip()
         year = int(request.form.get("year"))
+        date = request.form.get("date").strip()
+        original_title = request.form.get("original_title").strip()
 
         # Check for bad values.
         if year < 0:
@@ -136,15 +138,18 @@ def add_to_list():
 
     if not film:
         # Film is not list: add it.
+        print(f"Adding film '{title}'...")
         new_film = FilmListItem(user_id=current_user.id,
                                 title=title,
                                 year=year,
-                                tmdb_id=tmdb_id)
+                                tmdb_id=tmdb_id,
+								date=date,
+								original_title=original_title)
         db.session.add(new_film)
         db.session.commit()
         return jsonify({"success": True})
     else:
-		# Film is on list. Send error message.
+        # Film is on list. Send error message.
         err_message = "Film already on list!"
         print(err_message)
         return jsonify({"success": False, "err_message": err_message})
@@ -158,16 +163,16 @@ def remove_from_list():
     print("Request received to remove film...")
 
     try:
-		# Get id of film to be removed.
+        # Get id of film to be removed.
         print("Retrieving POST data...", end="")
         tmdb_id = int(request.form.get('tmdb_id'))
 
-		# Check for bad values.
+        # Check for bad values.
         if tmdb_id < 1:
             raise ValueError("tmdb_id must be positive.")
 
     except (ValueError, TypeError) as err:
-		# Bad id value or NoneType passed.
+        # Bad id value or NoneType passed.
         err_message = "Fatal Error: {0}".format(err)
         print(err_message)
         return jsonify({"success": False, "err_message": err_message})
@@ -178,14 +183,14 @@ def remove_from_list():
     print("Checking to see whether film is on list...")
     film = FilmListItem.query.filter_by(tmdb_id=tmdb_id, user_id=current_user.id).first()
 
-	# Film is on list. Remove it.
+    # Film is on list. Remove it.
     if film:
         print(f"Deleting film '{film.title}' from database...")
         db.session.delete(film)
         db.session.commit()
         return jsonify({"success": True})
     else:
-		# Film is not on list. Send error message.
+        # Film is not on list. Send error message.
         err_message = "Film not on list!"
         print(err_message)
         return jsonify({"success": False, "err_message": err_message})
@@ -313,22 +318,22 @@ def movie_info(tmdb_id):
     # Get movie info TMDB database.
     result = TmdbMovie.get_movie_info_by_id(tmdb_id)
 
-	# TMDB request failed.
+    # TMDB request failed.
     if not result['success']:
-		# Can't find movie referenced by id.
+        # Can't find movie referenced by id.
         if result['status_code'] == 404:
             abort(404)
         else:
-			# Some other error, e.g. 429: too many request.
+            # Some other error, e.g. 429: too many request.
             err_message = f"TMDB API query failed; HTTP response = {result['status_code']}"
             return render_template("errors/misc-error.html", err_message=err_message)
 
-	# Collect movie object.
+    # Collect movie object.
     movie = result['movie']
 
     # Get NYT movie review.
     if movie.release_year is not None:
-		# Try first with film's 'main' English language title.
+        # Try first with film's 'main' English language title.
         result = NytMovieReview.get_review_by_title_and_year(title=movie.title,
                                                             year=movie.release_year,
                                                             movie_obj=movie)
@@ -345,7 +350,7 @@ def movie_info(tmdb_id):
                                 review=None,
                                 on_user_list=None)
 
-	# NYT request failed.
+    # NYT request failed.
     if not result['success'] and result['status_code'] != 200:
         err_message = f"NYT API query failed; HTTP response = {result['status_code']}  description={result['message']}"
         return render_template("errors/misc-error.html", err_message=err_message)
@@ -355,8 +360,8 @@ def movie_info(tmdb_id):
     # See whether movie is already on user's list.
     on_user_list, film_list_item_id = None, None
 
-	# To check a user's list we need to who were checking, i.e. user must be
-	# logged in.
+    # To check a user's list we need to who were checking, i.e. user must be
+    # logged in.
     if current_user.is_authenticated:
         film = FilmListItem.query.filter_by(tmdb_id=tmdb_id, user_id=current_user.id).first()
         on_user_list = True if film else False

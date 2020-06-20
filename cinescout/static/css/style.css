@@ -18,6 +18,10 @@
   width: 90%;
 }
 
+.userlist-col{
+  width: 25%;
+}
+
 .publication {
   font-size: 80%;
   font-weight: 600;

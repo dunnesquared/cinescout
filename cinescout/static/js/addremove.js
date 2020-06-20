@@ -39,10 +39,14 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log(`tmdb-id: ${document.querySelector("#tmdb-id").value}`);
     console.log(`title: ${document.querySelector("#title").value}`);
     console.log(`year: ${document.querySelector("#year").value}`);
+    console.log(`date: ${document.querySelector("#date").value}`);
+    console.log(`original title: ${document.querySelector("#original-title").value}`);
 
     const tmdbId = document.querySelector("#tmdb-id").value;
     const title = document.querySelector("#title").value;
     const year = document.querySelector("#year").value;
+    const date = document.querySelector("#date").value;
+    const originalTitle = document.querySelector("#original-title").value;
 
     // Initialize new AJAX request.
     const request = new XMLHttpRequest();
@@ -86,6 +90,8 @@ document.addEventListener('DOMContentLoaded', () => {
     data.append('tmdb_id', tmdbId);
     data.append('title', title);
     data.append('year', year);
+    data.append('date', date);
+    data.append('original_title', originalTitle)
 
     // Send request.
     request.send(data);

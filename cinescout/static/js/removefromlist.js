@@ -1,49 +1,48 @@
 /**
- * @file Removes movie from user list
+ * @file Removes movie from user list.
  */
 
 document.addEventListener('DOMContentLoaded', () => {
 
   console.log('removefromlist.js');
 
+  // Only display empty list message if there are no remove buttons on list.
+  // Each time a film is removed, its remove button goes with it.
   buttons = document.querySelectorAll('.trash-button')
 
   if (buttons.length !== 0){
     document.querySelector("#empty-list-message").style.visibility = "hidden";
   }
 
-  // if document.querySelectorAll('.trash-button') === null {
-  //   console.log("No buttons!")
-  // }
-
-
-
+  // For all buttons...
   buttons.forEach(button => {
-
-    // Add event lister for each button
+    // Add event listener when button is clicked.
     button.onclick =  () => {
-
+        // Debug purposes.
         console.log(`button value = ${button.value}`);
 
-        // Get id of film you want to delete
+        // Get id of film you want to delete.
         const tmdbId = button.value;
 
+        // Initialize new AJAX request to remove film.
         const request = new XMLHttpRequest();
         request.open('POST', '/remove-from-list');
 
+        // Call back function to execute once request completed.
         request.onload = function() {
           // Extract JSON data
           const data = JSON.parse(request.responseText);
 
-
+          // Film removed from db!
           if (data.success){
             console.log("Film removed from your list!!");
-            // console.log(button.parentElement);
-            // console.log(button.parentElement.parentElement);
 
-            // Removes row from table.
+            // Removes row from movie-list table, in essence a movie.
             button.parentElement.parentElement.remove();
 
+            // If there are no buttons on the list, then the list is empty.
+            // Make visible the no-films-on-list message.
+            console.log("Number of buttons left on list:")
             console.log(document.querySelectorAll('.trash-button').length);
 
             if (document.querySelectorAll('.trash-button').length === 0) {
@@ -52,57 +51,20 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             else document.querySelector("#empty-list-message").style.visibility = "hidden";
 
-            // button.previousElementSibling.remove();
-            // button.remove();
           }else{
             // Film could not be removed for some reason...
             console.error(`Error: ${data.err_message}`);
             alert(`Error: Remove Film failed.\n${data.err_message}`);
           }
-
         };
 
-
+        // Pack-up POST data to backend route.
         const data = new FormData();
         data.append('tmdb_id', tmdbId);
 
         // Send request
         request.send(data);
         return false;
-
     };
-
-
   });
-
-
-
-
-  //
-  // form = document.querySelector('#list-form')
-  //
-  // form.addEventListener('submit', () => {
-  //
-  //   alert(this.id);
-  //
-  //
-  //   // Initialize new request
-  //   const filmId = document.querySelector("button[name='remove']").value;
-  //   console.log(filmId);
-  //   alert("Item removed!")
-  //
-  //   // const request = new XMLHttpRequest();
-  //   //
-  //   //
-  //   // request.open('POST', '/remove-item');
-  //   //
-  //   //
-  //   // // Send form data with request
-  //   // const data = new FormData();
-  //   // data.append()
-  //
-  // });
-
-
-
 });

@@ -50,6 +50,18 @@ class RouteTests(unittest.TestCase):
             follow_redirects=True
         )
 
+    def add_film_to_list(self, tmdb_id=None, title=None, year=None,
+                         date=None, original_title=None):
+        return self.app.post('/add-to-list',
+                   data=dict(tmdb_id=tmdb_id, title=title,
+                           year=year, date=date,
+                           original_title=original_title,
+                           follow_redirects=True))
+
+    def remove_film_from_list(self, tmdb_id=None):
+        return self.app.post('/remove-from-list',
+              data=dict(tmdb_id=tmdb_id,
+                      follow_redirects=True))
 
     # +++++++++++++++++++++++++++++++ TESTS +++++++++++++++++++++++++++++++++
 
@@ -498,6 +510,93 @@ class RouteTests(unittest.TestCase):
                       follow_redirects=True))
         data = json.loads(response.get_data(as_text=True))
         self.assertFalse(data['success'])
+
+
+    # USER LIST
+    # Tests:
+    # Try to access list without being logged in.
+    def test_user_list_not_logged_in(self):
+        response = self.app.get('/movie-list')
+        self.assertIn(b'Access Denied', response.data)
+
+    # Try to access list while logged in.
+    def test_user_list_logged_in(self):
+        self.login("Alex", "123")
+        response = self.app.get('/movie-list')
+        self.assertIn(b'Alex\'s List', response.data)
+
+    # Remove regular remove
+    def test_user_list_remove_ok(self):
+    	# Login and add a film.
+        self.login("Alex", "123")
+        self.add_film_to_list(tmdb_id="1018", title="Mulholland Drive",
+                            year="2001", date="2001-09-08",
+                            original_title="Mulholland Drive")
+
+        self.remove_film_from_list(tmdb_id="1018")
+
+        response = self.app.get('/movie-list')
+        self.assertIn(b'There are no films on your list', response.data)
+
+    # Remove when no films on list
+    def test_user_list_remove_no_films_on_list(self):
+    	# Login and add a film.
+        self.login("Alex", "123")
+        self.add_film_to_list(tmdb_id="1018", title="Mulholland Drive",
+                            year="2001", date="2001-09-08",
+                            original_title="Mulholland Drive")
+
+        self.remove_film_from_list(tmdb_id="1018")
+
+        # Try removing it again.
+        self.remove_film_from_list(tmdb_id="1018")
+
+        response = self.app.get('/movie-list')
+        self.assertIn(b'There are no films on your list', response.data)
+
+    # Try to remove film that is not on list
+    def test_user_list_remove_film_not_on_list(self):
+    	# Login and add a film.
+        self.login("Alex", "123")
+        self.add_film_to_list(tmdb_id="1018", title="Mulholland Drive",
+                            year="2001", date="2001-09-08",
+                            original_title="Mulholland Drive")
+
+        # Film 999 not on list
+        self.remove_film_from_list(tmdb_id="999")
+
+        response = self.app.get('/movie-list')
+        self.assertIn(b'Mulholland Drive', response.data)
+
+    # Remove with blank data.
+    def test_user_list_remove_blank__None_data(self):
+    	# Login and add a film.
+        self.login("Alex", "123")
+        self.add_film_to_list(tmdb_id="1018", title="Mulholland Drive",
+                            year="2001", date="2001-09-08",
+                            original_title="Mulholland Drive")
+
+        self.remove_film_from_list(tmdb_id="\n \t")
+        response = self.app.get('/movie-list')
+        self.assertIn(b'Mulholland Drive', response.data)
+
+        self.remove_film_from_list(tmdb_id=None)
+        response = self.app.get('/movie-list')
+        self.assertIn(b'Mulholland Drive', response.data)
+
+    # Remove with bad data
+    def test_user_list_remove_bad_data(self):
+    	# Login and add a film.
+        self.login("Alex", "123")
+        self.add_film_to_list(tmdb_id="1018", title="Mulholland Drive",
+                            year="2001", date="2001-09-08",
+                            original_title="Mulholland Drive")
+
+        self.remove_film_from_list(tmdb_id="ewr43%#$^^")
+        response = self.app.get('/movie-list')
+        self.assertIn(b'Mulholland Drive', response.data)
+
+
 
 
 if __name__ == "__main__":

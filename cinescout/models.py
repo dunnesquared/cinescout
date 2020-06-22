@@ -33,15 +33,18 @@ class Film(db.Model):
     title = db.Column(db.String(80), nullable=False) # Will have to make this not unique in good version
     year = db.Column(db.Integer, nullable=False)
     tmdb_id = db.Column(db.Integer, nullable=True)
+    director = db.Column(db.String(80), nullable=True)
 
     def __repr__(self):
-        return f"{self.id}, {self.title}, {self.year}, {self.tmdb_id}"
+        return f"{self.id}, {self.title}, {self.year}, {self.tmdb_id}, {self.director}"
 
 
 class CriterionFilm(db.Model):
     __tablename__ = "criterion_films"
     id = db.Column(db.Integer, primary_key=True)
     film_id = db.Column(db.Integer, db.ForeignKey('films.id'), nullable=False)
+    # director = db.Column(db.String(80), nullable=True)
+    # spine_num = db.Column(db.Integer, nullable=True)
 
     def __repr__(self):
         return f"{self.id}, film_id: {self.film_id}"

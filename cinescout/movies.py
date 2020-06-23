@@ -573,9 +573,12 @@ class NytMovieReview(MovieReview):
         else:
             return None
 
-        # Remove &quot; characters from review text should they exist;
-        # replace them with reqular quotes.
-        temp_text = temp_text.replace('&quot;', '"')
+        # Remove Unicode characters from review text that are not rendered,
+        # but presented as is. Replace them with appropriate characters.
+        temp_text = temp_text.replace('&quot;', '"')  # straight quotes
+        temp_text = temp_text.replace('&#151;', '—')  # em dash
+        temp_text = temp_text.replace('&#8220;', '"')  # left quote
+        temp_text = temp_text.replace('&#8221;', '"')  # right quote
 
         cleaned_text = temp_text
         return cleaned_text

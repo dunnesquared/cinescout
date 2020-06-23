@@ -548,7 +548,7 @@ class NytMovieReview(MovieReview):
 
     # Movies that cannot be queried the usual way, probably because two movies
     # of the same title came out the same year.
-    exceptions = { "Black Rain": 1989 }
+    exceptions = { "Black Rain": 1989, "Nineteen Eighty-Four": 1984}
 
     def __init__(self, title=None, year=None, text=None, publication_date=None,
                 critics_pick=None):
@@ -681,6 +681,41 @@ class NytMovieReview(MovieReview):
 
                 # Build review object.
                 review = cls(title=title, year=year,
+                             text=cls.clean_review_text(nyt_data['results'][0].get('summary_short')),
+                             publication_date=nyt_data['results'][0].get('publication_date'),
+                             critics_pick=nyt_data['results'][0].get('critics_pick'))
+
+                return {'status_code': res.status_code, 'review': review}
+
+        # '1984', 1984
+        # Written ad 'Nineteen Eighty-Four' in tmdb.
+        elif title.lower().strip() == 'nineteen eighty-four' and year == 1984:
+
+                print(f"'1984', {year} => John Hurt version!")
+                print("Getting review for film!")
+
+                # Film reviewed in US in 1985
+                opening_date_start = f"1985-01-01"
+                opening_date_end = f"1985-12-31"
+
+                print("Making initial request to NYT Movie Review API...", end="")
+                res = requests.get("https://api.nytimes.com/svc/movies/v2/reviews/search.json",
+                                        params={"api-key": cls.api_key,
+                                                "opening-date": f"{opening_date_start};{opening_date_end}",
+                                                "query": '1984'})
+
+                # Request to NYT failed...
+                if res.status_code != 200:
+                    print(f"FAILED! Http response status code = {res.status_code}")
+                    return {'status_code': res.status_code, 'review': None}
+
+                print("SUCCESS!")
+
+                # All good. Extract data.
+                nyt_data = res.json()
+
+                # Build review object.
+                review = cls(title='1984', year=year,
                              text=cls.clean_review_text(nyt_data['results'][0].get('summary_short')),
                              publication_date=nyt_data['results'][0].get('publication_date'),
                              critics_pick=nyt_data['results'][0].get('critics_pick'))

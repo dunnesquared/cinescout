@@ -98,11 +98,11 @@ if __name__ == "__main__":
         db.session.add(u)
         db.session.commit()
 
-        print("Creating second user 'Pablo'....")
+        print("Creating second user 'Yoda'....")
         password = input("Please input a password for second user: ")
 
         print("Adding user to db...")
-        u = User(username="Pablo", email="pablo@pablo.com")
+        u = User(username="Yoda", email="yoda@yoda.com")
         u.set_password(password)
         db.session.add(u)
         db.session.commit()

@@ -43,8 +43,6 @@ class CriterionFilm(db.Model):
     __tablename__ = "criterion_films"
     id = db.Column(db.Integer, primary_key=True)
     film_id = db.Column(db.Integer, db.ForeignKey('films.id'), nullable=False)
-    # director = db.Column(db.String(80), nullable=True)
-    # spine_num = db.Column(db.Integer, nullable=True)
 
     def __repr__(self):
         return f"{self.id}, film_id: {self.film_id}"
@@ -68,7 +66,6 @@ class FilmListItem(db.Model):
     tmdb_id = db.Column(db.Integer, nullable=True)
     date = db.Column(db.String(10), nullable=True)
     original_title = db.Column(db.String(80), nullable=True)
-    # film_id = db.Column(db.Integer, db.ForeignKey('films.id'), nullable=False)
 
     def __repr__(self):
         return f"{self.id}, user_id: {self.user_id}, title: {self.title}, year: {self.year}, tmdb_id: {self.tmdb_id}, date: {self.date}, original title: {self.original_title}"

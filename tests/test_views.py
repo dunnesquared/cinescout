@@ -129,7 +129,7 @@ class RouteTests(unittest.TestCase):
         response = self.login(username="Alex", password="123")
         response = self.app.get('/register', follow_redirects=True)
         self.assertEqual(response.status_code, 200)
-        self.assertIn(b'Random movie', response.data)
+        self.assertIn(b'Welcome', response.data)
 
     def test_register_valid_data(self):
         username = "borat"

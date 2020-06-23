@@ -98,11 +98,11 @@ if __name__ == "__main__":
         db.session.add(u)
         db.session.commit()
 
-        print("Creating second user 'Pablo'....")
+        print("Creating second user 'Yoda'....")
         password = input("Please input a password for second user: ")
 
         print("Adding user to db...")
-        u = User(username="Pablo", email="pablo@pablo.com")
+        u = User(username="Yoda", email="yoda@yoda.com")
         u.set_password(password)
         db.session.add(u)
         db.session.commit()
@@ -113,8 +113,13 @@ if __name__ == "__main__":
 
         # Add movies to personal lists
         print("Adding movies to personal lists...")
-        film1 = FilmListItem(user_id=1, title="Wendy and Lucy", year=2008, tmdb_id=8942)
-        film2 =  FilmListItem(user_id=2, title="MacGruber", year=2010, tmdb_id=37931)
+        film1 = FilmListItem(user_id=1, title="Wendy and Lucy",
+                             year=2008, tmdb_id=8942,
+                             date="2008-05-22",
+                             original_title="Wendy and Lucy")
+        film2 =  FilmListItem(user_id=2, title="MacGruber",
+                              year=2010, tmdb_id=37931,
+                              date="2010-05-21", original_title="MacGruber")
         db.session.add(film1)
         db.session.add(film2)
         db.session.commit()

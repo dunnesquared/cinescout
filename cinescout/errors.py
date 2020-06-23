@@ -1,3 +1,5 @@
+import requests
+
 from flask import render_template
 from cinescout import app, db
 
@@ -9,6 +11,17 @@ def not_found_error(e):
 @app.errorhandler(401)
 def not_found_error(e):
 	return render_template("errors/401.html"), 401
+
+@app.errorhandler(429)
+def not_found_error(e):
+    err_message = ("Too many requests in a row. Please wait 30–60 seconds " \
+    "before your next query.")
+    return render_template("errors/429.html", err_message=err_message), 429
+
+@app.errorhandler(requests.exceptions.ConnectionError)
+def connection_error(e):
+    return render_template("errors/connection-error.html")
+
 
 
 # THIS CODE WILL SUPERSEDE INTERACTIVE DEBUGGER DURING DEVELOPMENT

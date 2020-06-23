@@ -1,4 +1,4 @@
-"""Script that imports film data from csv file"""
+"""Script that imports film data from criterion.csv file."""
 
 import sys
 import os
@@ -12,33 +12,13 @@ print(f"New path inserted into sys.path:\n{PROJ_PATH}")
 from cinescout import app, db
 from cinescout.models import User, Film, CriterionFilm, PersonalFilm, FilmListItem
 
+# So script can find the input files.
 DATA_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "../data"))
+
+# Input file.
 CRITERION_FILE = os.path.join(DATA_PATH, "criterion.csv")
-PERSONAL_FILE = os.path.join(DATA_PATH, "personal.csv")
+# PERSONAL_FILE = os.path.join(DATA_PATH, "personal.csv")
 
-
-# from app import db, Film, CriterionFilm, PersonalFilm, User, FilmListItem
-#
-# # from sqlalchemy import create_engine, exc
-# # from sqlalchemy.orm import scoped_session, sessionmaker
-# #
-# # # Check for environment variable
-# # if not os.getenv("DATABASE_URL"):
-# #     raise RuntimeError("DATABASE_URL is not set")
-# #
-# # # Set up database
-# # engine = create_engine(os.getenv("DATABASE_URL"))
-# # db = scoped_session(sessionmaker(bind=engine))
-#
-# # Book table must exist before importing
-#
-# # try:
-# #     books = db.execute("SELECT * FROM books")
-# # except exc.ProgrammingError as err:
-# #     print("Error: Cannot import book data.")
-# #     print("Table 'books' does not exist. Please run SQL script 'schema.sql' before importing data.")
-# #     sys.exit()
-#
 
 def in_db(title, year):
     """Checks that film is not already in database.
@@ -62,28 +42,34 @@ def update_table(file_name, ModelClass):
             # Skip the header line
             next(reader, None)
 
-            # To inform user of current of record being outputted
+            # To inform user of current of record being outputted.
             count = 1
 
-            # Insert data into database
-            for title, year, tmdb_id in reader:
+            # Insert data into database.
+            for release_year, title, director, spine_num, tmdb_id, iffy in reader:
 
-                if not in_db(title, year):
+                # Clean up title. Replace @ symbols with commas.
+                # (@ were manually added in criterion.csv to replace commas
+                # in movie titles.)
+                title = title.replace('@', ',').strip()
+
+                if not in_db(title, release_year):
                     # Add to main table
-                    film = Film(title=title, year=year, tmdb_id=tmdb_id)
+                    film = Film(title=title, year=release_year,
+                                tmdb_id=tmdb_id, director=director)
                     db.session.add(film)
                     db.session.commit()
-                    print(f"#{count}: Inserting record into table '{Film.__tablename__}': {title}, {year}, {tmdb_id}")
+                    print(f"#{count}: Inserting record into table '{Film.__tablename__}': {title}, {release_year}, {tmdb_id}")
                 else:
                     # Query film id
                     film = Film.query.filter(Film.title==title).first()
 
-                # Add to ModelClass table
+                # Add to ModelClass table.
                 film_id = film.id
                 modelclass_obj = ModelClass(film_id=film_id)
                 db.session.add(modelclass_obj)
                 db.session.commit()
-                print(f"#{count}: Inserting record into table '{ModelClass.__tablename__}': {title}, {year}")
+                print(f"#{count}: Inserting record into table '{ModelClass.__tablename__}': {title}, {release_year}")
 
                 count += 1
 
@@ -91,7 +77,6 @@ def update_table(file_name, ModelClass):
 
     except OSError as err:
         print("OSError: {0}".format(err))
-
 
 
 if __name__ == "__main__":
@@ -124,7 +109,7 @@ if __name__ == "__main__":
 
         # Import film data
         update_table(CRITERION_FILE, CriterionFilm)
-        update_table(PERSONAL_FILE, PersonalFilm)
+        # update_table(PERSONAL_FILE, PersonalFilm) # No longer supported.
 
         # Add movies to personal lists
         print("Adding movies to personal lists...")
@@ -150,9 +135,10 @@ if __name__ == "__main__":
         for film in CriterionFilm.query.all():
             print(film)
 
-        print("\n**PERSONAL FILMS**")
-        for film in PersonalFilm.query.all():
-            print(film)
+        # No longer supported at this moment.
+        # print("\n**PERSONAL FILMS**")
+        # for film in PersonalFilm.query.all():
+        #     print(film)
 
         print("\n**FILM LIST ITEMS**")
         for film in FilmListItem.query.all():

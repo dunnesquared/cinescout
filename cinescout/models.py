@@ -33,9 +33,10 @@ class Film(db.Model):
     title = db.Column(db.String(80), nullable=False) # Will have to make this not unique in good version
     year = db.Column(db.Integer, nullable=False)
     tmdb_id = db.Column(db.Integer, nullable=True)
+    director = db.Column(db.String(80), nullable=True)
 
     def __repr__(self):
-        return f"{self.id}, {self.title}, {self.year}, {self.tmdb_id}"
+        return f"{self.id}, {self.title}, {self.year}, {self.tmdb_id}, {self.director}"
 
 
 class CriterionFilm(db.Model):
@@ -65,7 +66,6 @@ class FilmListItem(db.Model):
     tmdb_id = db.Column(db.Integer, nullable=True)
     date = db.Column(db.String(10), nullable=True)
     original_title = db.Column(db.String(80), nullable=True)
-    # film_id = db.Column(db.Integer, db.ForeignKey('films.id'), nullable=False)
 
     def __repr__(self):
         return f"{self.id}, user_id: {self.user_id}, title: {self.title}, year: {self.year}, tmdb_id: {self.tmdb_id}, date: {self.date}, original title: {self.original_title}"

@@ -17,6 +17,9 @@ class RouteTests(unittest.TestCase):
         self.app = app.test_client()
         db.create_all()
 
+        # print("TEST DB setup!")
+        # print(f"{User.query.all()}")
+
         # Create a default user
         u = User(username="Alex", email="alex@test.com")
         u.set_password("123")
@@ -29,6 +32,7 @@ class RouteTests(unittest.TestCase):
 
     def tearDown(self):
         """Executes after each test."""
+        # print("TEST DB dropped!")
         db.session.remove()
         db.drop_all()
 
@@ -596,6 +600,18 @@ class RouteTests(unittest.TestCase):
         response = self.app.get('/movie-list')
         self.assertIn(b'Mulholland Drive', response.data)
 
+
+    # BROWSE
+    # Get page when not logged in
+    def test_browse_not_logged_in(self):
+        response = self.app.get('/browse')
+        self.assertIn(b'Criterion Collection', response.data)
+
+    # Get page when logged in
+    def test_browse_logged_in(self):
+        self.login("Alex", "123")
+        response = self.app.get('/browse')
+        self.assertIn(b'Criterion Collection', response.data)
 
 
 

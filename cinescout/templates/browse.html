@@ -3,45 +3,54 @@
 {% block body %}
   <h1>Browse</h1>
 
-  <h2>All Films</h2>
 
-  <ul>
-  {% for film in films %}
+  <h2>Criterion Collection Films</h2>
 
-    <li>
-      <a href="{{ url_for('movie_info', tmdb_id=film.tmdb_id )}}">
-        {{ film.title }}
-      </a>
-    </li>
+  {% if criterion_films %}
+
+  <p>If you're looking to watch a movie that was made more with the intention
+    of making a piece of art than breaking box office records,
+    the Criterion Collection is a good place to start.
+    Check'em out!<sup>*</sup><br>
+    <sup>*</sup><em>This is only a partial list of the films from
+      The Criterion Collection. Fuller list coming soon!</em>
+  </p>
+
+    <table class="table table-hover">
+
+      <colgroup>
+        <col span=1 class="browselist-col-title">
+        <col span=1 class="browselist-col-year">
+        <col span=1 class="browselist-col-director">
+      </colgroup>
+
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Release Year</th>
+          <th>Director(s)</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for film in criterion_films %}
+
+    <tr>
+      <td>
+        <a href="{{ url_for('movie_info', tmdb_id=film.tmdb_id )}}">
+          {{ film.title }}
+        </a>
+      </td>
+
+      <td>{{ film.year }}</td>
+
+      <td>{{ film.director }}</td>
+    </tr>
 
   {% endfor %}
-  </ul>
+      </tbody>
+  </table>
+{% endif %}
 
-  <h2>Criterion Films</h2>
-
-  <ul>
-  {% for film in criterion_films %}
-
-    <li>
-      <a href="{{ url_for('movie_info', tmdb_id=film.tmdb_id )}}">
-        {{ film.title }}
-      </a>
-    </li>
-
-  {% endfor %}
-  </ul>
-
-  <h2>Personal Films</h2>
-  <ul>
-  {% for film in personal_films %}
-
-    <li>
-      <a href="{{ url_for('movie_info', tmdb_id=film.tmdb_id )}}">
-        {{ film.title }}
-      </a>
-    </li>
-
-  {% endfor %}
-  </ul>
 
 {% endblock %}

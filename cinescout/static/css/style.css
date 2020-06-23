@@ -22,6 +22,18 @@
   width: 25%;
 }
 
+.browselist-col-title{
+  width: 25%;
+}
+
+.browselist-col-year{
+  width: 25%;
+}
+
+.browselist-col-director{
+  width: 50%;
+}
+
 .publication {
   font-size: 80%;
   font-weight: 600;

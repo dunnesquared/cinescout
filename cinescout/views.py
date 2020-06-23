@@ -150,7 +150,8 @@ def add_to_list():
         return jsonify({"success": True})
     else:
         # Film is on list. Send error message.
-        err_message = "Film already on list!"
+        err_message = ("Film already on list! Film likely added elsewhere on " \
+		                "site. Try refreshing page movie list or movie page.")
         print(err_message)
         return jsonify({"success": False, "err_message": err_message})
 
@@ -191,7 +192,8 @@ def remove_from_list():
         return jsonify({"success": True})
     else:
         # Film is not on list. Send error message.
-        err_message = "Film not on list!"
+        err_message = ("Film not on list! Film likely removed elsewhere on " \
+		               "site. Try refreshing movie list or movie page.")
         print(err_message)
         return jsonify({"success": False, "err_message": err_message})
 

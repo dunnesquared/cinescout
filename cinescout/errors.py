@@ -1,3 +1,5 @@
+import requests
+
 from flask import render_template
 from cinescout import app, db
 
@@ -9,6 +11,12 @@ def not_found_error(e):
 @app.errorhandler(401)
 def not_found_error(e):
 	return render_template("errors/401.html"), 401
+
+
+@app.errorhandler(requests.exceptions.ConnectionError)
+def connection_error(e):
+    return render_template("errors/connection-error.html")
+
 
 
 # THIS CODE WILL SUPERSEDE INTERACTIVE DEBUGGER DURING DEVELOPMENT

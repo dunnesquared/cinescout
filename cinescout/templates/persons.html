@@ -9,7 +9,7 @@
 
         <li>
           <a href="{{ url_for('filmography', person_id=person.id, name=person.name ) }}">
-            {{ person.name }} (Known for: {{ person.known_for }})
+            <strong>{{ person.name }}</strong> (Known for: {{ person.known_for }})
           </a>
         </li>
 

@@ -46,3 +46,11 @@
 #review-warning {
   font-size: 80%;
 }
+
+.movie-section-heading {
+  font-weight: 900;
+}
+
+.movie-section-row {
+  padding-bottom: 1em;
+}

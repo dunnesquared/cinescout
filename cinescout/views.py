@@ -199,15 +199,20 @@ def remove_from_list():
 @app.route("/browse")
 def browse():
     """Display list of critically-acclaimed movies."""
-    all_films = Film.query.all()
+    # all_films = Film.query.all()
+	# personal_films = db.session.query(Film).join(PersonalFilm).all()
 
     criterion_films = db.session.query(Film).join(CriterionFilm).all()
-    personal_films = db.session.query(Film).join(PersonalFilm).all()
+
+	# return render_template("browse.html",
+    #                         films=all_films,
+    #                         criterion_films=criterion_films,
+    #                         personal_films=personal_films)
+
+    # print(criterion_films)
 
     return render_template("browse.html",
-                            films=all_films,
-                            criterion_films=criterion_films,
-                            personal_films=personal_films)
+                            criterion_films=criterion_films)
 
 
 @app.route("/search")

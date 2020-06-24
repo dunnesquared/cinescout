@@ -2,18 +2,16 @@
 
 {% block body %}
   <h1>Browse</h1>
+  <br>
 
+  <h2>The Criterion Collection</h2>
 
-  <h2>Criterion Collection Films</h2>
 
   {% if criterion_films %}
 
-  <p>If you're looking to watch a movie that was made more with the intention
-    of making a piece of art than breaking box office records,
-    the Criterion Collection is a good place to start.
-    Check'em out!<sup>*</sup><br>
-    <sup>*</sup><em>This is only a partial list of the films from
-      The Criterion Collection. Fuller list coming soon!</em>
+  <p>If you're in the mood to watch a piece of art rather than another mediocre
+    blockbuster, then <a href="https://criterion.com" target="_blank" class="text-info">The Criterion Collection</a>
+    is a great place to start. Check it out!<sup>*</sup><br>
   </p>
 
     <div class="table-responsive">
@@ -54,6 +52,9 @@
     {% endfor %}
         </tbody>
     </table>
+    </div>
+    <div class="footnote-text">
+      <sup>*</sup><em>This is a partial list of films in the collection. Fuller list coming soon!</em>
     </div>
 {% endif %}
 

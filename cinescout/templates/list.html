@@ -30,7 +30,7 @@
         {% for film in films %}
           <tr>
             <td>
-              <a href="{{ url_for('movie_info', tmdb_id=film.tmdb_id )}}">
+              <a href="{{ url_for('movie_info', tmdb_id=film.tmdb_id )}}" class="text-white">
                 {{ film.title }}
               </a>
             </td>

@@ -6,6 +6,10 @@
 }
 */
 
+#main-content{
+  padding-top: 3em;
+}
+
 .red {
   color: red;
 }

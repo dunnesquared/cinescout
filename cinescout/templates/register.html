@@ -3,6 +3,7 @@
 {% block body %}
 
   <h1>Register</h1>
+  <br>
    <form action="" method="post">
       {# Add token to prevent CRSF attacks #}
        {{ form.hidden_tag() }}
@@ -42,5 +43,5 @@
        <p>{{ form.submit() }}</p>
   </form>
 
-  
+
 {% endblock %}

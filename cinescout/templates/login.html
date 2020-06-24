@@ -3,6 +3,7 @@
 {% block body %}
 
   <h1>Sign In</h1>
+  <br>
    <form action="" method="post" novalidate>
       {# Add token to prevent CRSF attacks #}
        {{ form.hidden_tag() }}

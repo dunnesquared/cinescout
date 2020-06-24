@@ -13,8 +13,6 @@
     {% else %}
       <p>No poster available for this movie.</p>
     {% endif %}
-
-
   </div>
 
   <br>
@@ -73,8 +71,8 @@
 
     <div class="movie-section-row">
       <div class="movie-section-heading">Movie Review</div>
-        {% if review is not none %}
         <div class="review">
+          {% if review is not none %}
             <span class="review-text">
               {{ review.text }}
               {% if review.critics_pick == 1 %}
@@ -87,15 +85,16 @@
                 {% if review_warning %}
                   <sup>☂︎</sup>
                 {% endif %}
+                <!--Put here because was not rendering properly-->
+                <div class="movie-section-row"></div>
             </span>
           {% else %}
             <span> A movie review could not be found for this movie. </span>
         </div>
-        {% endif %}
+          {% endif %}
     </div>
 
-    <!--Put here because was not rendering properly-->
-    <div class="movie-section-row"></div>
+
 
 
     <div class="movie-section-row">

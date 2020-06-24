@@ -9,7 +9,7 @@
 
   <div>
     {% if movie.poster_full_url %}
-      <img src="{{ movie.poster_full_url }}"></img>
+      <img src="{{ movie.poster_full_url }}" class="border border-white"></img>
     {% else %}
       <p>No poster available for this movie.</p>
     {% endif %}
@@ -24,9 +24,8 @@
         <button class="btn btn-secondary" id="remove-button" type="submit"><h2>Remove from list</h2></button>
     {% endif %}
     </div>
+    <br>
   {% endif %}
-
-  <br>
 
   <section>
     <div class="movie-section-row">
@@ -93,9 +92,6 @@
         </div>
           {% endif %}
     </div>
-
-
-
 
     <div class="movie-section-row">
       <div class="movie-section-heading">TMDB Link</div>

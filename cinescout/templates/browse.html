@@ -1,55 +1,63 @@
 {% extends "base.html" %}
 
+{% block title %}Browse{% endblock %} 
+
 {% block body %}
   <h1>Browse</h1>
+  <br>
 
+  <h2>The Criterion Collection</h2>
 
-  <h2>Criterion Collection Films</h2>
 
   {% if criterion_films %}
 
-  <p>If you're looking to watch a movie that was made more with the intention
-    of making a piece of art than breaking box office records,
-    the Criterion Collection is a good place to start.
-    Check'em out!<sup>*</sup><br>
-    <sup>*</sup><em>This is only a partial list of the films from
-      The Criterion Collection. Fuller list coming soon!</em>
+  <p>If you're in the mood to watch a piece of art rather than another mediocre
+    blockbuster, then <a href="https://criterion.com" target="_blank" class="text-info">The Criterion Collection</a>
+    is a great place to start. Check it out!<sup>*</sup><br>
   </p>
 
-    <table class="table table-hover">
+    <div class="table-responsive">
+      <table class="table table-hover table-dark">
 
-      <colgroup>
-        <col span=1 class="browselist-col-title">
-        <col span=1 class="browselist-col-year">
-        <col span=1 class="browselist-col-director">
-      </colgroup>
+        <colgroup>
+          <!-- <col span=1 class="browselist-col-title">
+          <col span=1 class="browselist-col-year">
+          <col span=1 class="browselist-col-director"> -->
+          <col span=1>
+          <col span=1>
+          <col span=1>
+        </colgroup>
 
-      <thead>
-        <tr>
-          <th>Title</th>
-          <th>Release Year</th>
-          <th>Director(s)</th>
-        </tr>
-      </thead>
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Release Year</th>
+            <th>Director(s)</th>
+          </tr>
+        </thead>
 
-      <tbody>
-        {% for film in criterion_films %}
+        <tbody>
+          {% for film in criterion_films %}
 
-    <tr>
-      <td>
-        <a href="{{ url_for('movie_info', tmdb_id=film.tmdb_id )}}">
-          {{ film.title }}
-        </a>
-      </td>
+      <tr>
+        <td>
+          <a href="{{ url_for('movie_info', tmdb_id=film.tmdb_id )}}" class="text-white">
+            {{ film.title }}
+          </a>
+        </td>
 
-      <td>{{ film.year }}</td>
+        <td>{{ film.year }}</td>
 
-      <td>{{ film.director }}</td>
-    </tr>
+        <td>{{ film.director }}</td>
+      </tr>
 
-  {% endfor %}
-      </tbody>
-  </table>
+    {% endfor %}
+        </tbody>
+    </table>
+    </div>
+    <div class="footnote-text">
+      <sup>*</sup><em>This is a partial list of films in the collection. Fuller list coming soon!</em>
+    </div>
 {% endif %}
 
 

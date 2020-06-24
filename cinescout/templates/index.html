@@ -1,23 +1,24 @@
 {% extends "base.html" %}
 
+{% block title %}Find something good to watch{% endblock %} 
 {% block body %}
   <h1>Welcome!</h1>
   <p>
-    Welcome to cinescout, a web app that allows you to learn more about almost
-    any widely-released film or person in the world of cinema.
+    Welcome to Cinescout, a site that allows you to learn more about almost
+    any film or person in the world of cinema.
   </p>
 
   <p>Things you can do:</p>
   <ul>
     <li>
-      Read a short synopis of the film, as well as a review summary from
-      <a href="https://nytimes.com" target="_blank">The New York Times</a>.
+      Read a brief synopsis of the film from
+      <a href="https://www.themoviedb.org/", target="_blank" class="text-info">The Movie Database</a>, as well as a review summary from
+      <a href="https://nytimes.com" target="_blank" class="text-info">The New York Times</a>.
     </li>
-    <li>Discover the filmography of your favourite actress/actor
-       or crew member.
+    <li>Discover the filmography of your favourite cast or crew member.
     </li>
     <li>Create an account to add movies to a personal list for later reference.</li>
     <li>Browse through a list of critically-acclaimed films from
-      <a href="https://criterion.com" target="_blank">The Criterion Collection</a>.</li>
+      <a href="https://criterion.com" target="_blank" class="text-info">The Criterion Collection</a>.</li>
   </ul>
 {% endblock %}

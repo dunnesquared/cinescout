@@ -1,14 +1,17 @@
 {% extends "base.html" %}
 
+{% block title %}{{ current_user.username }}'s List{% endblock %} 
+
 {% block javascript %}
   <script src="{{ url_for('static', filename='js/removefromlist.js') }}"></script>
 {% endblock %}
 
 {% block body %}
   <h1>{{ current_user.username }}'s List</h1>
+  <br>
 
   {% if films %}
-    <table class="table table-hover">
+    <table class="table table-hover table-dark">
 
       <colgroup>
         <col span=1 class="userlist-col">
@@ -30,7 +33,7 @@
         {% for film in films %}
           <tr>
             <td>
-              <a href="{{ url_for('movie_info', tmdb_id=film.tmdb_id )}}">
+              <a href="{{ url_for('movie_info', tmdb_id=film.tmdb_id )}}" class="text-white">
                 {{ film.title }}
               </a>
             </td>

@@ -48,7 +48,7 @@ def register():
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
-        flash(f'Welcome to cinescout, {form.username.data}! Now login to get started.', 'success')
+        flash(f'Welcome to Cinescout, {form.username.data}! Now login to get started.', 'success')
         return redirect(url_for('login'))
 
     # When users GET the register page
@@ -76,7 +76,7 @@ def login():
         # e.g. closing tab while still logged-in.
         login_user(user, remember=form.remember_me.data)
         flash('You have been logged in!', 'success')
-        return redirect(url_for('index'))
+        return redirect(url_for('search'))
 
     return render_template('login.html', title='Sign In', form=form)
 
@@ -86,7 +86,7 @@ def login():
 def logout():
     logout_user()
     flash('You have been logged out!', 'success')
-    return redirect(url_for('index'))
+    return redirect(url_for('login'))
 
 
 @app.route('/movie-list')

@@ -141,7 +141,7 @@ class RouteTests(unittest.TestCase):
             data=dict(username=username, email=email, password=password, password2=password2),
             follow_redirects=True
         )
-        self.assertIn(b'Welcome to cinescout, borat! Now login to get started.', response.data)
+        self.assertIn(b'Welcome to Cinescout, borat! Now login to get started.', response.data)
 
     def test_register_blank_fields(self):
         # Empty string: ""

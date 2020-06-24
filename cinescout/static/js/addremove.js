@@ -69,6 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
         removeButton.id = 'remove-button';
         removeButton.type = 'submit';
         removeButton.innerHTML = '<h2>Remove film</h2>';
+        removeButton.className = 'btn btn-secondary';
         buttonContainer.append(removeButton);
 
         // Updata remove_button state.
@@ -125,6 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
         addButton.id = 'add-button';
         addButton.type = 'submit';
         addButton.innerHTML = '<h2>Add to list</h2>';
+        addButton.className ='btn btn-secondary'
         buttonContainer.append(addButton);
 
         // Updata add_button state

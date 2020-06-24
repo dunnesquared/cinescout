@@ -17,7 +17,7 @@
       {% for cast_item in cast %}
 
         <li>
-          <a href="{{ url_for('movie_info', tmdb_id=cast_item['movie'].id )}}">
+          <a href="{{ url_for('movie_info', tmdb_id=cast_item['movie'].id )}}" class="text-white">
             <strong>{{ cast_item['movie'].title }}</strong>
 
             {% if cast_item['movie'].title != cast_item['movie'].original_title and cast_item['movie'].original_title is not none %}
@@ -47,7 +47,7 @@
       <ul>
       {% for crew_item in crew %}
         <li>
-          <a href="{{ url_for('movie_info', tmdb_id=crew_item['movie'].id )}}">
+          <a href="{{ url_for('movie_info', tmdb_id=crew_item['movie'].id )}}" class="text-white">
             <strong>{{ crew_item['movie'].title }}</strong>
 
             {% if crew_item['movie'].title != crew_item['movie'].original_title and crew_item['movie'].original_title is not none %}

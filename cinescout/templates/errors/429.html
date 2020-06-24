@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block body %}
-    <h1>429: Too many requests</h1>
+    <h1>429: Too Many Requests</h1>
     <p>{{ err_message }}</p>
-    <p><a href="{{ url_for('index') }}">Return to homepage</a></p>
+    <p><a href="{{ url_for('index') }}" class="text-white">Return to homepage</a></p>
 {% endblock %}

@@ -101,7 +101,7 @@
       <div class="movie-section-heading">TMDB Link</div>
       <div>
         {% if movie.tmdb_full_url %}
-          <a href="{{ movie.tmdb_full_url }}" target="_blank">
+          <a href="{{ movie.tmdb_full_url }}" target="_blank" class="text-info">
             {{ movie.tmdb_full_url }}
           </a>
         {% else %}
@@ -114,7 +114,7 @@
       <div class="movie-section-heading">IMDB Link</div>
       <div>
         {% if movie.imdb_full_url %}
-          <a href="{{ movie.imdb_full_url }}" target="_blank">
+          <a href="{{ movie.imdb_full_url }}" target="_blank" class="text-info">
             {{ movie.imdb_full_url }}
           </a>
         {% else %}

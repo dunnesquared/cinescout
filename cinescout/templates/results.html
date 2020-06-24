@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Movie Results{% endblock %} 
+{% block title %}Movie Results{% endblock %}
 
 {% block body %}
   <h1>Movie Results</h1>
@@ -15,14 +15,12 @@
       <a href="{{ url_for('movie_info', tmdb_id=movie.id )}}" class="text-white">
         <strong>{{ movie.title }}</strong>
         {% if movie.release_date != '0001-01-01' %}
-          (Release date: {{ movie.release_date }}
+          (Release date: {{ movie.release_date }})
         {% else %}
-          (Release date: Unknown
+          (Release date: Unknown)
         {% endif %}
         {% if movie.title != movie.original_title and movie.original_title is not none %}
-          | Original title: {{ movie.original_title }})
-        {% else %}
-          )
+          [Original title: {{ movie.original_title }}]
         {% endif %}
       </a>
     </li>

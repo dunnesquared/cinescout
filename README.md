@@ -3,8 +3,8 @@
 Web Programming with Python and JavaScript
 
 # Cinescout (version 0.1)
-`Cinescout` is a Flask-based web tool that allows you to learn more about
-almost any film or person in the world of cinema. With `Cinescout` you can:
+`Cinescout` is a Flask-based, mobile-responsive web tool that allows you to learn
+more about almost any film or person in the world of cinema. With `Cinescout` you can:
 
 - Read a brief synopsis of a film from [The Movie Database](https://www.themoviedb.org/), as well as a review summary from [The New York Times](https://nytimes.com).
 - Discover the filmography of your favourite cast or crew member.
@@ -15,6 +15,8 @@ almost any film or person in the world of cinema. With `Cinescout` you can:
 `Cinescout` uses Python, Javascript and an SQL ORM to implement its features.
 Flask and SQLAlchemy are used for the backend, whereas JavaScript is used
 for asynchronous AJAX client requests and some frontend UI magic.
+
+`Cinescout` is a mobile-responsive web application.
 
 ## External dependencies
 This project depends on several external packages. Using these extensions

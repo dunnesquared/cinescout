@@ -1,0 +1,941 @@
+release_year,title,director,spine_num,tmdb_id,iffy
+1921,The Kid,Charlie Chaplin,799,10098,False
+1922,Nanook of the North,Robert Flaherty,33,669,False
+1922,Häxan: Witchcraft Through the Ages,Benjamin Christensen,134,57283,False
+1923,Safety Last!,Fred Newmeyer & Sam Taylor,662,22596,False
+1925,The Freshman,Fred Newmeyer & Sam Taylor,703,42359,False
+1925,Master of the House,Carl Theodor Dreyer,706,55589,False
+1927,The King of Kings,Cecil B. DeMille,266,49633,False
+1927,Underworld,Josef von Sternberg,529,42565,False
+1927,The Lodger: A Story of the London Fog,Alfred Hitchcock,885,2760,False
+1927,The Kid Brother,Ted Wilde,964,16661,False
+1928,The Passion of Joan of Arc,Carl Theodor Dreyer,62,780,False
+1928,The Last Command,Josef von Sternberg,530,52679,False
+1928,The Docks of New York,Josef von Sternberg,531,885,False
+1928,Lonesome,Paul Fejos,623,101482,True
+1928,Speedy,Ted Wilde,789,22595,False
+1928,The Circus,Charlie Chaplin,996,28978,True
+1928,The Cameraman,Edward Sedgwick,1033,31411,False
+1929,Pandora's Box,Georg Wilhelm Pabst,358,905,False
+1930,The Blood of a Poet,Jean Cocteau,67,36877,False
+1930,Under the Roofs of Paris,René Clair,161,54419,False
+1930,People on Sunday,Robert Siodmak & Edgar G. Ulmer,569,347,False
+1930,Westfront 1918,G. W. Pabst,907,80705,False
+1930,King of Jazz,John Murray Anderson,915,108213,False
+1930,Morocco,Josef von Sternberg,931,42641,False
+1931,M,Fritz Lang,30,832,True
+1931,Le million,René Clair,72,32317,False
+1931,À nous la liberté,René Clair,160,31514,False
+1931,The Threepenny Opera,Georg Wilhelm Pabst,405,42837,False
+1931,City Lights,Charlie Chaplin,680,901,False
+1931,La chienne ,Jean Renoir,818,26614,False
+1931,Limite,Mário Peixoto,877,8353,True
+1931,Marius,Alexander Korda,882,42818,False
+1931,Kameradschaft,G. W. Pabst,908,42836,False
+1931,Dishonored,Josef von Sternberg,932,73420,False
+1932,The Most Dangerous Game,Ernest B. Schoedsack & Irving Pichel,46,1994,False
+1932,Trouble in Paradise,Ernst Lubitsch,170,195,False
+1932,Boudu Saved from Drowning,Jean Renoir,305,48365,False
+1932,Vampyr,Carl Theodor Dreyer,437,779,True
+1932,Vampyr,Carl Theodor Dreyer,437,717583,True
+1932,Island of Lost Souls,Erle C. Kenton,586,3031,False
+1932,Fanny,Marc Allégret,883,43146,False
+1932,Shanghai Express,Josef von Sternberg,933,875,False
+1932,Blonde Venus,Josef von Sternberg,934,34474,False
+1933,The Testament of Dr. Mabuse,Fritz Lang,231,12206,False
+1933,Design for Living,Ernst Lubitsch,592,77210,False
+1933,The Story of Temple Drake,Stephen Roberts,1006,27986,False
+1934,The Scarlet Empress,Josef von Sternberg,109,31527,False
+1934,The Man Who Knew Too Much,Alfred Hitchcock,643,8208,False
+1934,It Happened One Night,Frank Capra,736,3078,False
+1934,Dos monjes,Juan Bustillo Oro,1048,170296,False
+1935,The 39 Steps,Alfred Hitchcock,56,260,False
+1935,The Devil Is a Woman,Josef von Sternberg,935,42943,False
+1935,Toni,Jean Renoir,1040,51949,True
+1936,My Man Godfrey,Gregory La Cava,114,13562,False
+1936,The Only Son,Yasujirō Ozu,525,52047,False
+1936,Modern Times,Charlie Chaplin,543,3082,False
+1936,Things to Come,William Cameron Menzies,660,3596,False
+1936,Redes,Emilio Gómez Muriel & Fred Zinnemann,686,195522,False
+1936,César,Marcel Pagnol,884,43873,False
+1936,Swing Time,George Stevens,979,20325,False
+1936,Show Boat,James Whale,1021,31548,False
+1937,Grand Illusion,Jean Renoir,1,777,False
+1937,Make Way for Tomorrow,Leo McCarey,505,41059,False
+1937,The Awful Truth,Leo McCarey,917,14675,False
+1938,The Lady Vanishes,Alfred Hitchcock,3,940,False
+1938,Pygmalion,Anthony Asquith & Leslie Howard,85,25016,False
+1938,Alexander Nevsky,Sergei Eisenstein,87,10235,False
+1938,Port of Shadows,Marcel Carné,245,46326,False
+1938,La bête humaine,Jean Renoir,324,29415,False
+1938,The Baker's Wife,Marcel Pagnol,986,43844,False
+1938,Holiday,George Cukor,1009,16274,True
+1939,The Rules of the Game,Jean Renoir,216,776,False
+1939,Young Mr. Lincoln,John Ford,320,43838,False
+1939,Stagecoach,John Ford,516,995,False
+1939,The Mikado,Victor Schertzinger,559,68201,False
+1939,The Four Feathers,Zoltan Korda,583,10568,False
+1939,Only Angels Have Wings,Howard Hawks,806,43832,False
+1939,The Story of the Last Chrysanthemum,Kenji Mizoguchi,832,46069,False
+1939,Destry Rides Again,George Marshall,1024,43828,False
+1940,The Bank Dick,Edward Cline,78,911,False
+1940,Rebecca,Alfred Hitchcock,135,223,False
+1940,The Thief of Bagdad,Ludwig Berger & Michael Powell & Tim Whelan,431,12232,False
+1940,Night Train to Munich,Carol Reed,523,41597,False
+1940,The Great Dictator,Charlie Chaplin,565,914,False
+1940,Foreign Correspondent,Alfred Hitchcock,696,25670,False
+1940,His Girl Friday,Howard Hawks,849,3085,False
+1940,The Philadelphia Story,George Cukor,901,981,False
+1940,Dance@ Girl@ Dance,Dorothy Arzner,1028,32196,False
+1941,The Lady Eve,Preston Sturges,103,3086,False
+1941,The Devil and Daniel Webster,William Dieterle,214,29451,False
+1941,49th Parallel,Michael Powell & Emeric Pressburger,376,21735,True
+1941,That Hamilton Woman,Alexander Korda,487,43798,False
+1941,Here Comes Mr. Jordan,Alexander Hall,819,38914,False
+1942,There Was a Father,Yasujirō Ozu,526,27372,False
+1942,In Which We Serve,David Lean & Noël Coward,604,28093,False
+1942,Les visiteurs du soir,Marcel Carné,626,45000,False
+1942,To Be or Not to Be,Ernst Lubitsch,670,198,False
+1942,I Married a Witch,René Clair,676,25970,False
+1942,The Palm Beach Story,Preston Sturges,742,32255,False
+1942,Cat People,Jacques Tourneur,833,25508,False
+1942,Woman of the Year,George Stevens,867,20640,False
+1942,The Magnificent Ambersons,Orson Welles,952,965,False
+1942,Now@ Voyager,Irving Rapper,1004,32847,False
+1943,Day of Wrath,Carl Theodor Dreyer,125,41391,False
+1943,The Life and Death of Colonel Blimp,Michael Powell & Emeric Pressburger,173,25037,False
+1943,Le Corbeau,Henri-Georges Clouzot,227,29084,False
+1943,Heaven Can Wait,Ernst Lubitsch,291,18727,False
+1944,Henry V,Laurence Olivier,41,22638,True
+1944,The Children Are Watching Us,Vittorio De Sica,323,61461,False
+1944,A Canterbury Tale,Michael PowellEmeric Pressburger,341,15696,False
+1944,This Happy Breed,David Lean,605,51617,False
+1944,Ministry of Fear,Fritz Lang,649,21451,False
+1944,The Uninvited,Lewis Allen,677,16373,False
+1945,Brief Encounter,David Lean,76,851,False
+1945,I Know Where I'm Going!,Michael Powell & Emeric Pressburger,94,56137,False
+1945,Spellbound,Alfred Hitchcock,136,4174,True
+1945,Children of Paradise,Marcel Carné,141,2457,False
+1945,Les dames du Bois de Boulogne,Robert Bresson,183,49845,False
+1945,Rome@ Open City,Roberto Rossellini,497,307,False
+1945,Blithe Spirit,David Lean,606,19072,False
+1945,Mildred Pierce,Michael Curtiz,860,3309,False
+1945,Detour,Edgar G. Ulmer,966,20367,False
+1945,Leave Her to Heaven,John M. Stahl,1020,17645,False
+1946,Beauty and the Beast,Jean Cocteau,6,648,False
+1946,Great Expectations,David Lean,31,14320,False
+1946,Notorious,Alfred Hitchcock,137,303,True
+1946,Green for Danger,Sidney Gilliat,375,29589,False
+1946,Paisan,Roberto Rossellini,498,8429,False
+1946,My Darling Clementine,John Ford,732,3088,False
+1946,Gilda,Charles Vidor,795,3767,False
+1946,A Matter of Life and Death,Michael Powell & Emeric Pressburger,939,28162,False
+1946,Cluny Brown,Ernst Lubitsch,997,52270,False
+1947,Black Narcissus,Michael Powell Emeric Pressburger,93,16391,False
+1947,Quai des Orfèvres,Henri-Georges Clouzot,193,49842,False
+1947,Brute Force,Jules Dassin,383,28297,False
+1947,Monsieur Verdoux,Charlie Chaplin,652,30588,False
+1947,Ride the Pink Horse,Robert Montgomery,750,18871,False
+1947,Odd Man Out,Carol Reed,754,43461,False
+1947,Panique,Julien Duvivier,955,43462,False
+1948,Oliver Twist,David Lean,32,10949,False
+1948,The Red Shoes,Michael Powell & Emeric Pressburger,44,19542,False
+1948,Hamlet,Laurence Olivier,82,23383,False
+1948,Unfaithfully Yours,Preston Sturges,292,33115,False
+1948,The Fallen Idol,Carol Reed,357,21631,False
+1948,Bicycle Thieves,Vittorio De Sica,374,5156,False
+1948,The Naked City,Jules Dassin,380,20482,False
+1948,Drunken Angel,Akira Kurosawa,413,25858,False
+1948,Germany@ Year Zero,Roberto Rossellini,499,8016,False
+1948,Red River,Howard Hawks,709,3089,False
+1948,They Live by Night,Nicholas Ray,880,44190,False
+1948,Moonrise,Frank Borzage,921,28392,False
+1949,The Third Man,Carol Reed,64,1092,False
+1949,Stray Dog,Akira Kurosawa,233,30368,False
+1949,Thieves' Highway,Jules Dassin,273,20025,False
+1949,Kind Hearts and Coronets,Robert Hamer,325,11898,False
+1949,Late Spring,Yasujirō Ozu,331,20530,False
+1949,The Small Back Room,Michael Powell & Emeric Pressburger,441,46096,False
+1949,Jour de fête,Jacques Tati,730,4595,False
+1949,Le silence de la mer,Jean-Pierre Melville,755,40650,False
+1949,Bitter Rice,Giuseppe De Santis,792,31058,False
+1949,The Heiress,William Wyler,974,28571,True
+1950,Variety Lights,Federico Fellini & Alberto Lattuada,81,43389,False
+1950,Rashomon,Akira Kurosawa,138,548,False
+1950,Night and the City,Jules Dassin,274,19119,False
+1950,The Flowers of St. Francis,Roberto Rossellini,293,56518,False
+1950,Les enfants terribles,Jean-Pierre Melville,398,15390,False
+1950,The Furies,Anthony Mann,435,28304,False
+1950,Stromboli,Roberto Rossellini,673,4173,False
+1950,In a Lonely Place,Nicholas Ray,810,17057,False
+1950,The Asphalt Jungle,John Huston,847,16958,False
+1950,The Breaking Point,Michael Curtiz,889,37954,False
+1950,All About Eve,Joseph L. Mankiewicz,1003,705,False
+1951,Diary of a Country Priest,Robert Bresson,222,43376,False
+1951,Early Summer,Yasujirō Ozu,240,50247,False
+1951,The River,Jean Renoir,276,45218,False
+1951,The Browning Version,Anthony Asquith,294,39946,False
+1951,The Tales of Hoffmann,Michael Powell & Emeric Pressburger,317,44334,False
+1951,Ace in the Hole,Billy Wilder,396,25364,False
+1951,Miss Julie,Alf Sjöberg,416,18650,False
+1951,Summer Interlude,Ingmar Bergman,613,47473,False
+1951,La poison,Sacha Guitry,891,65534,False
+1952,The Importance of Being Earnest,Anthony Asquith,158,20324,False
+1952,The White Sheik,Federico Fellini,189,43361,False
+1952,Umberto D.,Vittorio De Sica,201,833,False
+1952,Ikiru,Akira Kurosawa,221,3782,False
+1952,Casque d'or,Jacques Becker,270,68822,False
+1952,Le plaisir,Max Ophüls,444,43360,False
+1952,Fanfan la Tulipe,Christian Jaque,451,62547,False
+1952,The Life of Oharu,Kenji Mizoguchi,664,43364,False
+1952,Europa '51,Roberto Rossellini,674,41464,False
+1952,Limelight,Charlie Chaplin,756,28971,False
+1952,The Flavor of Green Tea over Rice,Yasujirō Ozu,989,55197,False
+1953,The Wages of Fear,Henri-Georges Clouzot,36,204,False
+1953,Monsieur Hulot's Holiday,Jacques Tati,110,778,False
+1953,Indiscretion of an American Wife,Vittorio De Sica,202,74585,False
+1953,Tokyo Story,Yasujirō Ozu,217,18148,False
+1953,Pickup on South Street,Samuel Fuller,224,25955,False
+1953,The Golden Coach,Jean Renoir,242,56167,False
+1953,I vitelloni,Federico Fellini,246,12548,False
+1953,Ugetsu,Kenji Mizoguchi,309,14696,False
+1953,Sawdust and Tinsel,Ingmar Bergman,412,47721,False
+1953,The Earrings of Madame de...,Max Ophüls,445,27030,False
+1953,Summer with Monika,Ingmar Bergman,614,47735,False
+1953,Gate of Hell,Teinosuke Kinugasa,653,43349,False
+1953,The War of the Worlds,Byron Haskin,1037,8974,False
+1954,Seven Samurai,Akira Kurosawa,2,346,False
+1954,Samurai I: Musashi Miyamoto,Hiroshi Inagaki,14,31372,False
+1954,Diabolique,Henri-Georges Clouzot,35,24212,False
+1954,La strada,Federico Fellini,219,405,False
+1954,Touchez pas au grisbi,Jacques Becker,271,27430,False
+1954,Sansho the Bailiff,Kenji Mizoguchi,386,20532,False
+1954,Twenty-Four Eyes,Keisuke Kinoshita,442,43339,False
+1954,Magnificent Obsession,Douglas Sirk,457,13457,False
+1954,Hobson's Choice,David Lean,461,16410,False
+1954,Senso,Luchino Visconti,556,43195,False
+1954,Godzilla,Ishirō Honda,594,1678,False
+1954,On the Waterfront,Elia Kazan,647,654,False
+1954,Journey to Italy,Roberto Rossellini,675,2748,False
+1954,Riot in Cell Block 11,Don Siegel,704,28023,False
+1954,A Story from Chikamatsu,Kenji Mizoguchi,949,35861,False
+1954,After the Curfew,Usmar Ismail,1046,172597,False
+1955,Samurai II: Duel at Ichijoji Temple,Hiroshi Inagaki,15,31374,False
+1955,Summertime,David Lean,22,50363,False
+1955,All That Heaven Allows,Douglas Sirk,95,43316,False
+1955,Rififi,Jules Dassin,115,934,False
+1955,Ordet,Carl Theodor Dreyer,126,48035,False
+1955,Richard III,Laurence Olivier,213,43323,False
+1955,Smiles of a Summer Night,Ingmar Bergman,237,11700,False
+1955,A Generation,Andrzej Wajda,283,43322,False
+1955,Death of a Cyclist,Juan Antonio Bardem,427,72083,False
+1955,Lola Montès,Max Ophüls,503,35987,False
+1955,The Night of the Hunter,Charles Laughton,541,3112,False
+1955,Kiss Me Deadly,Robert Aldrich,568,18030,False
+1955,Pather Panchali,Satyajit Ray,784,5801,False
+1955,Le amiche,Michelangelo Antonioni,817,46979,False
+1955,Journey to the Beginning of Time,Karel Zeman,1015,8779,False
+1956,Samurai III: Duel at Ganryu Island,Hiroshi Inagaki,16,31378,False
+1956,And God Created Woman,Roger Vadim,77,8420,False
+1956,Written on the Wind,Douglas Sirk,96,69605,False
+1956,Bob le flambeur,Jean-Pierre Melville,150,26030,False
+1956,Elena and Her Men,Jean Renoir,244,53156,False
+1956,Crazed Fruit,Kō Nakahira,295,86664,False
+1956,The Burmese Harp,Kon Ichikawa,379,33319,False
+1956,La Pointe Courte,Agnès Varda,419,54436,False
+1956,Bigger Than Life,Nicholas Ray,507,26036,False
+1956,The Killing,Stanley Kubrick,575,247,False
+1956,A Man Escaped,Robert Bresson,650,15244,False
+1956,Jubal,Delmer Daves,656,43260,False
+1956,Aparajito,Satyajit Ray,785,897,False
+1957,The Seventh Seal,Ingmar Bergman,11,490,False
+1957,Nights of Cabiria,Federico Fellini,49,19426,False
+1957,Wild Strawberries,Ingmar Bergman,139,614,False
+1957,The Cranes Are Flying,Mikhail Kalatozov,146,38360,False
+1957,Throne of Blood,Akira Kurosawa,190,3777,False
+1957,Kanał,Andrzej Wajda,284,29933,False
+1957,Le notti bianche,Luchino Visconti,296,43231,False
+1957,Paths of Glory,Stanley Kubrick,538,975,False
+1957,Sweet Smell of Success,Alexander Mackendrick,555,976,False
+1957,12 Angry Men,Sidney Lumet,591,389,False
+1957,3:10 to Yuma,Delmer Daves,657,14168,False
+1957,Forty Guns,Samuel Fuller,954,14837,False
+1957,A Face in the Crowd,Elia Kazan,970,21849,False
+1958,A Night to Remember,Roy Ward Baker,7,10971,False
+1958,The Blob,Irvin S. Yeaworth,91,8851,False
+1958,Fiend Without a Face,Arthur Crabtree,92,29347,False
+1958,Mon oncle,Jacques Tati,111,427,False
+1958,Big Deal on Madonna Street,Mario Monicelli,113,24382,False
+1958,The Hidden Fortress,Akira Kurosawa,116,1059,False
+1958,The Horse's Mouth,Ronald Neame,154,43139,False
+1958,Ashes and Diamonds,Andrzej Wajda,285,5055,False
+1958,The Haunted Strangler,Robert Day,367,86667,False
+1958,The Lovers,Louis Malle,429,2574,True
+1958,The Magician,Ingmar Bergman,537,29453,False
+1958,The Music Room,Satyajit Ray,573,822,False
+1958,Le beau Serge,Claude Chabrol,580,5562,False
+1958,The Ballad of Narayama,Keisuke Kinoshita,645,116690,False
+1958,The Fabulous World of Jules Verne,Karel Zeman,1016,19759,False
+1959,The 400 Blows,François Truffaut,5,147,False
+1959,Black Orpheus,Marcel Camus,48,40423,False
+1959,Good Morning,Yasujirō Ozu,84,28276,False
+1959,Ballad of a Soldier,Grigori Chukhrai,148,46592,False
+1959,Hiroshima mon amour,Alain Resnais,196,5544,False
+1959,Shadows,John Cassavetes,251,15484,True
+1959,Pickpocket,Robert Bresson,314,690,False
+1959,First Man into Space,Robert Day,365,28955,False
+1959,The Atomic Submarine,Spencer Gordon Bennet,366,37467,False
+1959,Fires on the Plain,Kon Ichikawa,378,31427,False
+1959,Il Generale Della Rovere,Roberto Rossellini,463,43100,False
+1959,Les cousins,Claude Chabrol,581,2363,False
+1959,Anatomy of a Murder,Otto Preminger,600,93,False
+1959,The Bridge,Bernhard Wicki,763,1566,True
+1959,Apur Sansar,Satyajit Ray,786,896,False
+1959,Some Like It Hot,Billy Wilder,950,239,False
+1960,Peeping Tom,Michael Powell,58,11167,False
+1960,L'avventura,Michelangelo Antonioni,98,5165,False
+1960,Spartacus,Stanley Kubrick,105,967,False
+1960,Tunes of Glory,Ronald Neame,225,43048,False
+1960,Eyes Without a Face,Georges Franju,260,31417,False
+1960,Shoot the Piano Player,François Truffaut,315,1818,False
+1960,The Bad Sleep Well,Akira Kurosawa,319,31589,False
+1960,The Virgin Spring,Ingmar Bergman,321,11656,False
+1960,Jigoku,Nobuo Nakagawa,352,50173,True
+1960,When a Woman Ascends the Stairs,Mikio Naruse,377,36872,False
+1960,Breathless,Jean-Luc Godard,408,269,False
+1960,Classe tous risques,Claude Sautet,434,34145,False
+1960,The Fugitive Kind,Sidney Lumet,515,47837,False
+1960,Zazie dans le Métro,Louis Malle,570,2546,False
+1960,Purple Noon,René Clément,637,10363,False
+1960,The Housemaid,Kim Ki-young,690,42506,False
+1960,La dolce vita,Federico Fellini,733,439,False
+1960,The Naked Island,Kaneto Shindo,811,3764,False
+1960,La vérité,Henri-Georges Clouzot,960,61711,False
+1960,The Cloud-Capped Star,Ritwik Ghatak,993,59239,False
+1961,Yojimbo,Akira Kurosawa,52,11878,False
+1961,Through a Glass Darkly,Ingmar Bergman,209,11602,False
+1961,A Woman Is a Woman,Jean-Luc Godard,238,31522,False
+1961,Divorce Italian Style,Pietro Germi,286,20271,False
+1961,Viridiana,Luis Buñuel,332,4497,False
+1961,Blast of Silence,Allen Baron,428,32008,False
+1961,Last Year at Marienbad,Alain Resnais,478,4024,False
+1961,Léon Morin@ Priest,Jean-Pierre Melville,572,63892,False
+1961,Chronicle of a Summer,Jean Rouch & Edgar Morin,648,84972,False
+1961,Lola,Jacques Demy,714,40641,False
+1961,The Innocents,Jack Clayton,727,16372,True
+1961,Paris Belongs to Us,Jacques Rivette,802,43026,False
+1961,A Taste of Honey,Tony Richardson,829,25062,False
+1961,One-Eyed Jacks,Marlon Brando,844,18647,False
+1961,Something Wild,Jack Garfein,850,82944,False
+1961,A Raisin in the Sun,Daniel Petrie,945,29478,False
+1962,Sanjuro,Akira Kurosawa,53,11712,False
+1962,Carnival of Souls,Herk Harvey,63,16093,False
+1962,Cléo from 5 to 7,Agnès Varda,73,499,False
+1962,Knife in the Water,Roman Polanski,215,11502,False
+1962,Mamma Roma,Pier Paolo Pasolini,236,47796,False
+1962,La commare secca,Bernardo Bertolucci,272,42999,False
+1962,L'eclisse,Michelangelo Antonioni,278,21135,False
+1962,Jules and Jim,François Truffaut,281,1628,False
+1962,Harakiri,Masaki Kobayashi,302,14537,False
+1962,Pitfall,Hiroshi Teshigahara,393,54146,False
+1962,Ivan's Childhood,Andrei Tarkovsky,397,31442,False
+1962,Mafioso,Alberto Lattuada,424,34866,False
+1962,An Autumn Afternoon,Yasujirō Ozu,446,50759,False
+1962,Le doulos,Jean-Pierre Melville,447,20778,False
+1962,The Exterminating Angel,Luis Buñuel,459,29264,False
+1962,Vivre sa vie,Jean-Luc Godard,512,1626,False
+1962,Il sorpasso,Dino Risi,707,24188,False
+1962,Sundays and Cybele,Serge Bourguignon,728,43001,False
+1962,The Manchurian Candidate,John Frankenheimer,803,982,False
+1962,The Fabulous Baron Munchausen,Karel Zeman,1017,41213,False
+1963,Shock Corridor,Samuel Fuller,19,25504,False
+1963,High and Low,Akira Kurosawa,24,12493,False
+1963,Lord of the Flies,Peter Brook,43,9960,False
+1963,Charade,Stanley Donen,57,4808,False
+1963,Billy Liar,John Schlesinger,121,26535,False
+1963,8½,Federico Fellini,140,422,True
+1963,Contempt,Jean-Luc Godard,171,266,False
+1963,The Silence,Ingmar Bergman,211,11506,False
+1963,The Leopard,Luchino Visconti,235,1040,False
+1963,Youth of the Beast,Seijun Suzuki,268,37939,False
+1963,The Bakery Girl of Monceau,Éric Rohmer,343,81399,False
+1963,Suzanne's Career,Éric Rohmer,344,86764,False
+1963,Hands Over the City,Francesco Rosi,355,58383,False
+1963,This Sporting Life,Lindsay Anderson,417,18774,False
+1963,The Fire Within,Louis Malle,430,2593,False
+1963,The Insect Woman,Shohei Imamura,473,42984,False
+1963,The Organizer,Mario Monicelli,610,51092,False
+1963,The Big City,Satyajit Ray,668,60567,False
+1963,It's a Mad@ Mad@ Mad@ Mad World,Stanley Kramer,692,11576,False
+1963,Judex,Georges Franju,710,56800,False
+1963,Bay of Angels,Jacques Demy,715,60773,False
+1963,Muriel@ or The Time of Return,Alain Resnais,824,54563,False
+1963,The Executioner,Luis García Berlanga,840,4498,True
+1963,Tom Jones,Tony Richardson,910,5769,False
+1963,An Actor's Revenge,Kon Ichikawa,912,27197,False
+1963,Le petit soldat,Jean-Luc Godard,1010,50785,False
+1963,The Great Escape,John Sturges,1027,5925,False
+1964,The Naked Kiss,Samuel Fuller,18,26031,False
+1964,Diary of a Chambermaid,Luis Buñuel,117,36245,False
+1964,Gertrud,Carl Theodor Dreyer,127,34181,False
+1964,Band of Outsiders,Jean-Luc Godard,174,8073,False
+1964,Onibaba,Kaneto Shindo,226,3763,False
+1964,Gate of Flesh,Seijun Suzuki,298,86666,False
+1964,Seduced and Abandoned,Pietro Germi,350,42790,False
+1964,Robinson Crusoe on Mars,Byron Haskin,404,7348,False
+1964,Intentions of Murder,Shohei Imamura,474,49571,False
+1964,Red Desert,Michelangelo Antonioni,522,26638,False
+1964,Pale Flower,Masahiro Shinoda,564,61475,False
+1964,Three Outlaw Samurai,Hideo Gosha,596,58878,False
+1964,Charulata,Satyajit Ray,669,35790,False
+1964,A Hard Day's Night,Richard Lester,711,704,False
+1964,The Umbrellas of Cherbourg,Jacques Demy,716,5967,False
+1964,The Soft Skin,François Truffaut,749,1719,False
+1964,Dr. Strangelove@ or: How I Learned to Stop Worrying and Love the Bomb,Stanley Kubrick,821,935,False
+1964,Diamonds of the Night,Jan Němec,969,100589,False
+1964,Fail Safe,Sidney Lumet,1011,502,False
+1965,Alphaville,Jean-Luc Godard,25,8072,False
+1965,Kwaidan,Masaki Kobayashi,90,30959,False
+1965,The Shop on Main Street,Elmar Klos & Ján Kadár,130,25905,False
+1965,Loves of a Blonde,Miloš Forman,144,39387,False
+1965,Juliet of the Spirits,Federico Fellini,149,19120,False
+1965,Tokyo Olympiad,Kon Ichikawa,155,43618,False
+1965,Red Beard,Akira Kurosawa,159,3780,False
+1965,Story of a Prostitute,Seijun Suzuki,299,39506,False
+1965,Sword of the Beast,Hideo Gosha,311,46917,False
+1965,Samurai Spy,Masahiro Shinoda,312,46916,False
+1965,The Naked Prey,Cornel Wilde,415,18513,False
+1965,Le bonheur,Agnès Varda,420,53023,False
+1965,Pierrot le fou,Jean-Luc Godard,421,2786,False
+1965,The Spy Who Came in from the Cold,Martin Ritt,452,13580,False
+1965,Simon of the Desert,Luis Buñuel,460,36265,False
+1965,Repulsion,Roman Polanski,483,11481,False
+1965,The Moment of Truth,Francesco Rosi,595,86785,False
+1965,I Knew Her Well,Antonio Pietrangeli,801,59336,False
+1966,Andrei Rublev,Andrei Tarkovsky,34,895,False
+1966,Tokyo Drifter,Seijun Suzuki,39,45706,True
+1966,Closely Watched Trains,Jiří Menzel,131,789,False
+1966,The Pornographers,Shohei Imamura,207,42718,False
+1966,The Battle of Algiers,Gillo Pontecorvo,249,17295,False
+1966,Fighting Elegy,Seijun Suzuki,269,42721,False
+1966,Young Törless,Volker Schlöndorff,279,45694,False
+1966,The Sword of Doom,Kihachi Okamoto,280,19884,False
+1966,Au Hasard Balthazar,Robert Bresson,297,20108,False
+1966,Masculin féminin,Jean-Luc Godard,308,4710,False
+1966,The Face of Another,Hiroshi Teshigahara,395,29452,False
+1966,Patriotism,Domoto Masaki & Yukio Mishima,433,71827,False
+1966,The Taking of Power by Louis XIV,Roberto Rossellini,456,69912,False
+1966,Made in U.S.A,Jean-Luc Godard,481,29369,False
+1966,Cul-de-sac,Roman Polanski,577,4772,False
+1966,Seconds,John Frankenheimer,667,20620,True
+1966,Persona,Ingmar Bergman,701,797,True
+1966,The Shooting,Monte Hellman,734,42701,False
+1966,Ride in the Whirlwind,Monte Hellman,735,60555,False
+1966,Here Is Your Life,Jan Troell,766,9646,False
+1966,Black Girl,Ousmane Sembène,852,95597,False
+1966,Blow-Up,Michelangelo Antonioni,865,1052,False
+1966,Law of the Border,Lüfti Ö. Akad,878,197297,False
+1966,The Hero,Satyajit Ray,911,112999,True
+1967,Branded to Kill,Seijun Suzuki,38,17905,False
+1967,Playtime,Jacques Tati,112,10227,False
+1967,The Firemen's Ball,Miloš Forman,145,38442,False
+1967,I Am Curious (Yellow),Vilgot Sjöman,180,42695,False
+1967,Le Samouraï,Jean-Pierre Melville,306,5511,False
+1967,Samurai Rebellion,Masaki Kobayashi,310,27031,False
+1967,Mouchette,Robert Bresson,363,1561,False
+1967,The Two of Us,Claude Berri,388,62570,False
+1967,2 or 3 Things I Know About Her,Jean-Luc Godard,482,8074,False
+1967,Belle de jour,Luis Buñuel,593,649,False
+1967,Weekend,Jean-Luc Godard,635,651058,True
+1967,Weekend,Jean-Luc Godard,635,8075,True
+1967,Marketa Lazarová,František Vláčil,661,25904,False
+1967,The Young Girls of Rochefort,Jacques Demy,717,2433,False
+1967,In Cold Blood,Richard Brooks,781,18900,True
+1967,Dont Look Back,D. A. Pennebaker,787,135,False
+1967,The Graduate,Mike Nichols,800,37247,False
+1967,Valley of the Dolls,Mark Robson,835,3055,True
+1967,Festival,Murray Lerner,892,16247,True
+1967,Dragon Inn,King Hu,937,104237,False
+1967,In the Heat of the Night,Norman Jewison,959,10633,False
+1968,Stolen Kisses,François Truffaut,186,255,False
+1968,Faces,John Cassavetes,252,753,True
+1968,Kill!,Kihachi Okamoto,313,39029,True
+1968,L'enfance nue,Maurice Pialat,534,31345,False
+1968,Head,Bob Rafelson,544,18193,True
+1968,Kuroneko,Kaneto Shindo,584,40149,False
+1968,Rosemary's Baby,Roman Polanski,630,805,False
+1968,Death by Hanging,Nagisa Oshima,798,98193,False
+1968,The Immortal Story,Orson Welles,831,84636,False
+1968,Night of the Living Dead,George A. Romero,909,10331,False
+1968,Memories of Underdevelopment,Tomás Gutiérrez Alea,943,47576,False
+1968,Shame,Ingmar Bergman,961,26372,True
+1968,Teorema,Pier Paolo Pasolini,1013,5335,False
+1968,Lucía,Humberto Solás,1045,88591,False
+1969,Double Suicide,Masahiro Shinoda,104,45713,False
+1969,My Night at Maud's,Éric Rohmer,345,48831,False
+1969,Army of Shadows,Jean-Pierre Melville,385,15383,False
+1969,The Milky Way,Luis Buñuel,402,35031,False
+1969,Z,Costa Gavras,491,2721,True
+1969,Downhill Racer,Michael Ritchie,494,33166,False
+1969,Dillinger Is Dead,Marco Ferreri,506,56693,False
+1969,Easy Rider,Dennis Hopper,545,624,False
+1969,Kes,Ken Loach,561,13384,True
+1969,Medium Cool,Haskell Wexler,658,42612,False
+1969,Fellini Satyricon,Federico Fellini,747,11163,False
+1969,Women in Love,Ken Russell,916,66027,False
+1969,The Color of Pomegranates,Sergei Parajanov,918,26302,False
+1969,Midnight Cowboy,John Schlesinger,925,3116,False
+1969,The Cremator,Juraj Herz,1023,18352,False
+1970,Gimme Shelter,Albert Maysles & David Maysles & Charlotte Zwerin,99,132,False
+1970,Bed and Board,François Truffaut,187,258,False
+1970,The Honeymoon Killers,Leonard Kastle,200,10237,False
+1970,Le cercle rouge,Jean-Pierre Melville,218,11657,False
+1970,Equinox,Jack Woods,338,28681,False
+1970,Claire's Knee,Éric Rohmer,347,2860,False
+1970,Dodes'ka-den,Akira Kurosawa,465,33205,False
+1970,Five Easy Pieces,Bob Rafelson,546,26617,False
+1970,Investigation of a Citizen Above Suspicion,Elio Petri,682,26451,False
+1970,Donkey Skin,Jacques Demy,718,5590,False
+1970,The Confession,Costa Gavras,759,60859,False
+1970,Valerie and Her Week of Wonders,Jaromil Jireš,761,46315,False
+1970,Beyond the Valley of the Dolls,Russ Meyer,836,5722,False
+1970,Multiple Maniacs,John Waters,863,25625,False
+1970,Baal,Volker Schlöndorff,914,252767,False
+1970,Wanda,Barbara Loden,965,80560,False
+1970,Husbands,John Cassavetes,1029,52105,False
+1970,Soleil Ô,Med Hondo,1049,195841,True
+1971,Walkabout,Nicolas Roeg,10,36040,False
+1971,Straw Dogs,Sam Peckinpah,182,994,False
+1971,W.R.: Mysteries of the Organism,Dušan Makavejev,389,42529,False
+1971,Two-Lane Blacktop,Monte Hellman,414,27236,False
+1971,Mon oncle Antoine,Claude Jutra,438,74689,False
+1971,Trafic,Jacques Tati,439,11378,False
+1971,Drive@ He Said,Jack Nicholson,547,57215,False
+1971,A Safe Place,Henry Jaglom,548,53898,False
+1971,The Last Picture Show,Peter Bogdanovich,549,25188,False
+1971,Harold and Maude,Hal Ashby,608,343,False
+1971,Sunday Bloody Sunday,John Schlesinger,629,45938,False
+1971,The Decameron,Pier Paolo Pasolini,632,33583,False
+1971,Macbeth,Roman Polanski,726,11316,True
+1971,Macbeth,Roman Polanski,726,304394,True
+1971,The Emigrants,Jan Troell,796,40732,False
+1971,A Touch of Zen,King Hu,825,44154,False
+1971,McCabe & Mrs. Miller,Robert Altman,827,29005,False
+1971,Death in Venice,Luchino Visconti,962,6619,False
+1971,Klute,Alan J. Pakula,987,466,True
+1972,Cries and Whispers,Ingmar Bergman,101,10238,False
+1972,The Discreet Charm of the Bourgeoisie,Luis Buñuel,102,4593,False
+1972,The Ruling Class,Peter Medak,132,30892,False
+1972,Solaris,Andrei Tarkovsky,164,593,False
+1972,Tout va bien,Jean-Luc Godard & Jean-Pierre Gorin,275,8071,False
+1972,Murmur of the Heart,Louis Malle,328,42501,False
+1972,Love in the Afternoon,Éric Rohmer,348,12116,False
+1972,The King of Marvin Gardens,Bob Rafelson,550,50627,False
+1972,The Canterbury Tales,Pier Paolo Pasolini,633,5691,True
+1972,The Bitter Tears of Petra von Kant,Rainer Werner Fassbinder,740,10310,False
+1972,State of Siege,Costa Gavras,760,91487,False
+1972,The New Land,Jan Troell,797,42488,False
+1972,Roma,Federico Fellini,848,11035,True
+1972,Eight Hours Don't Make a Day,Rainer Werner Fassbinder,946,440456,False
+1972,Downpour,Bahram Bayzai,1050,134346,False
+1973,Flesh for Frankenstein,Paul Morrissey,27,3043,False
+1973,The Harder They Come,Perry Henzell,83,7514,False
+1973,Sisters,Brian De Palma,89,22307,True
+1973,Sisters,Brian De Palma,89,656426,True
+1973,Maîtresse,Barbet Schroeder,223,42458,False
+1973,The Spirit of the Beehive,Víctor Erice,351,4495,False
+1973,The Friends of Eddie Coyle,Peter Yates,475,25680,False
+1973,World On a Wire,Rainer Werner Fassbinder,598,53094,False
+1973,Badlands,Terrence Malick,651,3133,False
+1973,Touki Bouki,Djibril Diop Mambéty,685,77771,False
+1973,A River Called Titas,Ritwik Ghatak,687,93164,False
+1973,Don't Look Now,Nicolas Roeg,745,931,False
+1973,Day for Night,François Truffaut,769,1675,False
+1973,Lady Snowblood,Toshiya Fujita,791,2487,False
+1973,Fantastic Planet,René Laloux,820,16306,False
+1974,Amarcord,Federico Fellini,4,7857,True
+1974,Blood for Dracula,Paul Morrissey,28,25944,False
+1974,The Night Porter,Liliana Cavani,59,26648,False
+1974,Hearts and Minds,Peter Davis,156,42449,False
+1974,Ali: Fear Eats the Soul,Rainer Werner Fassbinder,198,216,False
+1974,A Woman Under the Influence,John Cassavetes,253,29845,False
+1974,The Phantom of Liberty,Luis Buñuel,290,5558,False
+1974,Lacombe@ Lucien,Louis Malle,329,55368,False
+1974,Sweet Movie,Dušan Makavejev,390,1559,False
+1974,Arabian Nights,Pier Paolo Pasolini,634,47406,False
+1974,Parade,Jacques Tati,731,58655,True
+1974,Lady Snowblood: Love Song of Vengeance,Toshiya Fujita,782,18818,False
+1974,A Poem Is a Naked Person,Les Blank,805,126423,False
+1974,Alice in the Cities,Wim Wenders,814,2204,False
+1974,Female Trouble,John Waters,929,14267,False
+1975,Salò@ or The 120 Days of Sodom,Pier Paolo Pasolini,17,5336,False
+1975,Picnic at Hanging Rock ,Peter Weir,29,11020,False
+1975,The Magic Flute,Ingmar Bergman,71,44864,True
+1975,The Lost Honor of Katharina Blum,Margarethe von Trotta & Volker Schlöndorff,177,4762,False
+1975,F for Fake,Orson Welles,288,43003,False
+1975,Overlord,Stuart Cooper,382,55343,False
+1975,Jeanne Dielman@ 23 quai du Commerce@ 1080 Bruxelles,Chantal Akerman,484,44012,False
+1975,Black Moon,Louis Malle,571,27361,False
+1975,Nashville,Robert Altman,683,3121,False
+1975,Wrong Move,Wim Wenders,815,20017,False
+1975,Fox and His Friends,Rainer Werner Fassbinder,851,42254,False
+1975,Barry Lyndon,Stanley Kubrick,897,3175,False
+1975,Manila in the Claws of Light,Lino Brocka,926,70580,False
+1975,Shampoo,Hal Ashby,947,31121,False
+1976,Grey Gardens,David Maysles & Albert Maysles & Muffie Meyer & Susan Froemke & Ellen Hovde,123,17346,False
+1976,Coup de grâce,Volker Schlöndorff,192,42226,False
+1976,The Killing of a Chinese Bookie,John Cassavetes,254,32040,False
+1976,The Man Who Fell to Earth,Nicolas Roeg,304,991,False
+1976,Harlan County@ USA,Barbara Kopple,334,33324,False
+1976,Cría cuervos ...,Carlos Saura,403,51857,False
+1976,In the Realm of the Senses,Nagisa Oshima,466,5879,False
+1976,Kings of the Road,Wim Wenders,816,10834,False
+1976,Canoa: A Shameful Memory,Felipe Cazals,862,116982,False
+1976,Insiang,Lino Brocka,874,108949,False
+1976,Mikey and Nicky,Elaine May,957,59143,False
+1977,The Last Wave,Peter Weir,142,72277,False
+1977,That Obscure Object of Desire,Luis Buñuel,143,5781,False
+1977,3 Women,Robert Altman,230,41662,True
+1977,Opening Night,John Cassavetes,255,33665,False
+1977,House,Nobuhiko Obayashi,539,25623,True
+1977,¡Alambrista!,Robert M. Young,609,86975,False
+1977,Eraserhead,David Lynch,725,985,False
+1977,A Special Day,Ettore Scola,778,42229,False
+1977,The American Friend,Wim Wenders,793,11222,False
+1977,Jabberwocky,Terry Gilliam,903,11834,False
+1977,One Sings@ the Other Doesn't,Agnès Varda,978,63318,False
+1978,Autumn Sonata,Ingmar Bergman,60,12761,True
+1978,Jubilee,Derek Jarman,191,41426,True
+1978,Koko: A Talking Gorilla,Barbet Schroeder,340,54194,False
+1978,Days of Heaven,Terrence Malick,409,16642,False
+1978,Empire of Passion,Nagisa Oshima,467,49096,False
+1978,La Cage aux Folles,Edouard Molinaro,671,4484,False
+1978,Watership Down,Martin Rosen,748,11837,False
+1978,Gates of Heaven,Errol Morris,751,24998,False
+1978,The Tree of Wooden Clogs,Ermanno Olmi,854,31542,False
+1978,I Wanna Hold Your Hand,Robert Zemeckis,967,55457,False
+1978,An Unmarried Woman,Paul Mazursky,1032,38731,False
+1979,Monty Python's Life of Brian,Terry Jones,61,583,False
+1979,Love on the Run,François Truffaut,188,259,False
+1979,The Tin Drum,Volker Schlöndorff,234,659,False
+1979,Vengeance Is Mine,Shohei Imamura,384,42170,False
+1979,Wise Blood,John Huston,470,42179,False
+1979,Quadrophenia,Franc Roddam,624,10373,True
+1979,Tess,Roman Polanski,697,11121,True
+1979,All That Jazz,Bob Fosse,724,16858,False
+1979,The Rose,Mark Rydell,757,16323,True
+1979,The Black Stallion,Carroll Ballard,765,17264,False
+1979,The Brood,David Cronenberg,777,28942,False
+1979,The In-Laws,Arthur Hiller,823,19827,False
+1979,Being There,Hal Ashby,864,10322,False
+1979,Stalker,Andrei Tarkovsky,888,1398,False
+1979,My Brilliant Career,Gillian Armstrong,973,16659,False
+1979,Town Bloody Hall,Chris Hegedus & D. A. Pennebaker,1039,274381,False
+1979,Christ Stopped at Eboli,Francesco Rosi,1043,42169,False
+1980,The Long Good Friday,John Mackenzie,26,14807,False
+1980,Hopscotch,Ronald Neame,163,32030,False
+1980,Kagemusha,Akira Kurosawa,267,11953,False
+1980,Bad Timing,Nicolas Roeg,303,33214,False
+1980,Berlin Alexanderplatz,Rainer Werner Fassbinder,411,45560,True
+1980,The Last Metro,François Truffaut,462,1716,False
+1980,Heaven's Gate,Michael Cimino,636,10935,False
+1980,Every Man for Himself,Jean-Luc Godard,744,113479,True
+1980,Every Man for Himself,Jean-Luc Godard,744,186693,True
+1980,Dressed to Kill,Brian De Palma,770,11033,False
+1980,Breaker Morant,Bruce Beresford,773,13783,False
+1980,The Elephant Man,David Lynch,1051,1955,False
+1981,Time Bandits,Terry Gilliam,37,36819,False
+1981,Coup de torchon,Bertrand Tavernier,106,35797,False
+1981,Lola,Rainer Werner Fassbinder,206,2264,True
+1981,My Dinner with André,Louis Malle,479,25468,False
+1981,Blow Out,Brian De Palma,562,11644,False
+1981,Trances,Ahmed El Maânouni,689,215407,False
+1981,Thief,Michael Mann,691,11524,True
+1981,Scanners,David Cronenberg,712,9538,False
+1981,Vernon@ Florida,Errol Morris,752,30142,False
+1981,The French Lieutenant's Woman,Karel Reisz,768,12537,True
+1981,Polyester,John Waters,995,14269,False
+1981,Pixote,Héctor Babenco,1047,42148,False
+1982,Veronika Voss,Rainer Werner Fassbinder,205,2262,False
+1982,Fanny and Alexander,Ingmar Bergman,263,5961,False
+1982,Burden of Dreams,Les Blank,287,42124,False
+1982,Missing,Costa Gavras,449,15600,True
+1982,White Dog,Samuel Fuller,455,47955,False
+1982,Identification of a Woman,Michelangelo Antonioni,585,53234,False
+1982,Eating Raoul,Paul Bartel,625,28940,False
+1982,Une chambre en ville,Jacques Demy,719,4269,False
+1982,Tootsie,Sydney Pollack,738,9576,True
+1982,The Ballad of Gregorio Cortez,Robert M. Young,940,218500,False
+1982,Smithereens,Susan Seidelman,941,94066,False
+1983,Videodrome,David Cronenberg,248,837,False
+1983,À nos amours,Maurice Pialat,337,2282,False
+1983,El Norte,Gregory Nava,458,17435,False
+1983,Danton,Andrzej Wajda,464,4202,True
+1983,Merry Christmas@ Mr. Lawrence,Nagisa Oshima,535,11948,False
+1983,The Makioka Sisters,Kon Ichikawa,567,42116,False
+1983,Koyaanisqatsi,Godfrey Reggio,640,11314,False
+1983,The Big Chill,Lawrence Kasdan,720,12560,False
+1983,Burroughs: The Movie,Howard Brookner,790,339790,False
+1983,Rumble Fish,Francis Ford Coppola,869,232,False
+1983,L'argent,Robert Bresson,886,42112,False
+1983,El Sur,Víctor Erice,927,48139,False
+1983,Local Hero,Bill Forsyth,994,11235,True
+1984,This Is Spinal Tap,Rob Reiner,12,11031,False
+1984,And the Ship Sails On,Federico Fellini,50,5622,False
+1984,The Element of Crime,Lars von Trier,80,9063,False
+1984,Secret Honor,Robert Altman,257,50034,False
+1984,Stranger Than Paradise,Jim Jarmusch,400,469,False
+1984,Under the Volcano,John Huston,410,41089,True
+1984,Antonio Gaudi,Hiroshi Teshigahara,425,37239,False
+1984,The Hit,Stephen Frears,469,19621,True
+1984,Paris@ Texas,Wim Wenders,501,655,False
+1984,The Times of Harvey Milk,Robert Epstein,557,33138,False
+1984,Repo Man,Alex Cox,654,13820,False
+1984,Love Streams,John Cassavetes,721,52109,False
+1984,Blood Simple,Joel and Ethan Coen,834,11368,False
+1984,Meantime,Mike Leigh,890,57978,False
+1984,1984,Michael Radford,984,9314,True
+1985,Brazil,Terry Gilliam,51,68,True
+1985,Vagabond,Agnès Varda,74,44018,True
+1985,My Life as a Dog,Lasse Hallström,178,8816,False
+1985,Ran,Akira Kurosawa,316,11645,True
+1985,Mishima: A Life in Four Chapters,Paul Schrader,432,27064,False
+1985,Louie Bluie,Terry Zwigoff,532,87065,False
+1985,Insignificance,Nicolas Roeg,566,42035,False
+1985,Shoah,Claude Lanzmann,663,42044,False
+1985,My Beautiful Laundrette,Stephen Frears,767,11240,False
+1985,A Room with a View,James Ivory,775,11257,False
+1985,Tampopo,Juzo Itami,868,11830,False
+1985,Taipei Story,Edward Yang,879,106380,False
+1985,Lost in America,Albert Brooks,887,27223,False
+1985,Desert Hearts,Donna Deitch,902,294,False
+1985,The Breakfast Club,John Hughes,905,2108,False
+1985,Police Story,Jackie Chan,971,9056,False
+1985,Come and See,Elem Klimov,1035,25237,False
+1986,Sid & Nancy,Alex Cox,20,14924,False
+1986,Mona Lisa,Neil Jordan,107,10002,False
+1986,Down by Law,Jim Jarmusch,166,1554,False
+1986,Something Wild,Jonathan Demme,563,11300,False
+1986,True Stories,David Byrne,951,24798,False
+1986,Blue Velvet,David Lynch,977,793,False
+1986,Betty Blue,Jean-Jacques Beineix,1002,11986,False
+1987,RoboCop,Paul Verhoeven,23,5548,False
+1987,Au revoir les enfants,Louis Malle,330,1786,False
+1987,Border Radio,Allison Anders & Dean Lent & Kurt Voss,362,37497,False
+1987,House of Games,David Mamet,399,26719,True
+1987,The Last Emperor,Bernardo Bertolucci,422,746,False
+1987,Walker,Alex Cox,423,28448,False
+1987,Wings of Desire,Wim Wenders,490,144,False
+1987,Broadcast News,James L. Brooks,552,12626,False
+1987,Babette's Feast,Gabriel Axel,665,11832,False
+1987,The Princess Bride,Rob Reiner,948,2493,False
+1987,Where Is the Friend's House?,Abbas Kiarostami,990,49964,False
+1987,Matewan,John Sayles,999,24276,False
+1988,Dead Ringers,David Cronenberg,21,9540,True
+1988,The Unbearable Lightness of Being,Philip Kaufman,55,10644,False
+1988,The Last Temptation of Christ,Martin Scorsese,70,11051,False
+1988,The Vanishing,George Sluizer,133,8740,False
+1988,Powaqqatsi,Godfrey Reggio,641,24348,False
+1988,The Thin Blue Line,Errol Morris,753,14285,False
+1988,Women on the Verge of a Nervous Breakdown,Pedro Almodóvar,855,4203,False
+1988,Bull Durham,Ron Shelton,936,287,False
+1988,Police Story 2,Jackie Chan,972,10753,True
+1989,The Killer,John Woo,8,10835,True
+1989,For All Mankind,Al Reinert,54,20423,False
+1989,Do the Right Thing,Spike Lee,97,925,True
+1989,Sweetie,Jane Campion,356,65015,False
+1989,Mystery Train,Jim Jarmusch,521,11305,False
+1989,Revenge,Ermek Shinarbaev,876,216046,True
+1989,Sex@ Lies@ and Videotape,Steven Soderbergh,938,1412,False
+1989,A Dry White Season,Euzhan Palcy,953,32075,False
+1990,An Angel at My Table,Jane Campion,301,2891,False
+1990,Metropolitan,Whit Stillman,326,15389,False
+1990,Close-Up,Abbas Kiarostami,519,30017,False
+1990,Life Is Sweet,Mike Leigh,659,36843,False
+1990,Tie Me Up! Tie Me Down!,Pedro Almodóvar,722,2469,False
+1990,Mister Johnson,Bruce Beresford,774,123772,False
+1990,Akira Kurosawa's Dreams,Akira Kurosawa,842,12516,False
+1990,To Sleep with Anger,Charles Burnett,963,94725,False
+1990,Paris Is Burning,Jennie Livingston,1018,31225,False
+1990,The Comfort of Strangers,Paul Schrader,1041,41925,False
+1991,The Silence of the Lambs,Jonathan Demme,13,274,True
+1991,Naked Lunch,David Cronenberg,220,2742,False
+1991,Slacker,Richard Linklater,247,14022,False
+1991,My Own Private Idaho,Gus Van Sant,277,468,False
+1991,Sólo con tu pareja,Alfonso Cuarón,353,49971,False
+1991,The Double Life of Véronique,Krzysztof Kieślowski,359,1600,False
+1991,Night on Earth,Jim Jarmusch,401,339,False
+1991,Europa,Lars von Trier,454,9065,True
+1991,Homicide,David Mamet,486,22828,True
+1991,A Brief History of Time,Errol Morris,699,1358,False
+1991,The Fisher King,Terry Gilliam,764,177,False
+1991,A Brighter Summer Day,Edward Yang,804,15804,False
+1991,Europa Europa,Agnieszka Holland,985,8996,False
+1991,The Inland Sea,Lucille Carra,988,367453,False
+1991,Until the End of the World,Wim Wenders,1007,10341,False
+1991,The Prince of Tides,Barbra Streisand,1022,10333,False
+1992,Hard Boiled,John Woo,9,11782,False
+1992,Man Bites Dog,Rémy Belvaux & André Bonzel & Benoît Poelvoorde,165,10086,False
+1992,Howards End,James Ivory,488,8293,False
+1992,La vie de bohème,Aki Kaurismäki,693,28212,False
+1992,The Long Day Closes,Terence Davies,694,49956,False
+1992,The Player,Robert Altman,812,10403,True
+1992,Twin Peaks: Fire Walk with Me,David Lynch,898,1923,False
+1992,And Life Goes On,Abbas Kiarostami,991,83761,False
+1993,Short Cuts,Robert Altman,265,695,False
+1993,Naked,Mike Leigh,307,21450,True
+1993,Dazed and Confused,Richard Linklater,336,9571,False
+1993,Cronos,Guillermo del Toro,551,11655,False
+1993,Three Colors: Blue,Krzysztof Kieślowski,588,108,False
+1993,The War Room,D. A. Pennebaker & Chris Hegedus,602,26408,False
+1993,King of the Hill,Steven Soderbergh,698,34024,False
+1993,The Age of Innocence,Martin Scorsese,913,10436,False
+1994,Hoop Dreams,Steve James,289,14275,False
+1994,Before the Rain,Milčo Mančevski,436,19155,False
+1994,Chungking Express,Wong Kar-wai,453,11104,False
+1994,Three Colors: White,Krzysztof Kieślowski,589,109,False
+1994,Three Colors: Red,Krzysztof Kieślowski,590,110,False
+1994,Vanya on 42nd Street,Louis Malle,599,32636,False
+1994,Shallow Grave,Danny Boyle,616,9905,False
+1994,Barcelona,Whit Stillman,807,16771,False
+1994,Cold Water,Olivier Assayas,944,64901,False
+1994,Through the Olive Trees,Abbas Kiarostami,992,47104,False
+1995,Carl Th. Dreyer—My Metier,Torben Skjodt Jensen,128,66133,False
+1995,Kicking and Screaming,Noah Baumbach,349,28387,False
+1995,La haine,Mathieu Kassovitz,381,406,False
+1995,Crumb,Terry Zwigoff,533,26564,False
+1995,Safe,Todd Haynes,739,32646,True
+1995,Before Sunrise,Richard Linklater,857,76,False
+1995,Dead Man,Jim Jarmusch,919,922,True
+1996,The Rock,Michael Bay,108,9802,True
+1996,Schizopolis,Steven Soderbergh,199,16375,False
+1996,Bottle Rocket,Wes Anderson,450,13685,False
+1996,La promesse,Jean-Pierre Dardenne & Luc Dardenne,620,24183,False
+1996,Breaking the Waves,Lars von Trier,705,145,False
+1996,When We Were Kings,Leon Gast,998,10548,False
+1996,The Daytrippers,Greg Mottola,1001,49806,False
+1997,Taste of Cherry,Abbas Kiarostami,45,30020,False
+1997,Insomnia,Erik Skjoldbjærg,47,26610,False
+1997,Chasing Amy,Kevin Smith,75,2255,False
+1997,The Ice Storm,Ang Lee,426,68924,False
+1997,Ossos,Pedro Costa,509,55700,False
+1997,Gray's Anatomy,Steven Soderbergh,618,32686,False
+1997,The Game,David Fincher,627,2649,True
+1997,Funny Games,Michael Haneke,975,10234,False
+1997,La vie de Jésus,Bruno Dumont,980,27067,False
+1998,Armageddon,Michael Bay,40,95,True
+1998,Rushmore,Wes Anderson,65,11545,False
+1998,Fear and Loathing in Las Vegas,Terry Gilliam,175,1878,False
+1998,The Last Days of Disco,Whit Stillman,485,16980,False
+1998,The Thin Red Line,Terrence Malick,536,8741,False
+1999,Ratcatcher,Lynne Ramsay,162,29698,False
+1999,Ride with the Devil,Ang Lee,514,22267,True
+1999,Ride with the Devil,Ang Lee,514,419311,True
+1999,Topsy-Turvy,Mike Leigh,558,46435,False
+1999,Being John Malkovich,Spike Jonze,611,492,False
+1999,Rosetta,Jean-Pierre Dardenne & Luc Dardenne,621,11489,True
+1999,Following,Christopher Nolan,638,11660,False
+1999,Buena Vista Social Club,Wim Wenders,866,11779,False
+1999,Election,Alexander Payne,904,9451,True
+1999,The Virgin Suicides,Sofia Coppola,920,1443,False
+1999,L'Humanité,Bruno Dumont,981,65296,False
+1999,All About My Mother,Pedro Almodóvar,1012,99,False
+1999,Beau Travail,Claire Denis,1042,14626,False
+2000,In the Mood for Love,Wong Kar-wai,147,843,False
+2000,Traffic,Steven Soderbergh,151,1900,True
+2000,George Washington,David Gordon Green,152,18292,True
+2000,A Constant Forge,Charles Kiselyak,256,66131,False
+2000,Yi Yi,Edward Yang,339,25538,True
+2000,In Vanda's Room,Pedro Costa,510,87063,False
+2000,Code Unknown,Michael Haneke,780,30970,False
+2000,Mysterious Object at Noon,Apichatpong Weerasethakul,875,93553,False
+2000,Bamboozled,Spike Lee,1019,24664,False
+2001,The Royal Tenenbaums,Wes Anderson,157,9428,False
+2001,Fat Girl,Catherine Breillat,259,570,False
+2001,Monsoon Wedding,Mira Nair,489,480,False
+2001,The Devil's Backbone,Guillermo del Toro,666,1433,False
+2001,La Ciénaga,Lucrecia Martel,743,58429,True
+2001,Mulholland Dr.,David Lynch,779,1018,False
+2001,Ghost World,Terry Zwigoff,872,1548,False
+2001,The Piano Teacher,Michael Haneke,894,1791,False
+2001,Hedwig and the Angry Inch,John Cameron Mitchell,982,13403,False
+2002,Naqoyqatsi,Godfrey Reggio,642,21925,False
+2002,Punch-Drunk Love,Paul Thomas Anderson,843,8051,False
+2002,Bowling for Columbine,Michael Moore,928,1430,False
+2002,Japón,Carlos Reygadas,968,36211,False
+2004,The Life Aquatic with Steve Zissou,Wes Anderson,300,421,False
+2004,Before Sunset,Richard Linklater,858,80,False
+2005,The New World,Terrence Malick,826,11400,True
+2005,The Squid and the Whale,Noah Baumbach,845,10707,False
+2005,Me and You and Everyone We Know,Miranda July,1026,1382,False
+2006,The Beales of Grey Gardens,Albert Maysles & David Maysles,361,47491,False
+2006,Brand upon the Brain!,Guy Maddin,440,27359,False
+2006,Bergman Island,Marie Nyreröd,477,106194,False
+2006,Colossal Youth,Pedro Costa,511,82404,False
+2006,Pan's Labyrinth,Guillermo del Toro,838,1417,False
+2006,Old Joy,Kelly Reichardt,1008,26518,False
+2007,The Secret of the Grain,Abdellatif Kechiche,527,8280,False
+2007,The Darjeeling Limited,Wes Anderson,540,4538,False
+2007,Secret Sunshine,Lee Chang-dong,576,2015,False
+2007,My Winnipeg,Guy Maddin,741,13241,False
+2007,4 Months@ 3 Weeks and 2 Days,Cristian Mungiu,958,2009,False
+2008,The Curious Case of Benjamin Button,David Fincher,476,4922,False
+2008,A Christmas Tale,Arnaud Desplechin,492,8892,True
+2008,A Christmas Tale,Arnaud Desplechin,492,75725,True
+2008,Gomorrah,Matteo Garrone,493,8882,True
+2008,Revanche,Götz Spielmann,502,15451,True
+2008,Hunger,Steve McQueen,504,10360,True
+2008,Summer Hours,Olivier Assayas,513,8282,False
+2008,Everlasting Moments,Jan Troell,520,17077,False
+2008,Still Walking,Hirokazu Kore-eda,554,25050,False
+2009,Antichrist,Lars von Trier,542,17609,False
+2009,Fish Tank,Andrea Arnold,553,24469,False
+2009,White Material,Claire Denis,560,46207,False
+2009,Fantastic Mr. Fox,Wes Anderson,700,10315,False
+2010,Life During Wartime,Todd Solondz,574,39800,False
+2010,Carlos,Olivier Assayas,582,43434,True
+2010,Tiny Furniture,Lena Dunham,597,47607,False
+2010,Certified Copy,Abbas Kiarostami,612,48303,False
+2010,And Everything Is Going Fine,Steven Soderbergh,617,50779,False
+2011,Le Havre,Aki Kaurismäki,619,73532,False
+2011,Weekend,Andrew Haigh,622,79120,True
+2011,Weekend,Andrew Haigh,622,62881,True
+2011,The Forgiveness of Blood,Joshua Marston,628,82624,False
+2011,Pina,Wim Wenders,644,57276,True
+2011,The Kid with a Bike,Jean-Pierre Dardenne & Luc Dardenne,646,63831,False
+2011,The Tree of Life,Terrence Malick,942,8967,True
+2012,Like Someone in Love,Abbas Kiarostami,708,102001,True
+2012,Moonrise Kingdom,Wes Anderson,776,83666,True
+2012,Beyond the Hills,Cristian Mungiu,923,103740,False
+2013,Frances Ha,Noah Baumbach,681,121986,False
+2013,Blue Is the Warmest Color,Abdellatif Kechiche,695,152584,False
+2013,The Great Beauty,Paolo Sorrentino,702,179144,False
+2013,Jellyfish Eyes,Takashi Murakami,788,228426,False
+2013,Inside Llewyn Davis,Joel and Ethan Coen,794,86829,True
+2013,Before Midnight,Richard Linklater,859,132344,False
+2014,A Master Builder,Jonathan Demme,762,268536,False
+2014,Two Days@ One Night,Jean-Pierre Dardenne & Luc Dardenne,771,221902,False
+2014,Phoenix,Christian Petzold,809,254578,True
+2014,Clouds of Sils Maria,Olivier Assayas,822,246860,False
+2014,Boyhood,Richard Linklater,839,85350,False
+2014,The Grand Budapest Hotel,Wes Anderson,1025,120467,False
+2015,Ingrid Bergman: In Her Own Words,Stig Björkman,828,341106,False
+2015,Heart of a Dog,Laurie Anderson,846,352197,False
+2015,45 Years,Andrew Haigh,861,311291,False
+2015,Dheepan,Jacques Audiard,871,314402,False
+2015,The Lure,Agnieszka Smoczyńska,896,375742,False
+2016,Cameraperson,Kirsten Johnson,853,376534,False
+2016,Certain Women,Kelly Reichardt,893,340487,False
+2016,David Lynch: The Art Life,Olivia Neergaard-Holm & Rick Barnes & John Nguyen,895,413765,False
+2016,Personal Shopper,Olivier Assayas,899,340676,False
+2016,I@ Daniel Blake,Ken Loach,906,374473,False
+2016,Graduation,Cristian Mungiu,924,374458,True
+2017,The Other Side of Hope,Aki Kaurismäki,922,429199,False
+2017,24 Frames,Abbas Kiarostami,956,377269,False
+2017,Let the Sunshine In,Claire Denis,976,431017,False
+2018,Cold War,Paweł Pawlikowski,1005,517104,True
+2018,Cold War,Paweł Pawlikowski,1005,440298,True
+2018,Roma,Alfonso Cuarón,1014,426426,True
+2018,Wildlife,Paul Dano,1031,417812,True
+2019,Portrait of a Lady on Fire,Céline Sciamma,1034,531428,False
+2019,Marriage Story,Noah Baumbach,1038,492188,True

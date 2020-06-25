@@ -100,7 +100,10 @@ Folder containing scripts to scrape data and populate the database. To run succe
 execute the scripts from the project's root directory.
 - `film_data.py`: Script that populates database with data of Criterion Collection movies; sets up two demo users. You will need to enter passwords for these users. Uses `criterion.csv` as input file.
 - `tmdb_data.py`: Script that requests movie data from TMDB api. Uses `films.csv` as input; outputs
-to `found.csv` and `notfound.csv.`
+to `found.csv` and `notfound.csv.` READ WARNING BELOW!
+
+**WARNING!** Do not run `tmdb_data.py` at this moment! If you do, please do not overwrite the contents of  `criterion.csv` with  `found.csv`. Because some movie titles have commas in them I had to manually use another character to replace the commas so the titles would be accepted by `film_data.py`. If you run the `film_data.py` with an unedited `criterion.csv` as input, `film_data.py` will crash and your database will not be populated. I hope to find an elegant solution to this problem in a future version. In the case
+you've already gone ahead and run `tmdb_data.py` I've created `criterion_BACKUP.csv` should you need to restore `criterion.csv` to its desired state.
 
 ### `/tests`
 Unit-testing package. Contains files to run `unittest` framework tests on app.

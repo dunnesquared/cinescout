@@ -1,3 +1,5 @@
+"""Entry module for flask to launch app."""
+
 print("Executing app.py")
 
 from cinescout import app # Get app object from __init__.py

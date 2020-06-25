@@ -1,4 +1,4 @@
-"""Scrapes TMDB for tmdb_id given film name and release year """
+"""Scrapes TMDB for tmdb_id given film name and release year."""
 
 import os
 import time

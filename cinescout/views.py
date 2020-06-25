@@ -1,8 +1,9 @@
+"""Handling functions of users' requests that represent app's features."""
+
 import os
 import time
 import json
 import requests
-
 
 from flask import render_template, request, redirect, url_for, abort, flash, jsonify
 from flask_login import current_user, login_user, logout_user, login_required
@@ -12,6 +13,7 @@ from cinescout.models import User, Film, CriterionFilm, PersonalFilm, FilmListIt
 from cinescout.forms import LoginForm, RegistrationForm, SearchByTitleForm, SearchByPersonForm
 from cinescout.movies import TmdbMovie, NytMovieReview, Person
 
+# Won't be able to access the NYT or The Movie Database without these.
 NYT_API_KEY = app.config['NYT_API_KEY']
 TMDB_API_KEY = app.config['TMDB_API_KEY']
 
@@ -28,8 +30,8 @@ print("Executing views.py...")
 @app.route('/')
 @app.route('/index')
 def index():
-    message = "This is placeholder content"
-    return render_template("index.html", message=message)
+    """Home page."""
+    return render_template("index.html")
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -84,6 +86,7 @@ def login():
 @app.route('/logout')
 @login_required
 def logout():
+    """Logs out user."""
     logout_user()
     flash('You have been logged out!', 'success')
     return redirect(url_for('login'))
@@ -93,9 +96,7 @@ def logout():
 @login_required
 def movie_list():
     """Displays list of movies user has added."""
-
     films = FilmListItem.query.filter_by(user_id=current_user.id).all()
-
     return render_template("list.html", films=films)
 
 
@@ -247,8 +248,7 @@ def search_results_title():
 @app.route("/person-search-results", methods=["POST"])
 def search_results_person():
     """Renders list of people in their associated fields in the movie
-    industry.
-    """
+    industry."""
 
     form = SearchByPersonForm()
 

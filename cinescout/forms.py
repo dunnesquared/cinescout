@@ -1,4 +1,4 @@
-"""Implements logic to render and validate web forms for cinescout features"""
+"""Implements logic to render and validate web forms for cinescout features."""
 
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField
@@ -16,7 +16,7 @@ class LoginForm(FlaskForm):
 
 class RegistrationForm(FlaskForm):
     """Form for new users to register with site."""
-
+    
     # Class data
     username = StringField('Username',
                             validators=[DataRequired(),
@@ -73,7 +73,7 @@ class SearchByTitleForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired()])
     submit = SubmitField('Search')
 
-# Different departments that people in the movie industry might work in 
+# Different departments that people in the movie industry might work in
 TMDB_DEPARTMENTS = ["Art", "Acting", "Camera", "Costume & Make-Up", "Crew",
                     "Editing",  "Directing", "Lighting", "Production",
                     "Visual Effects", "Writing"]

@@ -1,5 +1,5 @@
-"""Defines cinescout directory as package, i.e. can be imnported.
-File executed when package imported."""
+"""Defines cinescout directory as package, i.e. a folder that other modules
+can import. File executed when package imported."""
 
 print("***Executing __init__.py...***")
 

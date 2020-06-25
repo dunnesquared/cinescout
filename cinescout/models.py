@@ -1,3 +1,5 @@
+"""Implements database table models via SqlAlchemy ORM."""
+
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 
@@ -11,6 +13,8 @@ def load_user(id):
 
 
 class User(UserMixin, db.Model):
+    """Model that represents users of web app. Passwords hashed."""
+
     __tablename__ = "users"
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True)
@@ -28,9 +32,11 @@ class User(UserMixin, db.Model):
 
 
 class Film(db.Model):
+    """Model that represents films."""
+
     __tablename__ = "films"
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(80), nullable=False) # Will have to make this not unique in good version
+    title = db.Column(db.String(80), nullable=False)
     year = db.Column(db.Integer, nullable=False)
     tmdb_id = db.Column(db.Integer, nullable=True)
     director = db.Column(db.String(80), nullable=True)
@@ -40,6 +46,8 @@ class Film(db.Model):
 
 
 class CriterionFilm(db.Model):
+    """Nodel that represents films from The Criterion Collection."""
+
     __tablename__ = "criterion_films"
     id = db.Column(db.Integer, primary_key=True)
     film_id = db.Column(db.Integer, db.ForeignKey('films.id'), nullable=False)
@@ -49,6 +57,8 @@ class CriterionFilm(db.Model):
 
 
 class PersonalFilm(db.Model):
+    """Model that represents films chosen by app creator. Not used in v0.1."""
+
     __tablename__ = "personal_films"
     id = db.Column(db.Integer, primary_key=True)
     film_id = db.Column(db.Integer, db.ForeignKey('films.id'), nullable=False)
@@ -58,10 +68,12 @@ class PersonalFilm(db.Model):
 
 
 class FilmListItem(db.Model):
+    """Model that represents movies on users' personal lists."""
+
     __tablename__ = "movie_lists"
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    title = db.Column(db.String(80), nullable=False) # Will have to make this not unique in good version
+    title = db.Column(db.String(80), nullable=False) 
     year = db.Column(db.Integer, nullable=False)
     tmdb_id = db.Column(db.Integer, nullable=True)
     date = db.Column(db.String(10), nullable=True)

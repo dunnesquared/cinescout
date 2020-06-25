@@ -1,3 +1,5 @@
+"""Performs unit test on functions in `views.py`."""
+
 import os
 import unittest
 import json
@@ -612,7 +614,6 @@ class RouteTests(unittest.TestCase):
         self.login("Alex", "123")
         response = self.app.get('/browse')
         self.assertIn(b'Criterion Collection', response.data)
-
 
 
 if __name__ == "__main__":

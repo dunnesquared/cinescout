@@ -1,3 +1,5 @@
+"""Business logic classes of cinescout app."""
+
 import os
 import time
 import json
@@ -6,11 +8,9 @@ from datetime import datetime
 import requests
 from textwrap import dedent
 
+# For determining how similar two movie titles are.
 from fuzzywuzzy import fuzz
 
-# Get API key info
-# N.B. Use app.config['TMDB_KEY'] to set key below once class has been set up
-# from cinescout import app
 
 class Person:
     """Class representing a person in the film industry.
@@ -1082,7 +1082,6 @@ class NytMovieReview(MovieReview):
                 result['review'] = review
 
                 return result
-
 
         # More than one movie with same title in the same year!
         # Rare but can happen.

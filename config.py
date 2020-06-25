@@ -1,3 +1,5 @@
+"""Ensures data required for app to run properly is there from the start."""
+
 import os
 
 # Get absolute directory path of this file (i.e. the project's top-level directory)
@@ -5,6 +7,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 print(f"basedir={basedir}")
 
 class Config(object):
+	"""Class that retrieves and stores essential data for app."""
 
 	print("Configuing application...")
 

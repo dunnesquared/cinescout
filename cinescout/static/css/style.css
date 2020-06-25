@@ -44,8 +44,9 @@
   font-size: 80%;
 }
 
-.footnote-text {
+#footnote {
   font-size: 80%;
+  padding-bottom: 1em;
 }
 
 .movie-section-heading {

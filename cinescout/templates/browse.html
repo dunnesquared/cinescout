@@ -1,19 +1,18 @@
 {% extends "base.html" %}
 
-{% block title %}Browse{% endblock %} 
+{% block title %}Browse{% endblock %}
 
 {% block body %}
-  <h1>Browse</h1>
+  <h1 id="browse-top">Browse</h1>
   <br>
 
   <h2>The Criterion Collection</h2>
-
 
   {% if criterion_films %}
 
   <p>If you're in the mood to watch a piece of art rather than another mediocre
     blockbuster, then <a href="https://criterion.com" target="_blank" class="text-info">The Criterion Collection</a>
-    is a great place to start. Check it out!<sup>*</sup><br>
+    is a great place to start. Check it out!<a href="#footnote" class="text-white"><sup>*</sup></a><br>
   </p>
 
     <div class="table-responsive">
@@ -55,8 +54,11 @@
         </tbody>
     </table>
     </div>
-    <div class="footnote-text">
+    <div id="footnote" class="footnote-text">
       <sup>*</sup><em>This is a partial list of films in the collection. Fuller list coming soon!</em>
+    </div>
+    <div class="text-right">
+      <a href="#browse-top" class="text-white">Back to top ⇑</a>
     </div>
 {% endif %}
 

@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block body %}
+    <h1>Connection Error</h1>
+    <p>
+      Please ensure that you are connected to the internet
+      when using this app.
+    </p>
+    <p><a href="{{ url_for('index') }}" class="text-white">Return to homepage</a></p>
+{% endblock %}

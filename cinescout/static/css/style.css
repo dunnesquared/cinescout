@@ -1,0 +1,65 @@
+
+#main-content{
+  padding-top: 3em;
+}
+
+.red {
+  color: red;
+}
+
+#header-column {
+  width: 10%;
+}
+
+#content-column {
+  width: 90%;
+}
+
+.userlist-col{
+  width: 25%;
+}
+
+.browselist-col-title{
+  width: 25%;
+}
+
+.browselist-col-year{
+  width: 25%;
+}
+
+.browselist-col-director{
+  width: 50%;
+}
+
+.publication {
+  font-size: 80%;
+  font-weight: 600;
+  font-family: sans-serif;
+}
+
+.review-text {
+}
+
+#review-warning {
+  font-size: 80%;
+}
+
+#footnote {
+  font-size: 80%;
+  padding-bottom: 1em;
+}
+
+.movie-section-heading {
+  font-weight: 900;
+}
+
+.movie-section-row {
+  padding-bottom: 1em;
+}
+
+/* Ensures menu items appear on right side of view port when menu collapseed.
+Thanks: https://stackoverflow.com/questions/47518911/boostrap-4-navbar-collapse-menu-right-align/50881393
+*/
+.nav-item{
+   text-align: right;
+}

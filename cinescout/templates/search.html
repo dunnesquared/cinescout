@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Search{% endblock %} 
+
+{% block body %}
+<h1>Find a movie</h1>
+<br>
+
+<section>
+  <h2> By title </h2>
+
+  <form action="{{ url_for('search_results_title') }}" method="post">
+    {# Add token to prevent CRSF attacks #}
+     {{ title_form.hidden_tag() }}
+
+     <p>
+       {{ title_form.title.label }}<br>
+       {{ title_form.title(size=32) }}
+     </p>
+
+     {% for error in title_form.title.errors %}
+       <span style="color: red;">[{{ error }}]</span>
+     {% endfor %}
+
+      <div>{{ title_form.submit() }}</div>
+
+  </form>
+</section>
+
+<br>
+
+<section>
+  <h2> By person </h2>
+
+  <form action="{{ url_for('search_results_person') }}" method="post">
+    {# Add token to prevent CRSF attacks #}
+     {{ person_form.hidden_tag() }}
+
+     <p>
+       {{ person_form.name.label }}<br>
+       {{ person_form.name(size=32) }}<br>
+      </p>
+
+    <p>
+     {{ person_form.known_for.label }} <br>
+     {{ person_form.known_for }}
+     </p>
+
+     {% for error in person_form.name.errors %}
+       <span style="color: red;">[{{ error }}]</span>
+     {% endfor %}
+
+      <div>{{ person_form.submit() }}</div>
+
+  </form>
+</section>
+
+{% endblock %}

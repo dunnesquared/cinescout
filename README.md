@@ -1,4 +1,4 @@
-# Project 4 - Final Project
+# Final Project
 
 Web Programming with Python and JavaScript
 
@@ -11,12 +11,22 @@ more about almost any film or person in the world of cinema. With `Cinescout` yo
 - Create an account to add movies to a personal list for later reference.
 - Browse through a list of critically-acclaimed films from The Criterion Collection.
 
-## Meeting minimal requirements
+## Exceeding minimal requirements
 `Cinescout` uses Python, Javascript and an SQL ORM to implement its features.
 Flask and SQLAlchemy are used for the backend, whereas JavaScript is used
 for asynchronous AJAX client requests and some frontend UI magic.
 
-`Cinescout` is a mobile-responsive web application.
+`Cinescout` is a mobile-responsive web application that relies on `Bootstrap 4.5`
+for its look, feel and behaviour.
+
+`Cinescout` exceeds the complexity of previous projects in the following ways:
+- Uses two external APIs for its data; previous projects only required one.
+- The problem of getting a NYT movie review for a particular movie is a *hard* problem. My code to heuristically find and identify the correct movie is sophisticated, takes into account edge cases, uses Levenshtein distance ratios.... All previous assignments had problems that could be solved with relatively straightforward deterministic solutions.
+- A script is used to scrape data from *The Movie Database*, so the data can then be imported into the app's database. Previous projects did not have this requirement.
+- I wrote a `bash` setup script to make it easier for developers to set up the app. Not required in previous projects.
+- The app's routes are thoroughly unit-tested with the `unittest` framework. No testing was required in previous projects.
+- Passwords are stored as hashed strings in the database, a minimal security standard. Not expected in previous projects.
+- The project used multiple external dependencies (see below), many of which were neither discussed in the lectures nor used in previous projects.
 
 ## External dependencies
 This project depends on several external packages. Using these extensions

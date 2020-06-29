@@ -201,10 +201,67 @@ def remove_from_list():
 
 @app.route("/browse")
 def browse():
-    """Display list of critically-acclaimed movies."""
+    """Displays list of critically-acclaimed movies."""
     criterion_films = db.session.query(Film).join(CriterionFilm).all()
     return render_template("browse.html",
                             criterion_films=criterion_films)
+
+
+@app.route("/api/criterion-films")
+def browse_new():
+    """Builds data object required to display a list of critically-acclaimed movies.
+    on the client side.
+
+    Returns:
+        JSON object with the following fields:
+        In case of errors:
+            'success': Boolean set to False.
+            'err_message': String containing error message.
+        Otherwise:
+            'success': Boolean set to True.
+            'num_results': Integer of indicating number of movies returned.
+            'results': List of dictionaries where each represents a film.
+                'title': String representing a movie's title.
+                'year': String represent movie's release year.
+                'directors': A list of strings representing directors' namees.
+    """
+    criterion_films = db.session.query(Film).join(CriterionFilm).all()
+
+    # Check for error cases.
+    if criterion_films is None:
+        return jsonify({
+            'success': False,
+            'err_message': "Query for Criterion films returned NoneType object."
+        })
+
+    num_films = len(criterion_films)
+
+    if num_films == 0:
+        return jsonify({
+            'success': False,
+            'err_message': "Query for Criterion films returned no films."
+        })
+
+    # All good. Build JSON object.
+    movies = {
+        'success': True,
+        'num_results': len(criterion_films),
+        'results': []
+    }
+
+    # Extract film info from ORM object.
+    for film in criterion_films:
+        result = {}
+        result['title'] = film.title
+        result['year'] = film.year
+
+        directors = film.director.split('&')
+        directors = [ director.strip() for director in directors ]
+        result['directors'] = directors
+
+        movies['results'].append(result)
+
+    return jsonify(movies)
 
 
 @app.route("/search")

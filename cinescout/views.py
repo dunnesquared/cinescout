@@ -341,6 +341,28 @@ def search_results_person():
                             title_form=SearchByTitleForm())
 
 
+@app.route("/person-search", methods=["GET"])
+def search_results_person_get():
+    """Renders list of people in their associated fields in the movie
+    industry, via GET request."""
+    name = request.args.get('name')
+    known_for = request.args.get('known_for')
+    
+    result = TmdbMovie.get_person_list_by_name_known_for(name=name,
+                                                     known_for=known_for)
+
+    if not result['success']:
+        # Bad HTTP response from API call or...
+        if result['status_code'] != 200:
+            abort(result['status_code'])
+        else:
+            # No people to display.
+            return render_template("persons.html",
+                                     persons=result['persons'])
+
+    return render_template("persons.html", persons=result['persons'])
+
+
 @app.route("/person/<int:person_id>", methods=["GET"])
 def filmography(person_id):
     """Renders movie credits of a person in the movie industry.

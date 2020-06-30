@@ -37,21 +37,36 @@ document.addEventListener('DOMContentLoaded', () => {
           linkTitle.className = 'text-white';
           const textTitle = document.createTextNode(`${film.title}`);
           linkTitle.appendChild(textTitle);
-
-          // Get all directors names.
-          let directorsText = "";
-          if (film.directors.length > 1){
-            directorsText = film.directors.join(' & ')
-          }else{
-            directorsText = film.directors[0];
-          }
-
-          // cellTitle.innerHTML = film.title;
           cellTitle.append(linkTitle);
-          cellYear.innerHTML = film.year;
-          cellDirectors.innerHTML = directorsText;
-          //cellDirectors.innerHTML = film.directors[0];
 
+          // Add year film was released to table.
+          cellYear.innerHTML = film.year;
+
+          // Create list of hyperlinks for directors; append & in between.
+
+          // Many of the names in directors are not know specifically for 'Directing'
+          // E.g. Charlie Chaplin is better known for 'Acting'
+          const known_for = 'All';
+
+          // Go through list of directors...
+          for (let i = 0; i < film.directors.length; i++){
+            // Create hyperlink for each director.
+            const linkDirector = document.createElement('a');
+            linkDirector.href = `/person-search?name=${film.directors[i]}&known_for=${known_for}`
+            linkDirector.className = 'text-white';
+            const textDirector = document.createTextNode(`${film.directors[i]}`);
+            linkDirector.appendChild(textDirector);
+
+            // Append that link to the table cell for directors
+            cellDirectors.append(linkDirector)
+
+            // Determine whether to add an ampersand or just stop.
+            if (i === film.directors.length - 1){
+              break;
+            } else{
+              cellDirectors.append(' & ');
+            }
+          }
         });
 
         console.log(data.num_results);

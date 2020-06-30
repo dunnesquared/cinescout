@@ -207,8 +207,15 @@ def browse():
                             criterion_films=criterion_films)
 
 
-@app.route("/api/criterion-films")
+@app.route("/browse_new")
 def browse_new():
+    """Displays list of critically-acclaimed movies."""
+    criterion_films = db.session.query(Film).join(CriterionFilm).all()
+    return render_template("browse_new.html",
+                            criterion_films=criterion_films)
+
+@app.route("/api/criterion-films")
+def criterionfilm_api():
     """Builds data object required to display a list of critically-acclaimed movies.
     on the client side.
 
@@ -258,6 +265,8 @@ def browse_new():
         directors = film.director.split('&')
         directors = [ director.strip() for director in directors ]
         result['directors'] = directors
+
+        result['tmdb_id'] = film.tmdb_id
 
         movies['results'].append(result)
 

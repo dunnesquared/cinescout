@@ -2,82 +2,100 @@
 *@file Renders dynamic table of movies from The Criterion Collection.
 **/
 
+
 document.addEventListener('DOMContentLoaded', () => {
   console.log("browse.js");
 
-  const url = "api/criterion-films";
-  console.log(`Making AJAX request to ${url}...`);
+  document.querySelector("#table-footnote-container").style.visibility = 'hidden';
 
-  const request = new XMLHttpRequest();
-  request.open('GET', '/api/criterion-films');
 
-  request.onload = () => {
-      const data = JSON.parse(request.responseText);
+  // Show spinner for a few moments
+  setTimeout(function () {
+      // Hide spinner
+    let spinnerContainer = document.querySelector("#spinner-container");
+    spinnerContainer.style.display = 'none';
 
-      if (data.success){
-        console.log("Horray! Criterion film results returned.");
-        const films = data.results;
+    const url = "api/criterion-films";
+    console.log(`Making AJAX request to ${url}...`);
 
-        let criterionTable = document.getElementById("criterion-table").getElementsByTagName('tbody')[0];
+    const request = new XMLHttpRequest();
+    request.open('GET', '/api/criterion-films');
 
-        films.forEach(film => {
-          console.log(`${film.title}, ${film.year}, ${film.directors}`);
+    request.onload = () => {
+        const data = JSON.parse(request.responseText);
 
-          // Create row.
-          let row = criterionTable.insertRow();
+        if (data.success){
+          console.log("Horray! Criterion film results returned.");
+          const films = data.results;
 
-          // Create cells in row.
-          let cellTitle = row.insertCell(0);
-          let cellYear = row.insertCell(1);
-          let cellDirectors = row.insertCell(2);
+          let criterionTable = document.getElementById("criterion-table").getElementsByTagName('tbody')[0];
 
-          // Create anchor that will link to movie page of given title.
-          const linkTitle = document.createElement('a');
-          linkTitle.href = `/movie/${film.tmdb_id}`
-          linkTitle.className = 'text-white';
-          const textTitle = document.createTextNode(`${film.title}`);
-          linkTitle.appendChild(textTitle);
-          cellTitle.append(linkTitle);
+          films.forEach(film => {
+            console.log(`${film.title}, ${film.year}, ${film.directors}`);
 
-          // Add year film was released to table.
-          cellYear.innerHTML = film.year;
+            // Create row.
+            let row = criterionTable.insertRow();
 
-          // Create list of hyperlinks for directors; append & in between.
+            // Create cells in row.
+            let cellTitle = row.insertCell(0);
+            let cellYear = row.insertCell(1);
+            let cellDirectors = row.insertCell(2);
 
-          // Many of the names in directors are not know specifically for 'Directing'
-          // E.g. Charlie Chaplin is better known for 'Acting'
-          const known_for = 'All';
+            // Create anchor that will link to movie page of given title.
+            const linkTitle = document.createElement('a');
+            linkTitle.href = `/movie/${film.tmdb_id}`
+            linkTitle.className = 'text-white';
+            const textTitle = document.createTextNode(`${film.title}`);
+            linkTitle.appendChild(textTitle);
+            cellTitle.append(linkTitle);
 
-          // Go through list of directors...
-          for (let i = 0; i < film.directors.length; i++){
-            // Create hyperlink for each director.
-            const linkDirector = document.createElement('a');
-            linkDirector.href = `/person-search?name=${film.directors[i]}&known_for=${known_for}`
-            linkDirector.className = 'text-white';
-            const textDirector = document.createTextNode(`${film.directors[i]}`);
-            linkDirector.appendChild(textDirector);
+            // Add year film was released to table.
+            cellYear.innerHTML = film.year;
 
-            // Append that link to the table cell for directors
-            cellDirectors.append(linkDirector)
+            // Create list of hyperlinks for directors; append & in between.
 
-            // Determine whether to add an ampersand or just stop.
-            if (i === film.directors.length - 1){
-              break;
-            } else{
-              cellDirectors.append(' & ');
+            // Many of the names in directors are not know specifically for 'Directing'
+            // E.g. Charlie Chaplin is better known for 'Acting'
+            const known_for = 'All';
+
+            // Go through list of directors...
+            for (let i = 0; i < film.directors.length; i++){
+              // Create hyperlink for each director.
+              const linkDirector = document.createElement('a');
+              linkDirector.href = `/person-search?name=${film.directors[i]}&known_for=${known_for}`
+              linkDirector.className = 'text-white';
+              const textDirector = document.createTextNode(`${film.directors[i]}`);
+              linkDirector.appendChild(textDirector);
+
+              // Append that link to the table cell for directors
+              cellDirectors.append(linkDirector)
+
+              // Determine whether to add an ampersand or just stop.
+              if (i === film.directors.length - 1){
+                break;
+              } else{
+                cellDirectors.append(' & ');
+              }
             }
-          }
-        });
+          });
 
-        console.log(data.num_results);
-        console.log(data.results);
+          console.log(data.num_results);
+          console.log(data.results);
+
+          document.querySelector("#table-footnote-container").style.visibility = 'visible';
+        }
+        else {
+          console.log("Oh no...");
+        }
 
       }
-      else {
-        console.log("Oh no...");
-      }
-    }
 
-  request.send();
+    // Send data
+    request.send();
+
+  }, 800);
+
+
+
 
 });

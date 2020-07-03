@@ -2,8 +2,15 @@
 
 {% block title %}Browse{% endblock %}
 
+{% block css %}
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/dataTables.bootstrap4.min.css">
+{% endblock %}
+
+
 {% block javascript %}
   <script src="{{ url_for('static', filename='js/browse.js') }}"></script>
+  <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js"></script>
 {% endblock %}
 
 {% block body %}
@@ -20,7 +27,7 @@
   </p>
 
 
-
+  <!-- Bootstrap loading spinning wheel! -->
   <div id='spinner-container' class="text-center">
     <br>
     <div class="spinner-border" style="width: 10rem; height: 10rem;" role="status">
@@ -33,12 +40,12 @@
         <table id="criterion-table" class="table table-hover table-dark">
 
           <colgroup>
-            <!-- <col span=1 class="browselist-col-title">
+            <col span=1 class="browselist-col-title">
             <col span=1 class="browselist-col-year">
-            <col span=1 class="browselist-col-director"> -->
+            <col span=1 class="browselist-col-director">
+            <!-- <col span=1>
             <col span=1>
-            <col span=1>
-            <col span=1>
+            <col span=1> -->
           </colgroup>
 
           <thead>
@@ -55,6 +62,7 @@
         </table>
       </div>
 
+      <br>
       <div id="footnote" class="footnote-text">
         <sup>*</sup><em>This is a partial list of films in the collection. Fuller list coming soon!</em>
       </div>

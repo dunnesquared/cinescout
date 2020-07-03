@@ -20,15 +20,15 @@
 }
 
 .browselist-col-title{
-  width: 25%;
+  width: 40%;
 }
 
 .browselist-col-year{
-  width: 25%;
+  width: 20%;
 }
 
 .browselist-col-director{
-  width: 50%;
+  width: 40%;
 }
 
 .publication {
@@ -62,4 +62,13 @@ Thanks: https://stackoverflow.com/questions/47518911/boostrap-4-navbar-collapse-
 */
 .nav-item{
    text-align: right;
+}
+
+#criterion-table_filter {
+  padding-top: 1em;
+  text-align: left;
+}
+
+.table-cell {
+  word-wrap: break-word;
 }

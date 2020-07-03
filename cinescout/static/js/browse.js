@@ -59,7 +59,7 @@ function fetchCriterionTableData() {
         console.log("Horray! Criterion film results returned.");
 
         const films = data.results;
-        createTable(films);
+        populateTable(films);
 
         // Display table.
         document.querySelector("#table-footnote-container").style.visibility = 'visible';
@@ -80,7 +80,7 @@ function fetchCriterionTableData() {
 /**
 * Populates table rows with data.
 */
-function createTable (films) {
+function populateTable (films) {
 
   let criterionTable = document.getElementById("criterion-table").getElementsByTagName('tbody')[0];
 
@@ -98,7 +98,7 @@ function createTable (films) {
     // Create anchor that will link to movie page of given title.
     const linkTitle = document.createElement('a');
     linkTitle.href = `/movie/${film.tmdb_id}`
-    linkTitle.className = 'text-white';
+    linkTitle.className = 'text-white table-cell';
     const textTitle = document.createTextNode(`${film.title}`);
     linkTitle.appendChild(textTitle);
     cellTitle.append(linkTitle);
@@ -117,7 +117,7 @@ function createTable (films) {
       // Create hyperlink for each director.
       const linkDirector = document.createElement('a');
       linkDirector.href = `/person-search?name=${film.directors[i]}&known_for=${known_for}`
-      linkDirector.className = 'text-white';
+      linkDirector.className = 'text-white table-cell';
       const textDirector = document.createTextNode(`${film.directors[i]}`);
       linkDirector.appendChild(textDirector);
 
@@ -132,4 +132,18 @@ function createTable (films) {
       }
     }
   });
+
+  // Use DataTables jQuery extension to provide sortable rows and other features.
+  $(document).ready( function () {
+    // dom => for positioning Search filter box to the left.
+    // paging => Don't want pagination feature on.
+    // order => Should display movies from oldest to newest
+    $('#criterion-table').DataTable( {
+        "dom": '<"wrapper"ft>',
+        'paging': false,
+        'order': [[1, "asc"]],
+        'responsive': true
+      } );
+  } );
+
 }

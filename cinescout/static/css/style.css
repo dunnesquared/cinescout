@@ -64,6 +64,10 @@ Thanks: https://stackoverflow.com/questions/47518911/boostrap-4-navbar-collapse-
    text-align: right;
 }
 
+/*
+Used to pad and left-align the Search box provided via the jQuery TableData 
+plug-in
+*/
 #criterion-table_filter {
   padding-top: 1em;
   text-align: left;

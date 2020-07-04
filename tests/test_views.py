@@ -5,7 +5,7 @@ import unittest
 import json
 
 # Add this line to whatever test script you write
-from context import app, db, basedir, User
+from context import app, db, basedir, User, Film, CriterionFilm
 
 
 class RouteTests(unittest.TestCase):
@@ -69,6 +69,23 @@ class RouteTests(unittest.TestCase):
               data=dict(tmdb_id=tmdb_id,
                       follow_redirects=True))
 
+    def add_MulhollandDrive_to_criterion_browse_list(self):
+        title = "Mulholland Dr."
+        release_year = 2001
+        tmdb_id = 1018
+        director = "David Lynch"
+
+        # Create film in db
+        film = Film(title=title, year=release_year,
+                    tmdb_id=tmdb_id, director=director)
+        db.session.add(film)
+        db.session.commit()
+
+        # Ensure that film is known as a Criterion Film
+        film_id = film.id
+        criterion_film = CriterionFilm(film_id=film_id)
+        db.session.add(criterion_film)
+        db.session.commit()
     # +++++++++++++++++++++++++++++++ TESTS +++++++++++++++++++++++++++++++++
 
     # *** INDEX ***
@@ -614,6 +631,32 @@ class RouteTests(unittest.TestCase):
         self.login("Alex", "123")
         response = self.app.get('/browse')
         self.assertIn(b'Criterion Collection', response.data)
+
+    # Check if Criterion film on browse list
+    # N.B. This test won't work because relies on JS to execute on client
+    # side to display movies in browser, not HTML rendered server-side.
+    # def test_browse_film_on_list(self):
+    #     self.add_MulhollandDrive_to_criterion_browse_list()
+    #     response = self.app.get('/browse')
+    #     self.assertIn(b'Mulholland Dr.', response.data)
+
+    # CRITERION API
+    # No movies in db table
+    def test_criterion_api_no_entries(self):
+        response = self.app.get('/api/criterion-films', data=dict())
+        data = json.loads(response.get_data(as_text=True))
+        self.assertFalse(data['success'])
+        self.assertIn('no films', data['err_message'])
+
+    # One Criterion movie in db
+    def test_criterion_api_ok(self):
+        self.add_MulhollandDrive_to_criterion_browse_list()
+        response = self.app.get('/api/criterion-films', data=dict())
+        data = json.loads(response.get_data(as_text=True))
+        self.assertTrue(data['success'])
+        self.assertEqual(data['num_results'], 1)
+        self.assertIn(data['results'][0]['title'], 'Mulholland Dr.')
+        self.assertIn(data['results'][0]['directors'][0], 'David Lynch')
 
 
 if __name__ == "__main__":

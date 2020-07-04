@@ -15,4 +15,4 @@ print(f"New path inserted into sys.path:\n{new_path}")
 
 from cinescout import app, db
 from config import basedir
-from cinescout.models import User
+from cinescout.models import User, Film, CriterionFilm

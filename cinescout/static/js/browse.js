@@ -68,7 +68,9 @@ function fetchCriterionTableData() {
         console.log(data.results);
       }
       else {
-        console.log("Oh no...");
+        // Film could not be added for some reason...
+        console.error(`Error: ${data.err_message}`);
+        alert(`Error: Failed to load CriterionTable data:\n${data.err_message}`);
       }
     }
 

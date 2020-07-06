@@ -345,9 +345,10 @@ def search_results_person():
 def search_results_person_get():
     """Renders list of people in their associated fields in the movie
     industry, via GET request."""
+
     name = request.args.get('name')
     known_for = request.args.get('known_for')
-    
+
     result = TmdbMovie.get_person_list_by_name_known_for(name=name,
                                                      known_for=known_for)
 
@@ -388,11 +389,21 @@ def filmography(person_id):
                                      crew=None,
                                      no_films=True)
 
+
+    print(f"Getting person bio data for {name}...")
+    bio_data = TmdbMovie.get_bio_data_by_person_id(person_id)
+
+    if not bio_data['success']:
+        # Bad HTTP response from API call or...
+        if bio_data['status_code'] != 200:
+            abort(bio_data['status_code'])
+
     return render_template("filmography.html",
                              cast=filmography_data.get('cast'),
                              crew=filmography_data.get('crew'),
                              no_films=False,
-                             name=name)
+                             name=name,
+                             person_image_url=bio_data.get('image_url'))
 
 
 @app.route("/movie/<int:tmdb_id>", methods=["GET"])

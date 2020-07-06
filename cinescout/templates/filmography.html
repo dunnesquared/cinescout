@@ -9,6 +9,15 @@
     There are no films for this person.
   {% endif %}
 
+  <div>
+    {% if person_image_url %}
+      <img src="{{ person_image_url }}" class="border border-white"></img>
+    {% else %}
+      <p>No photo available for this person.</p>
+    {% endif %}
+  </div>
+  <br>
+
     <h2> Cast </h2>
 
     {% if cast|length > 0 %}
@@ -39,7 +48,6 @@
     <p> There are no cast entries for this person. </p>
   {% endif %}
 
-  <br>
 
     <h2> Crew </h2>
 

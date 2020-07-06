@@ -289,6 +289,65 @@ class TmdbMovie(Movie):
 
         return result
 
+    @classmethod
+    def get_bio_data_by_person_id(cls, person_id):
+        """Returns details of cast/crew member (limited implementation).
+
+        Args:
+            person_id: Integer representing id of person in TMDB database.
+
+        Returns:
+            result: A dictionary with four fields fields:
+                success: True or False, depending on wheter person found.
+                status_code: Status code of Http response of api call.
+                image_url: String representing absolute url for cast/crew
+                           member's image. Returns None if you no image foud.
+        """
+
+        # Setup return value
+        result = {'success': True, 'status_code': 200, 'image_url': None}
+
+
+        # Make request.
+        print(f"Requesting person data from TMDB api with person_id={person_id}...",
+                end="")
+        res = requests.get(f"https://api.themoviedb.org/3/person/{person_id}",
+                            params={"api_key": cls.api_key})
+
+
+        # Check request.
+        if res.status_code != 200:
+            print(f"FAILED! status_code={res.status_code}")
+            result['success'] = False
+            result['status_code'] = res.status_code
+            return result
+
+        # Unpack.
+        print("SUCCESS!")
+        print("Extracting person data from TMDB JSON response....")
+
+        # Deserialize JSON response object
+        tmdb_person_data = res.json()
+
+        # See whether relative url or null returned.
+        if tmdb_person_data['profile_path'] is None:
+            return result
+
+        # Check for empty strings, just in case.
+        if tmdb_person_data['profile_path'].strip() == '':
+            return result
+
+        # Build image url for person.
+        # Use 'w185' size for image (relatively small).
+        # See https://developers.themoviedb.org/3/configuration/get-api-configuration
+        # for valid image sizes.
+        img_full_url = cls.poster_base_url + 'w185' + tmdb_person_data['profile_path']
+
+        result['image_url'] = img_full_url
+
+        # return url or none.
+        return result
+
 
     @classmethod
     def get_movie_list_by_person_id(cls, person_id):

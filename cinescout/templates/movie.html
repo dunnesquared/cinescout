@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}"{{ movie.title }}" ({{movie.release_year}}) {% endblock %} 
+{% block title %}"{{ movie.title }}" ({{movie.release_year}}) {% endblock %}
 
 {% block javascript %}
   <script src="{{ url_for('static', filename='js/addremove.js') }}"></script>

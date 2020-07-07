@@ -64,8 +64,32 @@ Thanks: https://stackoverflow.com/questions/47518911/boostrap-4-navbar-collapse-
    text-align: right;
 }
 
+.navbar-nav > li:hover{
+  background-color: #4d4d4d;
+  border-radius: 4px;
+}
+
+.navbar-nav > li > a{
+  margin-left: 10px;
+  margin-right: 10px;
+  font-weight: bold;
+}
+
+.navbar-collapse {
+  padding-top: 0.5em;
+}
+
+#mynavbar{
+  padding-bottom: 0.3em;
+  padding-top: 0.3em;
+}
+
+#mynavlogo{
+  padding-bottom: 0px;
+}
+
 /*
-Used to pad and left-align the Search box provided via the jQuery TableData 
+Used to pad and left-align the Search box provided via the jQuery TableData
 plug-in
 */
 #criterion-table_filter {

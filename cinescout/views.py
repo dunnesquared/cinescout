@@ -292,7 +292,9 @@ def search_results_title():
 
     if form.validate_on_submit():
         # Gets list of movies based on given title.
-        result = TmdbMovie.get_movie_list_by_title(form.title.data.strip())
+        form_title = form.title.data.strip()
+
+        result = TmdbMovie.get_movie_list_by_title(form_title)
 
         # Something went wrong...
         if not result['success']:
@@ -301,9 +303,11 @@ def search_results_title():
                 abort(result['status_code'])
             else:
                 # No movies found for given title.
-                return render_template("results.html", movies=None)
+                return render_template("results.html", movies=None,
+                                        form_title=form_title)
 
-        return render_template("results.html", movies=result['movies'])
+        return render_template("results.html", movies=result['movies'],
+                                form_title=form_title)
 
     # In case users GET this route, or the form data is invalid.
     return render_template("search.html",
@@ -331,9 +335,12 @@ def search_results_person():
             else:
                 # No people to display.
                 return render_template("persons.html",
-                                         persons=result['persons'])
+                                         persons=result['persons'],
+                                         name=name)
 
-        return render_template("persons.html", persons=result['persons'])
+        return render_template("persons.html",
+                                persons=result['persons'],
+                                name=name)
 
     # In case users GET this route, or the form data is invalid.
     return render_template("search.html",
@@ -359,9 +366,10 @@ def search_results_person_get():
         else:
             # No people to display.
             return render_template("persons.html",
-                                     persons=result['persons'])
+                                     persons=result['persons'],
+                                     name=name)
 
-    return render_template("persons.html", persons=result['persons'])
+    return render_template("persons.html", persons=result['persons'], name=name)
 
 
 @app.route("/person/<int:person_id>", methods=["GET"])

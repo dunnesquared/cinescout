@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 {% block title %}Filmography of {{ name }}{% endblock %}
 
+{% block javascript %}
+<script type="module" src="{{ url_for('static', filename='js/loadspinner.js') }}"></script>
+{% endblock %}
+
 {% block body %}
   <h1>Filmography: {{ name }}</h1>
   <br>
@@ -26,7 +30,7 @@
       {% for cast_item in cast %}
 
         <li>
-          <a href="{{ url_for('movie_info', tmdb_id=cast_item['movie'].id )}}" class="text-white">
+          <a href="{{ url_for('movie_info', tmdb_id=cast_item['movie'].id )}}" class="movie-link text-white">
             <strong>{{ cast_item['movie'].title }}</strong>
 
             {% if cast_item['movie'].title != cast_item['movie'].original_title and cast_item['movie'].original_title is not none %}
@@ -39,6 +43,7 @@
               (Release date: Unknown,
             {% endif %}
             Character: {{ cast_item['character'] }})
+            <span class="spinner-border spinner-border-sm"></span>
           </a>
         </li>
       {% endfor %}
@@ -55,7 +60,7 @@
       <ul>
       {% for crew_item in crew %}
         <li>
-          <a href="{{ url_for('movie_info', tmdb_id=crew_item['movie'].id )}}" class="text-white">
+          <a href="{{ url_for('movie_info', tmdb_id=crew_item['movie'].id )}}" class="movie-link text-white">
             <strong>{{ crew_item['movie'].title }}</strong>
 
             {% if crew_item['movie'].title != crew_item['movie'].original_title and crew_item['movie'].original_title is not none %}
@@ -68,6 +73,7 @@
               (Release date: Unknown,
             {% endif %}
             Job: {{ crew_item['job'] }})
+            <span class="spinner-border spinner-border-sm"></span>
           </a>
         </li>
       {% endfor %}

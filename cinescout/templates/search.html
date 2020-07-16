@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Search{% endblock %} 
+{% block title %}Search{% endblock %}
 
 {% block body %}
 <h1>Find a movie</h1>
@@ -19,10 +19,10 @@
      </p>
 
      {% for error in title_form.title.errors %}
-       <span style="color: red;">[{{ error }}]</span>
+       <span style="color: pink;">[{{ error }}]</span>
      {% endfor %}
 
-      <div>{{ title_form.submit() }}</div>
+      <div>{{ title_form.submit(class="btn btn-secondary") }}</div>
 
   </form>
 </section>
@@ -43,14 +43,14 @@
 
     <p>
      {{ person_form.known_for.label }} <br>
-     {{ person_form.known_for }}
+     {{ person_form.known_for(class="form-control-sm") }}
      </p>
 
      {% for error in person_form.name.errors %}
-       <span style="color: red;">[{{ error }}]</span>
+       <span style="color: pink;">[{{ error }}]</span>
      {% endfor %}
 
-      <div>{{ person_form.submit() }}</div>
+      <div>{{ person_form.submit(class="btn btn-secondary") }}</div>
 
   </form>
 </section>

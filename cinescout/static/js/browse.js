@@ -2,9 +2,11 @@
 *@file Renders dynamic table of movies from The Criterion Collection.
 **/
 
+import { showMovieSpinners } from './loadspinner.js'
+
 // Timeout function's time limit, in milliseconds.
 const TIME_MAX = 800;
-
+const MOVIE_SPINNER_DELAY = 10000;
 
 /**
 * Displays Criterion movies list.
@@ -33,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
 * Hides loading spinner.
 */
 function hideSpinner () {
-  // Hide spinner
+  // Hide spinner.
   let spinnerContainer = document.querySelector("#spinner-container");
   spinnerContainer.style.display = 'none';
 };
@@ -50,6 +52,7 @@ function fetchCriterionTableData() {
   const request = new XMLHttpRequest();
   request.open('GET', '/api/criterion-films');
 
+  // Callback function.
   request.onload = () => {
 
       const data = JSON.parse(request.responseText);
@@ -60,12 +63,13 @@ function fetchCriterionTableData() {
 
         const films = data.results;
         populateTable(films);
+        showMovieSpinners(MOVIE_SPINNER_DELAY);
 
         // Display table.
         document.querySelector("#table-footnote-container").style.visibility = 'visible';
 
-        console.log(data.num_results);
-        console.log(data.results);
+        // console.log(data.num_results);
+        // console.log(data.results);
       }
       else {
         // Film could not be added for some reason...
@@ -87,7 +91,7 @@ function populateTable (films) {
   let criterionTable = document.getElementById("criterion-table").getElementsByTagName('tbody')[0];
 
   films.forEach(film => {
-    console.log(`${film.title}, ${film.year}, ${film.directors}`);
+    // console.log(`${film.title}, ${film.year}, ${film.directors}`);
 
     // Create row.
     let row = criterionTable.insertRow();
@@ -100,9 +104,16 @@ function populateTable (films) {
     // Create anchor that will link to movie page of given title.
     const linkTitle = document.createElement('a');
     linkTitle.href = `/movie/${film.tmdb_id}`
-    linkTitle.className = 'text-white table-cell';
+    linkTitle.className = 'text-white table-cell movie-link';
     const textTitle = document.createTextNode(`${film.title}`);
     linkTitle.appendChild(textTitle);
+    // Add a space between the spinner and the title's text.
+    linkTitle.innerHTML += '&nbsp;';
+    // Append spinner to movie titles that shows when title is clicked.
+    const spinnerTitle = document.createElement('span');
+    spinnerTitle.className = "spinner-border spinner-border-sm";
+    linkTitle.appendChild(spinnerTitle);
+    // Ready to add title to cell to cell.
     cellTitle.append(linkTitle);
 
     // Add year film was released to table.
@@ -147,5 +158,4 @@ function populateTable (films) {
         'responsive': true
       } );
   } );
-
 }

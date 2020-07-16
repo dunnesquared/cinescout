@@ -292,7 +292,9 @@ def search_results_title():
 
     if form.validate_on_submit():
         # Gets list of movies based on given title.
-        result = TmdbMovie.get_movie_list_by_title(form.title.data.strip())
+        form_title = form.title.data.strip()
+
+        result = TmdbMovie.get_movie_list_by_title(form_title)
 
         # Something went wrong...
         if not result['success']:
@@ -301,9 +303,11 @@ def search_results_title():
                 abort(result['status_code'])
             else:
                 # No movies found for given title.
-                return render_template("results.html", movies=None)
+                return render_template("results.html", movies=None,
+                                        form_title=form_title)
 
-        return render_template("results.html", movies=result['movies'])
+        return render_template("results.html", movies=result['movies'],
+                                form_title=form_title)
 
     # In case users GET this route, or the form data is invalid.
     return render_template("search.html",
@@ -331,9 +335,12 @@ def search_results_person():
             else:
                 # No people to display.
                 return render_template("persons.html",
-                                         persons=result['persons'])
+                                         persons=result['persons'],
+                                         name=name)
 
-        return render_template("persons.html", persons=result['persons'])
+        return render_template("persons.html",
+                                persons=result['persons'],
+                                name=name)
 
     # In case users GET this route, or the form data is invalid.
     return render_template("search.html",
@@ -345,9 +352,10 @@ def search_results_person():
 def search_results_person_get():
     """Renders list of people in their associated fields in the movie
     industry, via GET request."""
+
     name = request.args.get('name')
     known_for = request.args.get('known_for')
-    
+
     result = TmdbMovie.get_person_list_by_name_known_for(name=name,
                                                      known_for=known_for)
 
@@ -358,9 +366,10 @@ def search_results_person_get():
         else:
             # No people to display.
             return render_template("persons.html",
-                                     persons=result['persons'])
+                                     persons=result['persons'],
+                                     name=name)
 
-    return render_template("persons.html", persons=result['persons'])
+    return render_template("persons.html", persons=result['persons'], name=name)
 
 
 @app.route("/person/<int:person_id>", methods=["GET"])
@@ -388,11 +397,21 @@ def filmography(person_id):
                                      crew=None,
                                      no_films=True)
 
+
+    print(f"Getting person bio data for {name}...")
+    bio_data = TmdbMovie.get_bio_data_by_person_id(person_id)
+
+    if not bio_data['success']:
+        # Bad HTTP response from API call or...
+        if bio_data['status_code'] != 200:
+            abort(bio_data['status_code'])
+
     return render_template("filmography.html",
                              cast=filmography_data.get('cast'),
                              crew=filmography_data.get('crew'),
                              no_films=False,
-                             name=name)
+                             name=name,
+                             person_image_url=bio_data.get('image_url'))
 
 
 @app.route("/movie/<int:tmdb_id>", methods=["GET"])

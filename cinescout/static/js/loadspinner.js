@@ -5,7 +5,7 @@
 
 console.log("loadspinner.js");
 
-// After X milliseconds, stop showing the spinner. 
+// After X milliseconds, stop showing the spinner.
 const DELAY = 10000;
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 /**
 * Adds spinners next to movie hyperlinks that are clicked.
-* Export function so it can be used in other scripts such as browsw.js.
+* Export function so it can be used in other scripts such as browse.js.
 */
 export function showMovieSpinners (delay) {
 

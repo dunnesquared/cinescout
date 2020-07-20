@@ -24,11 +24,19 @@ def too_many_requests_error(e):
                    "before your next query.")
     return render_template("errors/429.html", err_message=err_message), 429
 
+@app.errorhandler(422)
+def unprocessable_entity(e):
+    """Something is likely wrong with one or more query paramaters passed
+    in the URL (e.g. movie_title is set not given a value).
+    """
+    err_message = ("Unprocessable Entity. Check that the values of the query "
+                   "parameters in the URL are valid.")
+    return render_template("errors/422.html", err_message=err_message), 422
+
 @app.errorhandler(requests.exceptions.ConnectionError)
 def connection_error(e):
     """Connection error; mostly likely raised if internet is down."""
     return render_template("errors/connection-error.html")
-
 
 # THIS CODE WILL SUPERSEDE INTERACTIVE DEBUGGER DURING DEVELOPMENT
 # DO NOT ENABLE UNTIL YOU HAVE LOGGING/EMAILING OF ERRORS

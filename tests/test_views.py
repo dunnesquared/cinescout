@@ -280,6 +280,27 @@ class RouteTests(unittest.TestCase):
             data=dict(title=None), follow_redirects=True)
         self.assertIn(b'This field is required.', response.data)
 
+    def test_search_title_GET(self):
+        title="Mulholland Drive"
+        response = self.app.get(f'movie-search-results?movie_title={title}')
+        self.assertIn(b'2001-09-08', response.data)
+
+    def test_search_title_GET_not_exist(self):
+        title="eiwr43t984h3tkjdnfg,df.gmdf.glkto"
+        response = self.app.get(f'movie-search-results?movie_title={title}')
+        self.assertIn(b'There are no movies matching that title.',
+                        response.data)
+
+    def test_search_title_GET_blank(self):
+        title=""
+        response = self.app.get(f'movie-search-results?movie_title={title}')
+        self.assertIn(b'422', response.data)
+
+    def test_search_title_GET_None(self):
+        response = self.app.get(f'movie-search-results?')
+        self.assertIn(b'422', response.data)
+
+
     # *** SEARCH - Person Search ***
     def test_search_page_person(self):
         response = self.app.get('/search', follow_redirects=True)
@@ -657,6 +678,7 @@ class RouteTests(unittest.TestCase):
         self.assertEqual(data['num_results'], 1)
         self.assertIn(data['results'][0]['title'], 'Mulholland Dr.')
         self.assertIn(data['results'][0]['directors'][0], 'David Lynch')
+
 
 
 if __name__ == "__main__":

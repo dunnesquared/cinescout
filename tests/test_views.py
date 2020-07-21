@@ -61,13 +61,13 @@ class RouteTests(unittest.TestCase):
         return self.app.post('/add-to-list',
                    data=dict(tmdb_id=tmdb_id, title=title,
                            year=year, date=date,
-                           original_title=original_title,
-                           follow_redirects=True))
+                           original_title=original_title),
+                           follow_redirects=True)
 
     def remove_film_from_list(self, tmdb_id=None):
         return self.app.post('/remove-from-list',
-              data=dict(tmdb_id=tmdb_id,
-                      follow_redirects=True))
+              data=dict(tmdb_id=tmdb_id),
+                      follow_redirects=True)
 
     def add_MulhollandDrive_to_criterion_browse_list(self):
         title = "Mulholland Dr."
@@ -310,22 +310,22 @@ class RouteTests(unittest.TestCase):
     def test_search_person_exists(self):
         response = self.app.post(
             '/person-search-results',
-            data=dict(name="Gabriel Byrne", known_for="Acting",
-                    follow_redirects=True))
+            data=dict(name="Gabriel Byrne", known_for="Acting"),
+                    follow_redirects=True)
         self.assertIn(b'Gabriel Byrne', response.data)
 
     def test_search_person_not_exist(self):
         response = self.app.post(
             '/person-search-results',
-            data=dict(name="433u5h6krbtrbhtertkejb56k5363", known_for="All",
-                     follow_redirects=True))
+            data=dict(name="433u5h6krbtrbhtertkejb56k5363", known_for="All"),
+                     follow_redirects=True)
         self.assertIn(b'No persons matching description found.', response.data)
 
     def test_search_person_blank(self):
         response = self.app.post(
             '/person-search-results',
-            data=dict(name="\t\n\r    ", known_for="All",
-                     follow_redirects=True))
+            data=dict(name="\t\n\r    ", known_for="All"),
+                     follow_redirects=True)
         self.assertIn(b'This field is required.', response.data)
 
     def test_search_person_valid_id(self):
@@ -358,6 +358,30 @@ class RouteTests(unittest.TestCase):
         response = self.app.get(f'/person/{id}')
         self.assertIn(b'404: Page Not Found', response.data)
 
+    def test_search_person_GET(self):
+        name = "Paul Newman"
+        known_for = "All"
+        response = self.app.get(f'person-search?name={name}&known_for={known_for}')
+        self.assertIn(b'Harry Paul Newman', response.data)
+
+    def test_search_person_GET_name_not_exist(self):
+        known_for = "All"
+        response = self.app.get(f'person-search?name=&known_for={known_for}')
+        self.assertIn(b'422', response.data)
+
+    def test_search_person_GET_known_for_not_exist(self):
+        name = "Paul Newman"
+        response = self.app.get(f'person-search?name={name}&known_for=')
+        self.assertIn(b'422', response.data)
+
+    def test_search_person_GET_name_exists_not_known_for(self):
+        name = "Paul Newman"
+        response = self.app.get(f'person-search?name={name}')
+        self.assertIn(b'Harry Paul Newman', response.data)
+
+    def test_search_person_GET_no_values(self):
+        response = self.app.get(f'person-search?')
+        self.assertIn(b'422', response.data)
 
     # *** MOVIE PAGE ***
     # All major headings there
@@ -391,8 +415,8 @@ class RouteTests(unittest.TestCase):
     def test_movie_page_add_not_logged_in(self):
         response = self.app.post(
             '/add-to-list',
-            data=dict(tmdb_id="1018", title="Mulholland Drive", year="2001",
-                    follow_redirects=True))
+            data=dict(tmdb_id="1018", title="Mulholland Drive", year="2001"),
+                    follow_redirects=True)
 
         self.assertIn(b'Access Denied', response.data)
 
@@ -402,8 +426,8 @@ class RouteTests(unittest.TestCase):
         response = self.app.post('/add-to-list',
                 data=dict(tmdb_id="1018", title="Mulholland Drive",
                         year="2001", date="2001-09-08",
-                        original_title="Mulholland Drive",
- 						follow_redirects=True))
+                        original_title="Mulholland Drive"),
+ 						follow_redirects=True)
         data = json.loads(response.get_data(as_text=True))
         self.assertTrue(data['success'])
 
@@ -414,8 +438,8 @@ class RouteTests(unittest.TestCase):
         response = self.app.post('/add-to-list',
                 data=dict(tmdb_id="1018", title="Mulholland Drive",
                         year="2001", date="2001-09-08",
-                        original_title="Mulholland Drive",
-                        follow_redirects=True))
+                        original_title="Mulholland Drive"),
+                        follow_redirects=True)
         data = json.loads(response.get_data(as_text=True))
         self.assertTrue(data['success'])
 
@@ -423,8 +447,8 @@ class RouteTests(unittest.TestCase):
         response = self.app.post('/add-to-list',
                    data=dict(tmdb_id="1018", title="Mulholland Drive",
                            year="2001", date="2001-09-08",
-                           original_title="Mulholland Drive",
-                           follow_redirects=True))
+                           original_title="Mulholland Drive"),
+                           follow_redirects=True)
         data = json.loads(response.get_data(as_text=True))
         self.assertFalse(data['success'])
 
@@ -436,16 +460,16 @@ class RouteTests(unittest.TestCase):
         response = self.app.post('/add-to-list',
                  data=dict(tmdb_id="", title=" ",
                          year=" ", date="",
-                         original_title="  ",
-                         follow_redirects=True))
+                         original_title="  "),
+                         follow_redirects=True)
         data = json.loads(response.get_data(as_text=True))
         self.assertFalse(data['success'])
 
         # None types
         response = self.app.post('/add-to-list',
                 data=dict(tmdb_id=None, title=None, year=None,
-                        original_title=None, date=None,
-                        follow_redirects=True))
+                        original_title=None, date=None),
+                        follow_redirects=True)
         data = json.loads(response.get_data(as_text=True))
         self.assertFalse(data['success'])
 
@@ -457,8 +481,8 @@ class RouteTests(unittest.TestCase):
         response = self.app.post('/add-to-list',
                 data=dict(tmdb_id=movie_id, title="Mulholland Drive",
                         year="2001", date="2001-09-08",
-                        original_title="Mulholland Drive",
-                        follow_redirects=True))
+                        original_title="Mulholland Drive"),
+                        follow_redirects=True)
         data = json.loads(response.get_data(as_text=True))
         self.assertFalse(data['success'])
 
@@ -468,8 +492,8 @@ class RouteTests(unittest.TestCase):
         response = self.app.post('/add-to-list',
                 data=dict(tmdb_id=movie_id, title="Mulholland Drive",
                         year=year, date="2001-09-08",
-                        original_title="Mulholland Drive",
-                        follow_redirects=True))
+                        original_title="Mulholland Drive"),
+                        follow_redirects=True)
         data = json.loads(response.get_data(as_text=True))
         self.assertFalse(data['success'])
 
@@ -478,7 +502,7 @@ class RouteTests(unittest.TestCase):
     def test_movie_page_remove_not_logged_in(self):
       	response = self.app.post(
           '/remove-from-list',
-          data=dict(tmdb_id="1018", follow_redirects=True))
+          data=dict(tmdb_id="1018"), follow_redirects=True)
 
       	self.assertIn(b'Access Denied', response.data)
 
@@ -490,12 +514,12 @@ class RouteTests(unittest.TestCase):
       	self.app.post('/add-to-list', data=dict(tmdb_id="1018",
       				title="Mulholland Drive",
                             year="2001", date="2001-09-08",
-                            original_title="Mulholland Drive",
-                            follow_redirects=True))
+                            original_title="Mulholland Drive"),
+                            follow_redirects=True)
 
       	response = self.app.post('/remove-from-list',
-              data=dict(tmdb_id="1018",
-                      follow_redirects=True))
+              data=dict(tmdb_id="1018"),
+                      follow_redirects=True)
 
       	data = json.loads(response.get_data(as_text=True))
       	self.assertTrue(data['success'])
@@ -506,8 +530,8 @@ class RouteTests(unittest.TestCase):
 
         # List is empty.
       	response = self.app.post('/remove-from-list',
-              data=dict(tmdb_id="1018",
-                      follow_redirects=True))
+              data=dict(tmdb_id="1018"),
+                      follow_redirects=True)
 
       	data = json.loads(response.get_data(as_text=True))
       	self.assertFalse(data['success'])
@@ -520,20 +544,20 @@ class RouteTests(unittest.TestCase):
         self.app.post('/add-to-list', data=dict(tmdb_id="1018",
                     title="Mulholland Drive",
                             year="2001", date="2001-09-08",
-                            original_title="Mulholland Drive",
-                            follow_redirects=True))
+                            original_title="Mulholland Drive"),
+                            follow_redirects=True)
 
         # Blank data
         response = self.app.post('/remove-from-list',
-              data=dict(tmdb_id="\n\t ",
-                      follow_redirects=True))
+              data=dict(tmdb_id="\n\t "),
+                      follow_redirects=True)
         data = json.loads(response.get_data(as_text=True))
         self.assertFalse(data['success'])
 
         # Blank data
         response = self.app.post('/remove-from-list',
-              data=dict(tmdb_id=None,
-                      follow_redirects=True))
+              data=dict(tmdb_id=None),
+                      follow_redirects=True)
         data = json.loads(response.get_data(as_text=True))
         self.assertFalse(data['success'])
 
@@ -545,13 +569,13 @@ class RouteTests(unittest.TestCase):
         self.app.post('/add-to-list', data=dict(tmdb_id="1018",
                     title="Mulholland Drive",
                             year="2001", date="2001-09-08",
-                            original_title="Mulholland Drive",
-                           follow_redirects=True))
+                            original_title="Mulholland Drive"),
+                           follow_redirects=True)
 
         # Bad id
         response = self.app.post('/remove-from-list',
-              data=dict(tmdb_id="-1018",
-                      follow_redirects=True))
+              data=dict(tmdb_id="-1018"),
+                      follow_redirects=True)
         data = json.loads(response.get_data(as_text=True))
         self.assertFalse(data['success'])
 

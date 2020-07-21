@@ -283,39 +283,6 @@ def search():
                             person_form=person_form)
 
 
-# @app.route("/title-search-results", methods=["POST"])
-# def search_results_title():
-#     """Renders list of movies from the external movie API based on
-#     title supplied."""
-#
-#     form = SearchByTitleForm()
-#
-#     if form.validate_on_submit():
-#         # Gets list of movies based on given title.
-#         form_title = form.title.data.strip()
-#
-#         result = TmdbMovie.get_movie_list_by_title(form_title)
-#
-#         # Something went wrong...
-#         if not result['success']:
-#             # Bad HTTP response from API call or...
-#             if result['status_code'] != 200:
-#                 abort(result['status_code'])
-#             else:
-#                 # No movies found for given title.
-#                 return render_template("results.html", movies=None,
-#                                         form_title=form_title)
-#
-#         return render_template("results.html", movies=result['movies'],
-#                                 form_title=form_title)
-#
-#     # In case users GET this route, or the form data is invalid.
-#     return render_template("search.html",
-#                            title_form=form,
-#                            person_form=SearchByPersonForm())
-
-
-# NEW CODE V1
 @app.route("/title-search-results", methods=["GET", "POST"])
 def search_results_title():
     """Validates form data from movie search form."""
@@ -371,32 +338,19 @@ def display_movie_search_results():
                             form_title=movie_title)
 
 
-@app.route("/person-search-results", methods=["POST"])
+@app.route("/person-search-results", methods=["GET", "POST"])
 def search_results_person():
-    """Renders list of people in their associated fields in the movie
-    industry."""
+    """Validates data from person search form."""
 
     form = SearchByPersonForm()
 
+    # Sent via POST
     if form.validate_on_submit():
         name = form.name.data.strip()
         known_for = form.known_for.data
-        result = TmdbMovie.get_person_list_by_name_known_for(name=name,
-                                                         known_for=known_for)
 
-        if not result['success']:
-            # Bad HTTP response from API call or...
-            if result['status_code'] != 200:
-                abort(result['status_code'])
-            else:
-                # No people to display.
-                return render_template("persons.html",
-                                         persons=result['persons'],
-                                         name=name)
-
-        return render_template("persons.html",
-                                persons=result['persons'],
-                                name=name)
+        return redirect(url_for('search_results_person_get',
+                        name=name, known_for=known_for))
 
     # In case users GET this route, or the form data is invalid.
     return render_template("search.html",
@@ -411,6 +365,14 @@ def search_results_person_get():
 
     name = request.args.get('name')
     known_for = request.args.get('known_for')
+
+    # Query parameters should not be valueless. Don't bother TMDB otherwise.
+    if not name or known_for == "":
+        abort(422)
+
+    # If not specified in GET query, assume it's 'All'
+    if known_for is None:
+        known_for = 'All'
 
     result = TmdbMovie.get_person_list_by_name_known_for(name=name,
                                                      known_for=known_for)

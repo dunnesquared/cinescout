@@ -331,10 +331,10 @@ def display_movie_search_results():
             abort(result['status_code'])
         else:
             # No movies found for given title.
-            return render_template("results.html", movies=None,
+            return render_template("movies.html", movies=None,
                                     form_title=movie_title)
 
-    return render_template("results.html", movies=result['movies'],
+    return render_template("movies.html", movies=result['movies'],
                             form_title=movie_title)
 
 

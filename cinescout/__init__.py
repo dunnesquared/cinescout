@@ -16,6 +16,9 @@ print("SQLAlchemy and Migrate successfully imported.")
 from flask_login import LoginManager
 print("LoginManager imported.")
 
+from flask_wtf.csrf import CSRFProtect
+print("Flask_wtf CSRFProtect imported.")
+
 app = Flask(__name__)
 print("app object created.")
 
@@ -26,11 +29,15 @@ db = SQLAlchemy(app)
 print("db object created.")
 
 migrate = Migrate(app, db)
-print("Migration engine created")
+print("Migration engine created.")
 
 login_manager = LoginManager()
 login_manager.init_app(app)
 print("LoginManager object created and initialized.")
+
+csrf = CSRFProtect()
+csrf.init_app(app)
+print("CSRF object created and applied to app.")
 
 from cinescout import views
 print("cinescout.views imported.")

@@ -8,6 +8,8 @@ from context import app, NytMovieReview
 
 
 class NytMovieReviewTests(unittest.TestCase):
+
+    # Setup/teardown
     def setUp(self):
         # """Executes before each test."""
         print("Setting up NytMovieReviewTests...")
@@ -21,15 +23,10 @@ class NytMovieReviewTests(unittest.TestCase):
         """Executes after each test."""
         print("Tearing down NytMovieReviewTests...")
 
+
+    # Tests
     def test_createReview(self):
         """Create a NytMovieReview object.
-
-            Attributes:
-                title: Striing representing the title of movie reviewed.
-                year: Integer representing the release year of the movie.
-                text: String containing summary of movie review.
-                publication_date: String representing date review was published.
-                critics_pick: Boolean representing whether movie is NYT critic's pick.
         """
         review = NytMovieReview(title="Not a Real Movie", year=2999,
                                 text="Five bags of popcorn.",
@@ -41,6 +38,44 @@ class NytMovieReviewTests(unittest.TestCase):
         self.assertEqual(review.text, "Five bags of popcorn.")
         self.assertEqual(review.publication_date, "2999-10-31")
         self.assertTrue(review.critics_pick)
+
+    def test_good_enough_match(self):
+        """Tests fuzzy matching."""
+        # Practically the same title.
+        extdb_title = "Mulholldand Drive"
+        nyt_title = "Mulholland Dr."
+        result = NytMovieReview.good_enough_match(extdb_title, nyt_title)
+        self.assertTrue(result)
+
+        #  Different titles.
+        extdb_title = "Maximum Overdrive"
+        nyt_title = "Mulholland Drive"
+        result = NytMovieReview.good_enough_match(extdb_title, nyt_title)
+        self.assertFalse(result)
+
+    def test_get_review_by_title_and_year_OK(self):
+        title = "Mulholland Drive"
+        release_year = 2001
+        result = NytMovieReview.get_review_by_title_and_year(title,
+                                                             release_year)
+
+        self.assertTrue(result['success'])
+        self.assertEqual(result['status_code'], 200)
+        self.assertEqual(result['message'], 'OK')
+
+        review = result['review']
+
+        extdb_title = "Mulholland Drive"
+        review_year = 2001
+        text = "David Lynch's epic nightmare of Hollywood"
+        publication_date = "2001-10-06"
+
+        self.assertEqual(review.title, title)
+        self.assertEqual(review.year, review_year)
+        self.assertIn(text, review.text)
+        self.assertEqual(review.publication_date, publication_date)
+        self.assertTrue(review.critics_pick)
+
 
 
 if __name__ == "__main__":

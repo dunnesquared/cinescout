@@ -564,6 +564,11 @@ class MovieReview:
         title of film and year film was released."""
         pass
 
+    @classmethod
+    def get_movie_review(cls, movie):
+        """Returns movie review based on information in Movie object"""
+        pass
+
     def __str__(self):
         return f"'{self.title}' ({self.year}): {self.text}"
 
@@ -782,9 +787,6 @@ class NytMovieReview(MovieReview):
                 return {'status_code': res.status_code, 'review': review}
         else:
             raise ValueError("Film that is not a special case being processed as one!")
-
-
-
 
     @classmethod
     def get_review_by_title_and_year(cls, title, year, movie_obj=None):
@@ -1203,6 +1205,11 @@ class NytMovieReview(MovieReview):
         result['review'] = review
 
         return result
+
+    @classmethod
+    def get_movie_review(cls, movie):
+        """Returns movie review based using movie title and release year."""
+        return "NEW"
 
 
 if __name__ == "__main__":

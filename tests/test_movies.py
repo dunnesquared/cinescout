@@ -76,6 +76,10 @@ class NytMovieReviewTests(unittest.TestCase):
         self.assertEqual(review.publication_date, publication_date)
         self.assertTrue(review.critics_pick)
 
+    def test_get_movie_review(self):
+        expected = "NEW"
+        result = NytMovieReview.get_movie_review(title="", release_year=0)
+        self.assertEqual(expected, result)
 
 
 if __name__ == "__main__":

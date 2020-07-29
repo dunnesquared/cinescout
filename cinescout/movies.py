@@ -545,7 +545,7 @@ class MovieReview:
     """Class representing a movie review.
 
     Attributes:
-        title: Striing representing the title of movie reviewed.
+        title: String representing the title of movie reviewed.
         year: Integer representing the release year of the movie.
         text: String containing summary of movie review.
         publication_date: String representing date review was published.
@@ -582,7 +582,7 @@ class NytMovieReview(MovieReview):
                     movies who need cannot be queried the usual way.
 
     Attributes:
-        title: Striing representing the title of movie reviewed.
+        title: String representing the title of movie reviewed.
         year: Integer representing the release year of the movie.
         text: String containing summary of movie review.
         publication_date: String representing date review was published.

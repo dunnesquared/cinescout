@@ -1209,7 +1209,27 @@ class NytMovieReview(MovieReview):
     @classmethod
     def get_movie_review(cls, movie):
         """Returns movie review based using movie title and release year."""
-        return "NEW"
+
+        # Setup default result.
+        result = result = {'success': False, 'status_code': None,
+                            'message': None, 'review': None}
+
+        # Check whether release date of movie is in the future. It's
+        # highly unlikely that there is a review for it then. The only
+        # exception might be if a film premieres and is reviewed at a festival,
+        # and given a general release at a later date. The trade-off is
+        # generally worth it.
+        today = datetime.today()
+        release_dt = datetime.strptime(movie.release_date, '%Y-%m-%d')
+
+        if release_dt > today:
+            result['message'] = "No review: film has yet to be released."
+            return result
+
+        
+
+        return result
+
 
 
 if __name__ == "__main__":

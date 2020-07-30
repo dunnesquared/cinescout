@@ -1,9 +1,11 @@
 import os
+from datetime import datetime
 import unittest
 # import json
 
+
 # Add this line to whatever test script you write
-from context import app, NytMovieReview
+from context import app, NytMovieReview, Movie, TmdbMovie
 
 
 
@@ -76,10 +78,25 @@ class NytMovieReviewTests(unittest.TestCase):
         self.assertEqual(review.publication_date, publication_date)
         self.assertTrue(review.critics_pick)
 
-    def test_get_movie_review(self):
-        expected = "NEW"
-        result = NytMovieReview.get_movie_review(title="", release_year=0)
-        self.assertEqual(expected, result)
+    def test_get_movie_review_future_release(self):
+        # Expected for future releases only.
+        expected = "No review: film has yet to be released."
+
+        # Future releasec
+        movie = Movie(release_date="2999-12-31")
+        result = NytMovieReview.get_movie_review(movie)
+        self.assertEqual(expected, result['message'])
+
+        # Past release
+        movie = Movie(release_date="1999-12-31")
+        result = NytMovieReview.get_movie_review(movie)
+        self.assertNotEqual(expected, result['message'])
+
+        # Released today
+        movie = Movie(release_date=datetime.today().strftime('%Y-%m-%d'))
+        result = NytMovieReview.get_movie_review(movie)
+        self.assertNotEqual(expected, result['message'])
+
 
 
 if __name__ == "__main__":

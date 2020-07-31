@@ -1208,7 +1208,7 @@ class NytMovieReview(MovieReview):
 
 
     @classmethod
-    def get_movie_review_for_exception(movie):
+    def get_movie_review_for_exception(cls, movie):
         """Processes special cases where film review exists but is otherwise
         impossible to find given current algorithms.
 
@@ -1306,11 +1306,11 @@ class NytMovieReview(MovieReview):
             raise ValueError("Film that is not a special case being processed as one!")
 
 
-
     @classmethod
     def get_movie_review(cls, movie):
         """Returns movie review based using movie title and release year."""
 
+        # ==================== INNER FUNCTIONS ==============================
         def get_result(success=None, status_code=None, message=None,
                         review=None):
             result = {
@@ -1321,33 +1321,40 @@ class NytMovieReview(MovieReview):
                     }
             return result
 
-        # Check whether release date of movie is in the future. It's
-        # highly unlikely that there is a review for it then. The only
+        # =========================== ALGORITHM =============================
+
+        # *** Check whether release date of movie is in the future. ***
+        # It's highly unlikely that there is a review for it then. The only
         # exception might be if a film premieres and is reviewed at a festival,
         # and given a general release at a later date. The trade-off is
         # generally worth it.
-        today = datetime.today()
-        release_dt = datetime.strptime(movie.release_date, '%Y-%m-%d')
+        if movie.release_date:
+            today = datetime.today()
+            release_dt = datetime.strptime(movie.release_date, '%Y-%m-%d')
 
-        if release_dt > today:
-            message = "No review: film has yet to be released."
-            return get_result(success=False, message=message)
+            if release_dt > today:
+                message = "No review: film has yet to be released."
+                return get_result(success=False, message=message)
 
-        # # Check whether film is an exception.
-        # if cls.exceptions.get(movie.title) == movie.release_year:
-        #     # Get the movie review by going around algorithm below.
-        #     review_result = cls.get_movie_review_for_exception(movie)
-        #
-        #     # Transfer data to return object.
-        #     result['status_code'] = review_result['status_code']
-        #     result['review'] = review_result['review']
-        #
-        #     # No review found.
-        #     if not review_result['review']:
-        #         result['success'] = False
-        #         result['message'] = "Error: processing exceptions failed."
-        #
-        #     return result
+        # *** Check whether film is an exception. ***
+        if movie.title and movie.release_year and cls.exceptions.get(movie.title) == movie.release_year:
+            # Get the movie review by going around algorithm below.
+            review_result = cls.get_movie_review_for_exception(movie)
+
+            # Transfer data to return object.
+            # No review found.
+            if not review_result['review']:
+                message = "Error: processing exceptions failed."
+                result = get_result(success=False,
+                                    status_code=review_result['status_code'],
+                                    message=message,
+                                    review=review_result['review'])
+            else:
+                result = get_result(success=True,
+                                    status_code=review_result['status_code'],
+                                    review=review_result['review'])
+
+            return result
 
         result = get_result()
         return result

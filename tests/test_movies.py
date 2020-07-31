@@ -82,7 +82,7 @@ class NytMovieReviewTests(unittest.TestCase):
         # Expected for future releases only.
         expected = "No review: film has yet to be released."
 
-        # Future releasec
+        # Future release
         movie = Movie(release_date="2999-12-31")
         result = NytMovieReview.get_movie_review(movie)
         self.assertEqual(expected, result['message'])
@@ -96,6 +96,26 @@ class NytMovieReviewTests(unittest.TestCase):
         movie = Movie(release_date=datetime.today().strftime('%Y-%m-%d'))
         result = NytMovieReview.get_movie_review(movie)
         self.assertNotEqual(expected, result['message'])
+
+    def test_get_movie_review_exception(self):
+        # Exception: in exception list, matching year
+        movie = Movie(title="Black Rain", release_year=1989,
+                     original_title="Black Rain")
+        result = NytMovieReview.get_movie_review(movie)
+        self.assertTrue(result['success'])
+        self.assertIn("Mechanical police melodrama.", result['review'].text)
+
+        # Exception: in exception list, not matching year
+        movie = Movie(title="Black Rain", release_year=1900,
+                     original_title="Black Rain")
+        result = NytMovieReview.get_movie_review(movie)
+        self.assertFalse(result['success'])
+
+        # Just one more test
+        movie = Movie(title="Nineteen Eighty-Four", release_year=1984)
+        result = NytMovieReview.get_movie_review(movie)
+        self.assertTrue(result['success'])
+        self.assertIn("Big Brother rewriting history", result['review'].text)
 
 
 

@@ -1206,7 +1206,6 @@ class NytMovieReview(MovieReview):
 
         return result
 
-
     @classmethod
     def get_movie_review_for_exception(cls, movie):
         """Processes special cases where film review exists but is otherwise
@@ -1305,7 +1304,6 @@ class NytMovieReview(MovieReview):
         else:
             raise ValueError("Film that is not a special case being processed as one!")
 
-
     @classmethod
     def get_movie_review(cls, movie):
         """Returns movie review based using movie title and release year."""
@@ -1321,9 +1319,41 @@ class NytMovieReview(MovieReview):
                     }
             return result
 
+        def error_result(message, status_code=None):
+            return get_result(success=False,
+                              status_code=status_code,
+                              message=message)
+
+        def nyt_api_title_query(title):
+            url = "https://api.nytimes.com/svc/movies/v2/reviews/search.json"
+            res = requests.get(url, params={"api-key": cls.api_key,
+                                            "query": movie.title.strip()})
+            return res
+
+        def build_NYTReview_object(movie, nyt_data):
+            nyt_critics_pick = nyt_data['results'][0]['critics_pick']
+            nyt_summary_short = nyt_data['results'][0]['summary_short']
+
+            if nyt_summary_short is not None:
+                if nyt_summary_short.strip() == "":
+                    nyt_summary_short = "No summary review provided."
+
+            review = cls(title=movie.title, year=movie.release_year,
+                         text=cls.clean_review_text(nyt_summary_short),
+                         critics_pick=nyt_critics_pick,
+                         publication_date=nyt_data['results'][0].get('publication_date'))
+
+            return review
+
+
         # =========================== ALGORITHM =============================
 
+        # Guard code: need the title of a movie to find a review at a minimum.
+        if not movie.title:
+            raise ValueError("Movie title cannot be None or empty. Please specify.")
+
         # *** Check whether release date of movie is in the future. ***
+
         # It's highly unlikely that there is a review for it then. The only
         # exception might be if a film premieres and is reviewed at a festival,
         # and given a general release at a later date. The trade-off is
@@ -1334,10 +1364,10 @@ class NytMovieReview(MovieReview):
 
             if release_dt > today:
                 message = "No review: film has yet to be released."
-                return get_result(success=False, message=message)
+                return error_result(message=message)
 
         # *** Check whether film is an exception. ***
-        if movie.title and movie.release_year and cls.exceptions.get(movie.title) == movie.release_year:
+        if movie.release_year and cls.exceptions.get(movie.title) == movie.release_year:
             # Get the movie review by going around algorithm below.
             review_result = cls.get_movie_review_for_exception(movie)
 
@@ -1345,10 +1375,8 @@ class NytMovieReview(MovieReview):
             # No review found.
             if not review_result['review']:
                 message = "Error: processing exceptions failed."
-                result = get_result(success=False,
-                                    status_code=review_result['status_code'],
-                                    message=message,
-                                    review=review_result['review'])
+                result = error_result(message=message,
+                                      status_code=review_result['status_code'])
             else:
                 result = get_result(success=True,
                                     status_code=review_result['status_code'],
@@ -1356,7 +1384,56 @@ class NytMovieReview(MovieReview):
 
             return result
 
-        result = get_result()
+
+        # **** Fetch review based on title ***
+        response = nyt_api_title_query(movie.title)
+
+        print(response.status_code)
+
+        if response.status_code != 200:
+            message = "Error: Http response status code = {res.status_code}"
+            result = error_result(message=message, status_code=status_code)
+            return result
+
+        # Unpack data
+        nyt_data = response.json()
+
+        # No results returned.
+        if nyt_data["num_results"] == 0:
+            # Foreign films may be in their original titles.
+            if movie.original_title != movie.title:
+                # Delay request, so as not to timeout NYT api.
+                time.sleep(cls.delay)
+                response = nyt_api_title_query(movie.original_title)
+
+                if response.status_code != 200:
+                    message = "Error: Http response status code = {res.status_code}"
+                    result = error_result(message=message,
+                                          status_code=response.status_code)
+                    return result
+
+            # Still no luck with foreign title.
+            if nyt_data["num_results"] == 0:
+                message = "No review found for this movie."
+                print(f"{message}: {movie.title}")
+                result = get_result(success=False,
+                                  status_code=response.status_code,
+                                  message=message)
+                return result
+
+
+        if nyt_data["num_results"] == 1:
+
+            # Single result
+            print("ONE RESULT!")
+            review = build_NYTReview_object(movie, nyt_data)
+            # print(review)
+            result = get_result(success=True,
+                                status_code=response.status_code,
+                                review=review)
+
+
+        # result = get_result()
         return result
 
 

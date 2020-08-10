@@ -1363,6 +1363,124 @@ class NytMovieReview(MovieReview):
                 return False
             return True
 
+        def get_review_closest_to_release_year(movie, nyt_data):
+            """Extracts and returns data for review whose published year is
+            is closest to the film's release year from list of multiple reviews.
+            """
+            nyt_data_result = None
+
+            # List of years each review was published along with index in
+            # NYT data
+            review_years = []
+
+            for movie_result in nyt_data['results']:
+                print("Extracting NYT publcation or release year...", end="")
+
+                if movie_result['publication_date']:
+                    nyt_date = movie_result['publication_date']
+                else:
+                    nyt_date = movie_result['opening_date']
+                nyt_year = nyt_date.split('-')[0].strip()
+                print(nyt_year)
+                review_years.append({'year': nyt_year,
+                                  'index': nyt_data['results'].index(movie_result)})
+
+            print("Getting NYT year closest to movie release year...",
+                  end="")
+
+            # Some reviews are dated after the movie's release date.
+            # These should excluded as viable contenders.
+            shortlist = []
+
+            # Calculate the number of years between review and release date
+            # Only add differences if the review was done in the same year
+            # or later wrt the release year.
+            for review_year in review_years:
+                diff = int(review_year['year']) - int(movie.release_year)
+                if diff >= 0:
+                    shortlist.append(diff)
+
+            # Pick the closest year.
+            if shortlist:
+                shortlist_index = shortlist.index(min(shortlist))
+                result_index = review_years[shortlist_index].get('index')
+                print(review_years[shortlist_index].get('year'))
+
+                # Found it!
+                nyt_data_result = nyt_data['results'][result_index]
+            else:
+                print("FAILED!")
+                print("All reviews made prior to release year of film.")
+                print("There are really no reviews for this movie. Sorry😭")
+
+            return nyt_data_result
+
+
+        def verify_result(nyt_data_result, original_title_used=False):
+            # Ensure that all reviews have a publication date.
+            # Don't trust them otherwise.
+            if not nyt_data_result.get('publication_date'):
+                message = "Review has no publication date. Discard."
+                print(f"{message}: {movie.title}")
+                result = get_result(success=False,
+                                  status_code=response.status_code,
+                                  message=message)
+                return result
+
+            # Get publication year.
+            nyt_pub_year = get_publication_year(nyt_data_result)
+
+            # Film review cannot have been published before a film's realease.
+            if nyt_pub_year != movie.release_year:
+                if nyt_pub_year < movie.release_year:
+                    message = "A review cannot be published before a film's release."
+                    print(f"{message}: {movie.title}")
+                    result = get_result(success=False,
+                                      status_code=response.status_code,
+                                      message=message)
+                    return result
+
+                # Film reviews that are published 'too late' are not trustworthy.
+                if not film_reviewed_in_last_X_years(release_year=movie.release_year,
+                                                nyt_pub_year=nyt_pub_year,
+                                                acceptable_range=cls.max_year_gap):
+
+                    message = "Film review published too many years after film release."
+                    print(f"{message}: {movie.title}")
+                    result = get_result(success=False,
+                                      status_code=response.status_code,
+                                      message=message)
+                    return result
+
+            # See whether film's title is a good enough match.
+
+            # NYT may have used original movie title instead of
+            # more widely-known, often Anglicized, movie title.
+            if original_title_used:
+                searched_title = movie.original_title.strip().lower()
+            else:
+                searched_title = movie.title.strip().lower()
+
+            # Get and clean NYT title for movie.
+            nyt_movie_title = nyt_data_result.get('display_title').strip().lower()
+
+            if not cls.good_enough_match(searched_title, nyt_movie_title):
+                print("NOT GOOD ENOUGH MATCH!")
+                message = "Film title does not match title of film in review."
+                print(f"{message}: {movie.title}")
+                result = get_result(success=False,
+                                  status_code=response.status_code,
+                                  message=message)
+                return result
+
+            # All good. Build a review object.
+            review = build_NYTReview_object(movie, nyt_data_result)
+            result = get_result(success=True,
+                                status_code=response.status_code,
+                                review=review)
+
+            return result
+
         # =========================== ALGORITHM =============================
 
         # Guard code: need the title of a movie to find a review at a minimum.
@@ -1412,6 +1530,10 @@ class NytMovieReview(MovieReview):
         # Unpack data
         nyt_data = response.json()
 
+        # Flag for check later on to make sure the right titles are
+        # compared.
+        original_title_used = False
+
         # No results returned.
         if nyt_data["num_results"] == 0:
             # Foreign films may be in their original titles.
@@ -1425,6 +1547,9 @@ class NytMovieReview(MovieReview):
                     result = error_result(message=message,
                                           status_code=response.status_code)
                     return result
+
+                # Found at least one review with original title!
+                original_title_used = True
 
             # Still no luck with foreign title.
             if nyt_data["num_results"] == 0:
@@ -1442,80 +1567,27 @@ class NytMovieReview(MovieReview):
             # Single result. Naturally going to be first item.
             nyt_data_result = nyt_data['results'][0]
 
-            # Ensure that all reviews have a publication date.
-            # Don't trust them otherwise.
-            if not nyt_data_result.get('publication_date'):
-                message = "Review has no publication date. Discard."
-                print(f"{message}: {movie.title}")
-                result = get_result(success=False,
-                                  status_code=response.status_code,
-                                  message=message)
-                return result
-
-            # Get publication year.
-            nyt_pub_year = get_publication_year(nyt_data_result)
-
-            # Film review cannot have been published before a film's realease.
-            if nyt_pub_year != movie.release_year:
-                if nyt_pub_year < movie.release_year:
-                    message = "A review cannot be published before a film's release."
-                    print(f"{message}: {movie.title}")
-                    result = get_result(success=False,
-                                      status_code=response.status_code,
-                                      message=message)
-                    return result
-
-                # Film reviews that are published 'too late' are not trustworthy.
-                if not film_reviewed_in_last_X_years(release_year=movie.release_year,
-                                                nyt_pub_year=nyt_pub_year,
-                                                acceptable_range=cls.max_year_gap):
-
-                    message = "Film review published too many years after film release."
-                    print(f"{message}: {movie.title}")
-                    result = get_result(success=False,
-                                      status_code=response.status_code,
-                                      message=message)
-                    return result
-
-            # See whether film's title is a good enough match.
-
-            # NYT may have used original movie title instead of
-            # more widely-known, often Anglicized, movie title.
-            if movie.title != movie.original_title:
-                searched_title = movie.original_title.strip().lower()
-            else:
-                searched_title = movie.title.strip().lower()
-
-            # Get and clean NYT title for movie.
-            nyt_movie_title = nyt_data_result.get('display_title').strip().lower()
-
-            if not cls.good_enough_match(searched_title, nyt_movie_title):
-                print("NOT GOOD ENOUGH MATCH!")
-                message = "Film title does not match title of film in review."
-                print(f"{message}: {movie.title}")
-                result = get_result(success=False,
-                                  status_code=response.status_code,
-                                  message=message)
-                return result
-
-            # All good. Build a review object.
-            review = build_NYTReview_object(movie, nyt_data_result)
-            result = get_result(success=True,
-                                status_code=response.status_code,
-                                review=review)
-
+            result = verify_result(nyt_data_result, original_title_used)
             return result
 
 
         if nyt_data["num_results"] > 1:
-            print("Multiple Results")
-            result = get_result()
+            print("Multiple Results!")
+
+            nyt_data_result = get_review_closest_to_release_year(movie,
+                                                                nyt_data)
+
+            if not nyt_data_result:
+                message = "Multiple reviews: Movie could not be matched to review."
+                print(f"{message}: {movie.title}")
+                result = get_result(success=False,
+                                  status_code=response.status_code,
+                                  message=message)
+                return result
+
+            result = verify_result(nyt_data_result, original_title_used)
+
             return result
-
-
-
-
-
 
 
 

@@ -182,6 +182,40 @@ class NytMovieReviewTests(unittest.TestCase):
         result = NytMovieReview.get_movie_review(movie)
         self.assertTrue(result['success'])
 
+    def test_get_movie_review_multiple_results(self):
+        self.delay_api_call()
+        title = "Solaris"
+        release_year = 2002
+        original_title = title
+        movie = Movie(title=title,
+                      release_year=release_year,
+                      original_title=original_title)
+        result = NytMovieReview.get_movie_review(movie)
+        self.assertTrue(result['success'])
+
+
+        self.delay_api_call()
+        title = "Solaris"
+        release_year = 1974
+        original_title = "Солярис"
+        movie = Movie(title=title,
+                      release_year=release_year,
+                      original_title=original_title)
+        result = NytMovieReview.get_movie_review(movie)
+        self.assertTrue(result['success'])
+
+
+        self.delay_api_call()
+        title = "Solaris"
+        release_year = 2012
+        original_title = title
+        movie = Movie(title=title,
+                      release_year=release_year,
+                      original_title=original_title)
+        result = NytMovieReview.get_movie_review(movie)
+        self.assertFalse(result['success'])
+
+
 
 
 

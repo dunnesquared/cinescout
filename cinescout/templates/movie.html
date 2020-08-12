@@ -122,13 +122,13 @@
       </div>
     </div>
 
-    {% if review_warning %}
+    {% if review_warning is true %}
       <div class="movie-section-row" id="review-warning">
         <sup>☂︎</sup>
         <em>
-          Because of a difference between the release and review dates,
+          Because of a difference between the release and review years,
           the movie review presented may be for another movie of the
-          same title.
+          same or similar title.
         </em>
       </div>
     {% endif %}

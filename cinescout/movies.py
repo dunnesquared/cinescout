@@ -1310,13 +1310,15 @@ class NytMovieReview(MovieReview):
 
         # ==================== INNER FUNCTIONS ==============================
         def get_result(success=None, status_code=None, message=None,
-                        review=None):
+                        review=None, bullseye=None, future_release=None):
             """Returns result object"""
             result = {
                       'success': success,
                       'status_code': status_code,
                       'message': message,
-                      'review': review
+                      'review': review,
+                      'bullseye': bullseye,
+                      'future_release': future_release
                     }
             return result
 
@@ -1511,9 +1513,17 @@ class NytMovieReview(MovieReview):
 
             # All good. Build a review object.
             review = build_NYTReview_object(movie, nyt_data_result)
+
+            # Let caller know whehter review is an exact match or not.
+            if nyt_pub_year != movie.release_year or nyt_movie_title != searched_title:
+                bullseye = False
+            else:
+                bullseye = True
+
             result = get_result(success=True,
                                 status_code=response.status_code,
-                                review=review)
+                                review=review,
+                                bullseye=bullseye)
 
             return result
 
@@ -1688,7 +1698,10 @@ class NytMovieReview(MovieReview):
 
             if release_dt > today:
                 message = "No review: film has yet to be released."
-                return error_result(message=message)
+                print(message)
+                return get_result(success=False,
+                                  message=message,
+                                  future_release=True)
 
         # *** Check whether film is an exception that must be fetched directly. ***
         if movie.release_year and cls.exceptions.get(movie.title) == movie.release_year:
@@ -1781,7 +1794,8 @@ class NytMovieReview(MovieReview):
                 review_obj = build_NYTReview_object(movie, nytreview)
                 result = get_result(success=True,
                                     status_code=response.status_code,
-                                    review=review_obj)
+                                    review=review_obj,
+                                    bullseye=True)
                 return result
 
             print("Filtering by release year...")
@@ -1823,7 +1837,8 @@ class NytMovieReview(MovieReview):
                 review_obj = build_NYTReview_object(movie, filtered_reviews[0])
                 result = get_result(success=True,
                                     status_code=response.status_code,
-                                    review=review_obj)
+                                    review=review_obj,
+                                    bullseye=False)
                 return result
 
             # Title that matches the closest to one searched for will be the
@@ -1847,7 +1862,8 @@ class NytMovieReview(MovieReview):
                 review_obj = build_NYTReview_object(movie, nytreview)
                 result = get_result(success=True,
                                     status_code=response.status_code,
-                                    review=review_obj)
+                                    review=review_obj,
+                                    bullseye=False)
                 return result
 
 

@@ -432,6 +432,7 @@ def filmography(person_id):
                              person_image_url=bio_data.get('image_url'))
 
 
+# NEW!
 @app.route("/movie/<int:tmdb_id>", methods=["GET"])
 def movie_info(tmdb_id):
     """Renders salient movie data and review summary from external APIs."""
@@ -454,17 +455,7 @@ def movie_info(tmdb_id):
 
     # Get NYT movie review.
     if movie.release_year is not None:
-        # Try first with film's 'main' English language title.
-        result = NytMovieReview.get_review_by_title_and_year(title=movie.title,
-                                                            year=movie.release_year,
-                                                            movie_obj=movie)
-
-        # Review may be under film's original language title.
-        if not result['review'] and movie.original_title is not None:
-            print("Trying get review with film's original title...")
-            result = NytMovieReview.get_review_by_title_and_year(title=movie.original_title,
-                                                                year=movie.release_year,
-                                                                movie_obj=movie)
+        result = NytMovieReview.get_movie_review(movie)
     else:
         return render_template("movie.html",
                                 movie=movie,
@@ -477,8 +468,11 @@ def movie_info(tmdb_id):
         if result['status_code'] == 429:
             abort(429)
         else:
-            err_message = f"NYT API query failed; HTTP response = {result['status_code']}  description={result['message']}"
-            return render_template("errors/misc-error.html", err_message=err_message)
+            # Movie may not have a review yet because it hasn't been released.
+            # This is not an error.
+            if not result['future_release']:
+                err_message = f"NYT API query failed; HTTP response = {result['status_code']}  description={result['message']}"
+                return render_template("errors/misc-error.html", err_message=err_message)
 
     review = result['review']
 
@@ -494,10 +488,84 @@ def movie_info(tmdb_id):
 
     # Check whether review has been flagged as being potentially wrong.
     print(result['message'])
-    review_warning = True if result['message'].strip() == 'WARNING' else False
+
+    review_warning = None
+    if result['bullseye'] is not None:
+        review_warning = not result['bullseye']
 
     return render_template("movie.html",
                             movie=movie,
                             review=review,
                             on_user_list=on_user_list,
                             review_warning=review_warning)
+
+# # OLD
+# @app.route("/movie/<int:tmdb_id>", methods=["GET"])
+# def movie_info(tmdb_id):
+#     """Renders salient movie data and review summary from external APIs."""
+#
+#     # Get movie info TMDB database.
+#     result = TmdbMovie.get_movie_info_by_id(tmdb_id)
+#
+#     # TMDB request failed.
+#     if not result['success']:
+#         # Can't find movie referenced by id.
+#         if result['status_code'] == 404:
+#             abort(404)
+#         else:
+#             # Some other error, e.g. 429: too many request.
+#             err_message = f"TMDB API query failed; HTTP response = {result['status_code']}"
+#             return render_template("errors/misc-error.html", err_message=err_message)
+#
+#     # Collect movie object.
+#     movie = result['movie']
+#
+#     # Get NYT movie review.
+#     if movie.release_year is not None:
+#         # Try first with film's 'main' English language title.
+#         result = NytMovieReview.get_review_by_title_and_year(title=movie.title,
+#                                                             year=movie.release_year,
+#                                                             movie_obj=movie)
+#
+#         # Review may be under film's original language title.
+#         if not result['review'] and movie.original_title is not None:
+#             print("Trying get review with film's original title...")
+#             result = NytMovieReview.get_review_by_title_and_year(title=movie.original_title,
+#                                                                 year=movie.release_year,
+#                                                                 movie_obj=movie)
+#     else:
+#         return render_template("movie.html",
+#                                 movie=movie,
+#                                 review=None,
+#                                 on_user_list=None)
+#
+#     # NYT request failed.
+#     if not result['success'] and result['status_code'] != 200:
+#         # Too many requests
+#         if result['status_code'] == 429:
+#             abort(429)
+#         else:
+#             err_message = f"NYT API query failed; HTTP response = {result['status_code']}  description={result['message']}"
+#             return render_template("errors/misc-error.html", err_message=err_message)
+#
+#     review = result['review']
+#
+#     # See whether movie is already on user's list.
+#     on_user_list, film_list_item_id = None, None
+#
+#     # To check a user's list we need to who were checking, i.e. user must be
+#     # logged in.
+#     if current_user.is_authenticated:
+#         film = FilmListItem.query.filter_by(tmdb_id=tmdb_id, user_id=current_user.id).first()
+#         on_user_list = True if film else False
+#         print(f"On user list? {on_user_list}, id: {film_list_item_id}")
+#
+#     # Check whether review has been flagged as being potentially wrong.
+#     print(result['message'])
+#     review_warning = True if result['message'].strip() == 'WARNING' else False
+#
+#     return render_template("movie.html",
+#                             movie=movie,
+#                             review=review,
+#                             on_user_list=on_user_list,
+#                             review_warning=review_warning)

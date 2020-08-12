@@ -1330,7 +1330,29 @@ class NytMovieReview(MovieReview):
             """Queries for NYT review based on title."""
             url = "https://api.nytimes.com/svc/movies/v2/reviews/search.json"
             res = requests.get(url, params={"api-key": cls.api_key,
-                                            "query": movie.title.strip()})
+                                            "query": title.strip()})
+            return res
+
+        def nyt_api_title_opening_year_query(title, release_year):
+            """Queries for NYT review based on title and release year.
+            Results ordred by opening date as per NYT.
+            """
+
+            start = f"{release_year}-01-01"
+            url = "https://api.nytimes.com/svc/movies/v2/reviews/search.json"
+
+            # res = requests.get(url, params={"api-key": cls.api_key,
+            #                                 "opening-date": f"{start}",
+            #                                 "order": "by-opening-date",
+            #                                 "query": title.strip()})
+
+            res = requests.get(url, params={"api-key": cls.api_key,
+                                            "publication-date": f"{start}",
+                                            "order": "by-publication-date",
+                                            "query": title.strip()})
+
+
+
             return res
 
         def build_NYTReview_object(movie, nyt_data_result):
@@ -1363,6 +1385,8 @@ class NytMovieReview(MovieReview):
                 return False
             return True
 
+
+
         def get_review_closest_to_release_year(movie, nyt_data):
             """Extracts and returns data for review whose published year is
             is closest to the film's release year from list of multiple reviews.
@@ -1373,6 +1397,8 @@ class NytMovieReview(MovieReview):
             # NYT data
             review_years = []
 
+            # print(nyt_data['results'])
+
             for movie_result in nyt_data['results']:
                 print("Extracting NYT publcation or release year...", end="")
 
@@ -1380,8 +1406,12 @@ class NytMovieReview(MovieReview):
                     nyt_date = movie_result['publication_date']
                 else:
                     nyt_date = movie_result['opening_date']
+
                 nyt_year = nyt_date.split('-')[0].strip()
+
                 print(nyt_year)
+                print(movie_result.get("display_title"))
+
                 review_years.append({'year': nyt_year,
                                   'index': nyt_data['results'].index(movie_result)})
 
@@ -1408,6 +1438,10 @@ class NytMovieReview(MovieReview):
 
                 # Found it!
                 nyt_data_result = nyt_data['results'][result_index]
+
+
+                print(nyt_data_result.get('display_title'))
+                print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
             else:
                 print("FAILED!")
                 print("All reviews made prior to release year of film.")
@@ -1429,6 +1463,8 @@ class NytMovieReview(MovieReview):
 
             # Get publication year.
             nyt_pub_year = get_publication_year(nyt_data_result)
+
+            print(f"NYT YEAR for single result: {nyt_pub_year}")
 
             # Film review cannot have been published before a film's realease.
             if nyt_pub_year != movie.release_year:
@@ -1481,6 +1517,159 @@ class NytMovieReview(MovieReview):
 
             return result
 
+        # +++++++++++++++++++++++++ MUTLIPLE RESULTS +++++++++++++++++++++++++
+        def nyt_review_year(nytreview):
+            """Returns year a NYT review was published; should that not exist,
+            then the year the movie opened.
+
+            Args:
+                nytreview: An element from NYT api 'results' list.
+
+            Returns:
+                review_year: Integer representing desired year.
+            """
+            if nytreview['publication_date']:
+                nyt_date = nytreview['publication_date']
+            else:
+                nyt_date = nytreview['opening_date']
+
+            review_year = int(nyt_date.split('-')[0].strip())
+
+            return review_year
+
+
+        def exact_match(movie, nytreviews):
+            """Attempts to find NYT review that has exactly the same title
+            and year as the passed Movie object.
+
+            Args:
+                movie: Movie object containing salient movie data.
+                nytreviews: List of dictionaries containing review data from
+                            NYT api response.
+
+            Returns:
+                nytreview: An element from said list if an exact match found.
+                None: A None type object should an exact match not be found.
+            """
+            # Matches should be capitalization and space-neutral
+            movie_obj_title = movie.title.strip().lower()
+
+            for nytreview in nytreviews:
+                # Idem reason.
+                review_movietitle = nytreview['display_title'].strip().lower()
+
+                # Compare titles.
+                if movie_obj_title == review_movietitle:
+
+                    # Compare release years.
+                    if movie.release_year == nyt_review_year(nytreview):
+                        return nytreview
+
+            # No match.
+            return None
+
+
+        def filter_year(release_year, nytreviews, grace_period):
+            """Builds and returns list of NYT reviews that were written
+            after a movie's release_year and within a grace period
+
+            Args:
+                release_year: Integer representing movie release year.
+                nytreviews: List of dictionaries containing review data from
+                            NYT api response.
+                grace_period: Integer representing number of years after
+                              a film's release for a review to be 'valid'.
+
+            Returns:
+                filtered_list: A list of NYT reviews that pass the filter
+                               tests; list can be empty.
+            """
+            filtered_reviews = []
+
+            for nytreview in nytreviews:
+                review_year = nyt_review_year(nytreview)
+
+                if review_year >= release_year:
+                    if (review_year - release_year) <= grace_period:
+                        filtered_reviews.append(nytreview)
+
+            return filtered_reviews
+
+
+        def filter_title(movie_title, nytreviews):
+            """Filters NYT data api response for titles that are
+            good-enough matches.
+
+            Args:
+                movie_title: String representing movie title.
+                nytreviews: List of dictionaries containing review data from
+                            NYT api response.
+
+            Returns:
+                filtered_list: A list of NYT reviews that pass the filter
+                               tests; list can be empty.
+            """
+            filtered_list = []
+
+            for nytreview in nytreviews:
+                nyt_movie_title = nytreview.get('display_title').lower().strip()
+
+                print(nyt_movie_title)
+                print(nytreview.get('publication_date'))
+
+                if cls.good_enough_match(movie_title, nyt_movie_title):
+                    filtered_list.append(nytreview)
+
+            # print(filtered_list)
+            # print(len(filtered_list))
+
+            return filtered_list
+
+        def highest_levenshtein(searched_title, nyt_data_results):
+            """Returns NYT movie review that has the highest Levenshtein score."""
+
+            # An exact match should be worth more than a partial one.
+            weight_full = 2
+            weight_partial = 1
+
+            # Calculate score of first title. Let it be the max.
+            full_ratio = fuzz.ratio(searched_title,
+                                    nyt_data_results[0]['display_title'].strip().lower())
+            partial_ratio = fuzz.partial_ratio(searched_title,
+                                    nyt_data_results[0]['display_title'].strip().lower())
+
+            score_max = weight_full * full_ratio + weight_full + partial_ratio * weight_partial
+            index = 0 # index of review with best score
+
+            # We need to be sure that the result we're returning is the only
+            # result with the highest score.
+            two_results_same_score = False
+
+            for i in range(1, len(nyt_data_results)):
+                # Calculate score for each film.
+                full_ratio = fuzz.ratio(searched_title,
+                                        nyt_data_results[i]['display_title'].strip().lower())
+                partial_ratio = fuzz.partial_ratio(searched_title,
+                                        nyt_data_results[i]['display_title'].strip().lower())
+
+                score_i = weight_full * full_ratio + weight_full + partial_ratio * weight_partial
+
+                # Update accordingly if new max found or tie.
+                if score_i > score_max:
+                    score_max = score_i
+                    index = i
+                    two_results_same_score = False
+                elif score_i == score_max:
+                    two_results_same_score = True
+
+            # No ties allowed.
+            if two_results_same_score:
+                return None
+
+            # All is well: one result found.
+            return nyt_data_results[index]
+
+
         # =========================== ALGORITHM =============================
 
         # Guard code: need the title of a movie to find a review at a minimum.
@@ -1520,11 +1709,13 @@ class NytMovieReview(MovieReview):
             return result
 
         # **** Fetch review based on title ***
-        response = nyt_api_title_query(movie.title)
+        # response = nyt_api_title_query(movie.title)
+        response = nyt_api_title_opening_year_query(movie.title,
+                                                    movie.release_year)
 
         if response.status_code != 200:
-            message = "Error: Http response status code = {res.status_code}"
-            result = error_result(message=message, status_code=status_code)
+            message = "Error: Http response status code = {response.status_code}"
+            result = error_result(message=message, status_code=response.status_code)
             return result
 
         # Unpack data
@@ -1536,17 +1727,24 @@ class NytMovieReview(MovieReview):
 
         # No results returned.
         if nyt_data["num_results"] == 0:
+            print("No results found.")
             # Foreign films may be in their original titles.
             if movie.original_title != movie.title:
                 # Delay request, so as not to timeout NYT api.
+                print(f"Checking original title: {movie.original_title}....")
                 time.sleep(cls.delay)
-                response = nyt_api_title_query(movie.original_title)
+                # response = nyt_api_title_query(movie.original_title)
+                response = nyt_api_title_opening_year_query(movie.original_title,
+                                                            movie.release_year)
 
                 if response.status_code != 200:
                     message = "Error: Http response status code = {res.status_code}"
                     result = error_result(message=message,
                                           status_code=response.status_code)
                     return result
+
+                # Update data set.
+                nyt_data = response.json()
 
                 # Found at least one review with original title!
                 original_title_used = True
@@ -1570,24 +1768,87 @@ class NytMovieReview(MovieReview):
             result = verify_result(nyt_data_result, original_title_used)
             return result
 
-
         if nyt_data["num_results"] > 1:
-            print("Multiple Results!")
+            print("Multiple reviews found...")
 
-            nyt_data_result = get_review_closest_to_release_year(movie,
-                                                                nyt_data)
+            nytreviews = nyt_data['results']
 
-            if not nyt_data_result:
-                message = "Multiple reviews: Movie could not be matched to review."
+            # Try to find exact match first.
+            nytreview = exact_match(movie, nytreviews)
+
+            if nytreview:
+                print("Exact match found!")
+                review_obj = build_NYTReview_object(movie, nytreview)
+                result = get_result(success=True,
+                                    status_code=response.status_code,
+                                    review=review_obj)
+                return result
+
+            print("Filtering by release year...")
+            filtered_reviews = filter_year(release_year=movie.release_year,
+                                           nytreviews=nytreviews,
+                                           grace_period=cls.max_year_gap)
+
+            # Nothing left.
+            if not filtered_reviews:
+                message = "Multiple reviews: No review found within grace period."
                 print(f"{message}: {movie.title}")
                 result = get_result(success=False,
                                   status_code=response.status_code,
                                   message=message)
                 return result
 
-            result = verify_result(nyt_data_result, original_title_used)
+            print("Filtering by title....")
+            # Make sure to pass the right title before filtering the results!
+            # NYT may have used original movie title instead of
+            # more widely-known, often Anglicized, movie title.
+            if original_title_used:
+                movie_title = movie.original_title.strip().lower()
+            else:
+                movie_title = movie.title.strip().lower()
 
-            return result
+            filtered_reviews = filter_title(movie_title, filtered_reviews)
+
+            # Nothing left.
+            if not filtered_reviews:
+                message = "Multiple reviews: none passed title filtering."
+                print(f"{message}: {movie.title}")
+                result = get_result(success=False,
+                                  status_code=response.status_code,
+                                  message=message)
+                return result
+
+            if len(filtered_reviews) == 1:
+                print("Review found! Hopefully it's the right one.")
+                review_obj = build_NYTReview_object(movie, filtered_reviews[0])
+                result = get_result(success=True,
+                                    status_code=response.status_code,
+                                    review=review_obj)
+                return result
+
+            # Title that matches the closest to one searched for will be the
+            # deciding factor.
+            if len(filtered_reviews) > 1:
+                print("Choosing review with highest Levenshtein score...")
+                nytreview = highest_levenshtein(movie_title, filtered_reviews)
+
+            # No luck.
+            if not nytreview:
+                message = "No luck: Multiple reviews with same Levenshtein score."
+                print(f"{message}: {movie.title}")
+                result = get_result(success=False,
+                                  status_code=response.status_code,
+                                  message=message)
+                return result
+            # Success!
+            else:
+                print("Review with highest Levenshtein score selected!")
+                print("Hopefully it's the right one.")
+                review_obj = build_NYTReview_object(movie, nytreview)
+                result = get_result(success=True,
+                                    status_code=response.status_code,
+                                    review=review_obj)
+                return result
 
 
 

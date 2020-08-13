@@ -205,23 +205,6 @@ class NytMovieReviewTests(unittest.TestCase):
         self.assertFalse(result['success'])
 
     # Individual movies
-
-    # # FAILS TEST!
-    # # Reason: Too many results come up for kin, none of which are the movie
-    # itself. Can remedy by specifying opening year, but then
-    # other tests will fail. Trade-off bug.
-    def test_get_review_kin_2018(self):
-        self.delay_api_call()
-        title = "Kin"
-        release_year = 2018
-        original_title = title
-        movie = Movie(title=title,
-                      release_year=release_year,
-                      original_title=original_title)
-        result = NytMovieReview.get_movie_review(movie)
-        self.assertTrue(result['success'])
-        self.assertIn('fantasy wish fulfillment', result['review'].text)
-
     def test_get_review_solaris_2002(self):
         self.delay_api_call()
         title = "Solaris"
@@ -436,72 +419,24 @@ class NytMovieReviewTests(unittest.TestCase):
         self.assertIn("Greta Gerwig refreshes a literary classic" ,
                     result['review'].text)
 
+    # Testing 'second attempt' query; requires setting release date in Movie
+    # object, and setting first_try switch to False.
+    def test_get_review_kin_2018(self):
+        self.delay_api_call()
+        title = "Kin"
+        release_year = 2018
+        release_date = "2018-08-01"
+        original_title = title
 
+        movie = Movie(title=title,
+                      release_year=release_year,
+                      release_date=release_date,
+                      original_title=original_title)
 
+        result = NytMovieReview.get_movie_review(movie, first_try=False)
 
-
-
-
-
-    """
-    2) Kin: Couldn't select among multiple reviews:
-      SOL'N impose exact title match when picking reviews
-    3) Crashes if film is not in database, e.g. Le Shower
-      SOL'N: Return None for Movies object instead of warning string.
-    4) Catfight" crashes for entry that does not have release date
-      SOL'N: Don't display review if release_date does not exist
-    5) *** Catfight
-      - gives the wrong review for 2006 film "CatFight"
-      - gives the wrong review for 2019 film "CatFight"
-      *** Ghost in the Shell (1995)
-       - gives review for Scar Jo 2017 version
-      SOL'N: Better heuristic testing; warning messages
-    6) Solaris 1972 review not showing up
-      SOL'N: Fix up NytReview Heuristic
-    7) *** Dirty Dancing (Released 2017-05-24):
-        - ValueError: min() arg is an empty sequence
-        SOL'N: Prevent determining review year if all review dated before release
-    8)  No review found for "Blue is the Warmest Color" because exact title match
-       means if words are capitalized differently there will be no match.
-       SOL'N: Force strings into lower case before comparing.
-    9) No review show for "Crystal Fairy & the Magical Cactus" because title is
-     "Crystal Fairy" in NYT db; No review found "Amélie" because it's 'Amelie' in
-     NYT database (accent issue)
-      SOL'N: Fuzzy string comparison
-    10)  No review for "Auberge Espagnole" because TMDB title searched is in English
-     but NYT review has it in the original French: L' Auberge Espagnole
-      SOL'N: Query search using original title rather than English translation.
-    11) Wrong review for CatFight, 2006 - showing review for 2017 movie
-      Little Women (Release date: 1917-07-02) - has review for 1933 version
-      even though 1933 version is in NYT db
-      SOL'N: Enforce threshold to reject any review that are 10 years older than
-      the release date.
-    12)   - King Cobra (Review precedes opening date)
-     - Tim and Eric's Billion Dollar Movie (get warning even though movie and review dates are the same)
-    - Little Women, 2018 (No warnings that review might be wrong!!)
-      SOL'N: Append warning for any movie where the release and review years are not the same.
-    13) Black Rain: example of movie made in same year with same title!
-      SOL'N: Hard code it as an exception.
-    14) Sabrina (1995) - Says 2004 is closest review but 1996 is...
-        SOLN: Bugs in logic (didn't include case where pub and release years the same)
-    15) Handle case where there is no overview text (Sabrina, 2011)
-      SOLN: Jinja conditional
-    16) 1984: gives link to Apple commercial, not film.
-      - Film is "Nineteen Eighty-Four" in tmdb db
-      - Sol'n:
-        - manually write in correct tmdb id in criterion.csv
-        - add 1984 as Criterion movie exception
-    17) Rendering all messed up on pages without posters ("Happiest Season")
-        Or even with a poster ("The Flavour of Green Tea Over Rice")
-        - SOL'N: inappropiately located conditional
-
-    """
-
-
-
-
-
-
+        self.assertTrue(result['success'])
+        self.assertIn('fantasy wish fulfillment', result['review'].text)
 
 
 if __name__ == "__main__":

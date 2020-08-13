@@ -1305,7 +1305,7 @@ class NytMovieReview(MovieReview):
             raise ValueError("Film that is not a special case being processed as one!")
 
     @classmethod
-    def get_movie_review(cls, movie):
+    def get_movie_review(cls, movie, first_try=True):
         """Returns movie review based using movie title and release year."""
 
         # ==================== INNER FUNCTIONS ==============================
@@ -1335,9 +1335,9 @@ class NytMovieReview(MovieReview):
                                             "query": title.strip()})
             return res
 
-        def nyt_api_title_opening_year_query(title, release_year):
+        def nyt_api_title_release_year_query(title, release_year):
             """Queries for NYT review based on title and release year.
-            Results ordred by opening date as per NYT.
+            Results ordred by publication date as per NYT.
             """
 
             start = f"{release_year}-01-01"
@@ -1354,6 +1354,30 @@ class NytMovieReview(MovieReview):
                                             "query": title.strip()})
 
 
+
+            return res
+
+        def nyt_api_title_release_date_query(title, release_year, release_date):
+            """Queries for NYT review based on title and release date.
+            Results ordred by opening date as per NYT.
+            """
+
+            start = f"{release_year}-01-01"
+            url = "https://api.nytimes.com/svc/movies/v2/reviews/search.json"
+
+            # End-date for query should be however many years after
+            # a film has opened that the programmer has decided for it to be
+            # 'acceptable' consider reviews.
+            date_parts = release_date.split('-', 1)
+            end_year = int(date_parts[0]) + cls.max_year_gap
+            end_date = f"{end_year}-{date_parts[1]}"
+
+            opening_date = f"{release_date};{end_date}"
+
+            res = requests.get(url, params={"api-key": cls.api_key,
+                                            "opening-date": opening_date,
+                                            "order": "by-opening-date",
+                                            "query": title.strip()})
 
             return res
 
@@ -1723,8 +1747,14 @@ class NytMovieReview(MovieReview):
 
         # **** Fetch review based on title ***
         # response = nyt_api_title_query(movie.title)
-        response = nyt_api_title_opening_year_query(movie.title,
-                                                    movie.release_year)
+        if first_try:
+            response = nyt_api_title_release_year_query(movie.title,
+                                                        movie.release_year)
+        else:
+            response = nyt_api_title_release_date_query(movie.title,
+                                                        movie.release_year,
+                                                        movie.release_date)
+
 
         if response.status_code != 200:
             message = "Error: Http response status code = {response.status_code}"
@@ -1745,10 +1775,18 @@ class NytMovieReview(MovieReview):
             if movie.original_title != movie.title:
                 # Delay request, so as not to timeout NYT api.
                 print(f"Checking original title: {movie.original_title}....")
+
                 time.sleep(cls.delay)
+
                 # response = nyt_api_title_query(movie.original_title)
-                response = nyt_api_title_opening_year_query(movie.original_title,
-                                                            movie.release_year)
+                if first_try:
+                    response = nyt_api_title_release_year_query(movie.original_title,
+                                                                movie.release_year)
+                else:
+                    response = nyt_api_title_release_date_query(movie.original_title,
+                                                                movie.release_year,
+                                                                movie.release_date)
+
 
                 if response.status_code != 200:
                     message = "Error: Http response status code = {res.status_code}"
@@ -1865,7 +1903,6 @@ class NytMovieReview(MovieReview):
                                     review=review_obj,
                                     bullseye=False)
                 return result
-
 
 
 if __name__ == "__main__":

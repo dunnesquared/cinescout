@@ -432,7 +432,7 @@ def filmography(person_id):
                              person_image_url=bio_data.get('image_url'))
 
 
-# NEW!
+# New movie_info view using redesigned NYTMovieReview algorithm. 
 @app.route("/movie/<int:tmdb_id>", methods=["GET"])
 def movie_info(tmdb_id):
     """Renders salient movie data and review summary from external APIs."""
@@ -453,11 +453,12 @@ def movie_info(tmdb_id):
     # Collect movie object.
     movie = result['movie']
 
-    # Get NYT movie review.
+    # No point in searching for a movie review if release year is unknown.
     if movie.release_year is not None:
+        # Try this first.
         result = NytMovieReview.get_movie_review(movie)
 
-        # Give this a shot.
+        # If the above doesn't work, give this a shot.
         if not result['review']:
             result = NytMovieReview.get_movie_review(movie, first_try=False)
 
@@ -474,29 +475,31 @@ def movie_info(tmdb_id):
             abort(429)
         else:
             # Movie may not have a review yet because it hasn't been released.
-            # This is not an error.
+            # This is not an error, and so should not be handled as such.
             if not result['future_release']:
                 err_message = f"NYT API query failed; HTTP response = {result['status_code']}  description={result['message']}"
                 return render_template("errors/misc-error.html", err_message=err_message)
 
+    # Looks like a review has been returned. Get it.
     review = result['review']
 
     # See whether movie is already on user's list.
     on_user_list, film_list_item_id = None, None
 
-    # To check a user's list we need to who were checking, i.e. user must be
+    # To check a user's list we need to know who were checkinguser must be
     # logged in.
     if current_user.is_authenticated:
-        film = FilmListItem.query.filter_by(tmdb_id=tmdb_id, user_id=current_user.id).first()
+        film = FilmListItem.query.filter_by(tmdb_id=tmdb_id,
+                                            user_id=current_user.id).first()
         on_user_list = True if film else False
         print(f"On user list? {on_user_list}, id: {film_list_item_id}")
 
     # Check whether review has been flagged as being potentially wrong.
-    print(result['message'])
-
     review_warning = None
     if result['bullseye'] is not None:
         review_warning = not result['bullseye']
+
+    print(result['message'])
 
     return render_template("movie.html",
                             movie=movie,
@@ -504,7 +507,8 @@ def movie_info(tmdb_id):
                             on_user_list=on_user_list,
                             review_warning=review_warning)
 
-# # OLD
+# OLD CODE
+# Previous version of movie_info view calling old NYTMovieReview algorirthm.
 # @app.route("/movie/<int:tmdb_id>", methods=["GET"])
 # def movie_info(tmdb_id):
 #     """Renders salient movie data and review summary from external APIs."""

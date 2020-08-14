@@ -967,21 +967,17 @@ class NytMovieReview(MovieReview):
 
             return res
 
-        def nyt_api_title_release_date_query(title, release_year, release_date):
+        def nyt_api_title_release_date_query(title, release_date):
             """First query made to NYT api to find movie review.
             Results in ascending ordred per review publication date.
 
             Args:
                 title: String representing film's title.
-                release_year: Integer representing film's release year.
                 release_date: String representing film's release date.
 
             Returns:
                 res: JSON response object from NYT server.
             """
-
-            start = f"{release_year}-01-01"
-
             url = "https://api.nytimes.com/svc/movies/v2/reviews/search.json"
 
             # End-date for query should be however many years after
@@ -1376,7 +1372,6 @@ class NytMovieReview(MovieReview):
                                                         movie.release_year)
         else:
             response = nyt_api_title_release_date_query(movie.title,
-                                                        movie.release_year,
                                                         movie.release_date)
 
         # 5. Check the api's response. Return if something's gone wrong.
@@ -1409,7 +1404,6 @@ class NytMovieReview(MovieReview):
                                                                 movie.release_year)
                 else:
                     response = nyt_api_title_release_date_query(movie.original_title,
-                                                                movie.release_year,
                                                                 movie.release_date)
 
 

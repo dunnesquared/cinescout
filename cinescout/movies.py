@@ -1325,8 +1325,9 @@ class NytMovieReview(MovieReview):
         #    before proceeeding.
 
         # Guard code: need the title of a movie to find a review at a minimum.
-        if not movie.title:
-            raise ValueError("Movie title cannot be None or empty. Please specify.")
+        if not movie.title or not movie.release_year or not movie.release_date:
+            message = "Title, release year or date can't be None or empty."
+            raise ValueError(message)
 
         # 2. Check whether movie is a future release. If so, there's no review,
         #    so return right away.
@@ -1336,23 +1337,22 @@ class NytMovieReview(MovieReview):
         # and given a general release at a later date. The release date though
         # tends to be this festival date though, so there is probably
         # little chance of missing a review.
-        if movie.release_date:
-            today = datetime.today()
-            release_dt = datetime.strptime(movie.release_date, '%Y-%m-%d')
+        today = datetime.today()
+        release_dt = datetime.strptime(movie.release_date, '%Y-%m-%d')
 
-            if release_dt > today:
-                message = "No review: film has yet to be released."
-                print(message)
-                return get_result(success=False,
-                                  message=message,
-                                  future_release=True)
+        if release_dt > today:
+            message = "No review: film has yet to be released."
+            print(message)
+            return get_result(success=False,
+                              message=message,
+                              future_release=True)
 
         # 3. Check whether film is a special 'exception': a film in which the
         #    algorithm will not find becuase of its unique 'situation.'
 
         # An exception movie must have the same title and release year as a
         # a movie on the exception list.
-        if movie.release_year and cls.exceptions.get(movie.title) == movie.release_year:
+        if cls.exceptions.get(movie.title) == movie.release_year:
             # Get the movie review directly.
             review_result = cls.get_movie_review_for_exception(movie)
 

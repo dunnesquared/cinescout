@@ -1024,7 +1024,12 @@ class NytMovieReview(MovieReview):
             # doesn't give us false negatives.
             nyt_movie_title = nyt_data_result.get('display_title').strip().lower()
 
-            if not cls.good_enough_match(searched_title, nyt_movie_title):
+            # Check whether TMDB movie title and move title in NYT review
+            # are similar.
+            similar_titles = cls.good_enough_match(searched_title,
+                                                    nyt_movie_title)
+
+            if not similar_titles:
                 message = "Not a close enough match: Film title does not match title of film in review."
                 print(f"{message}: {movie.title}, ({movie.release_year})")
                 result = get_result(success=False,
@@ -1037,7 +1042,7 @@ class NytMovieReview(MovieReview):
             review = build_NYTReview_object(movie, nyt_data_result)
 
             # Let caller know whehter review is an exact match or not.
-            if nyt_pub_year != movie.release_year or nyt_movie_title != searched_title:
+            if nyt_pub_year != movie.release_year or not similar_titles:
                 print("Some risk that this is the wrong review.")
                 bullseye = False
             else:
@@ -1294,7 +1299,7 @@ class NytMovieReview(MovieReview):
                 print(f"Checking original title: {movie.original_title}...")
                 print(f"Waiting {cls.delay} seconds...")
                 cls.delay_next()
-    
+
                 if first_try:
                     response = nyt_api_title_release_year_query(movie.original_title,
                                                                 movie.release_year)

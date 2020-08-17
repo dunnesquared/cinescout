@@ -468,6 +468,8 @@ def movie_info(tmdb_id):
         # that hasn't come out yet.
         if not result['review'] and not result['future_release']:
             print("Making second attempt...")
+            print(f"Waiting {NytMovieReview.delay} seconds...")
+            NytMovieReview.delay_next()
             result = NytMovieReview.get_movie_review(movie, first_try=False)
 
     else:

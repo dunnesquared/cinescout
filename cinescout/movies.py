@@ -643,6 +643,7 @@ class NytMovieReview(MovieReview):
         temp_text = temp_text.replace('&#151;', '—')  # em dash
         temp_text = temp_text.replace('&#8220;', '"')  # left quote
         temp_text = temp_text.replace('&#8221;', '"')  # right quote
+        temp_text = temp_text.replace('&#8217;', '\'')  # apostrophe
 
         cleaned_text = temp_text
         return cleaned_text

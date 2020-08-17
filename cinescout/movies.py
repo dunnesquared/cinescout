@@ -688,7 +688,7 @@ class NytMovieReview(MovieReview):
 
         # Are the two title similar enough to be confident they refer to same
         # movie?
-        if ratio >= cls.threshold or partial_ratio >= cls.threshold:
+        if ratio >= cls.threshold or (ratio >= 50 and partial_ratio >= cls.threshold):
             return True
         else:
             return False

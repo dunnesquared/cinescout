@@ -1085,8 +1085,6 @@ class NytMovieReview(MovieReview):
             # Get publication year from publication date
             nyt_pub_year = get_publication_year(nyt_data_result)
 
-            print(f"Year review published: {nyt_pub_year}")
-
             # Film review cannot have been published before a film's realease.
             if nyt_pub_year != movie.release_year:
                 if nyt_pub_year < movie.release_year:
@@ -1139,7 +1137,7 @@ class NytMovieReview(MovieReview):
                 print("Some risk that this is the wrong review.")
                 bullseye = False
             else:
-                print("Zero or low risl that this is the wrong review.")
+                print("Zero or low risk that this is the wrong review.")
                 bullseye = True
 
             result = get_result(success=True,
@@ -1243,14 +1241,8 @@ class NytMovieReview(MovieReview):
             for nytreview in nytreviews:
                 nyt_movie_title = nytreview.get('display_title').lower().strip()
 
-                print(nyt_movie_title)
-                print(nytreview.get('publication_date'))
-
                 if cls.good_enough_match(movie_title, nyt_movie_title):
                     filtered_list.append(nytreview)
-
-            # print(filtered_list)
-            # print(len(filtered_list))
 
             return filtered_list
 

@@ -432,23 +432,26 @@ def filmography(person_id):
                              person_image_url=bio_data.get('image_url'))
 
 
-# New movie_info view using redesigned NYTMovieReview algorithm. 
+# New movie_info view using redesigned NYTMovieReview algorithm.
 @app.route("/movie/<int:tmdb_id>", methods=["GET"])
 def movie_info(tmdb_id):
     """Renders salient movie data and review summary from external APIs."""
 
     # Get movie info TMDB database.
+    print("Fetching movie info based on tmdb id...")
     result = TmdbMovie.get_movie_info_by_id(tmdb_id)
 
     # TMDB request failed.
     if not result['success']:
+        print("Error!")
         # Can't find movie referenced by id.
         if result['status_code'] == 404:
             abort(404)
         else:
             # Some other error, e.g. 429: too many request.
             err_message = f"TMDB API query failed; HTTP response = {result['status_code']}"
-            return render_template("errors/misc-error.html", err_message=err_message)
+            return render_template("errors/misc-error.html",
+                                    err_message=err_message)
 
     # Collect movie object.
     movie = result['movie']
@@ -456,13 +459,19 @@ def movie_info(tmdb_id):
     # No point in searching for a movie review if release year is unknown.
     if movie.release_year is not None:
         # Try this first.
+        print(f"Fetching NYT movie review for '{movie.title}' ({movie.release_year})...")
+        print("Making first attempt...")
         result = NytMovieReview.get_movie_review(movie)
 
         # If the above doesn't work, give this a shot.
-        if not result['review']:
+        # Note that there is no point doing a second attempt for a film
+        # that hasn't come out yet.
+        if not result['review'] and not result['future_release']:
+            print("Making second attempt...")
             result = NytMovieReview.get_movie_review(movie, first_try=False)
 
     else:
+        print("Unable to fetch review: Movie has no review year.")
         return render_template("movie.html",
                                 movie=movie,
                                 review=None,
@@ -472,11 +481,13 @@ def movie_info(tmdb_id):
     if not result['success'] and result['status_code'] != 200:
         # Too many requests
         if result['status_code'] == 429:
+            print("Error!")
             abort(429)
         else:
             # Movie may not have a review yet because it hasn't been released.
             # This is not an error, and so should not be handled as such.
             if not result['future_release']:
+                print("Error!")
                 err_message = f"NYT API query failed; HTTP response = {result['status_code']}  description={result['message']}"
                 return render_template("errors/misc-error.html", err_message=err_message)
 
@@ -484,14 +495,19 @@ def movie_info(tmdb_id):
     review = result['review']
 
     # See whether movie is already on user's list.
-    on_user_list, film_list_item_id = None, None
+    on_user_list, film_list_item_id = False, None
 
     # To check a user's list we need to know who were checkinguser must be
     # logged in.
     if current_user.is_authenticated:
+        print("Checking whether film on user list...")
         film = FilmListItem.query.filter_by(tmdb_id=tmdb_id,
                                             user_id=current_user.id).first()
-        on_user_list = True if film else False
+        if film:
+            on_user_list = True
+            film_list_item_id = film.id
+
+        # on_user_list = True if film else False
         print(f"On user list? {on_user_list}, id: {film_list_item_id}")
 
     # Check whether review has been flagged as being potentially wrong.
@@ -499,14 +515,11 @@ def movie_info(tmdb_id):
     if result['bullseye'] is not None:
         review_warning = not result['bullseye']
 
-    print(result['message'])
-
     return render_template("movie.html",
                             movie=movie,
                             review=review,
                             on_user_list=on_user_list,
                             review_warning=review_warning)
-
 # OLD CODE
 # Previous version of movie_info view calling old NYTMovieReview algorirthm.
 # @app.route("/movie/<int:tmdb_id>", methods=["GET"])

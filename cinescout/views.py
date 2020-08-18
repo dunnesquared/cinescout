@@ -477,6 +477,22 @@ def movie_info(tmdb_id):
     # Collect movie object.
     movie = result['movie']
 
+    # See whether movie is already on user's list.
+    on_user_list, film_list_item_id = False, None
+
+    # To check a user's list we need to know who were checkinguser must be
+    # logged in.
+    if current_user.is_authenticated:
+        print(f"Checking whether {movie.title} on user list...")
+        film = FilmListItem.query.filter_by(tmdb_id=tmdb_id,
+                                            user_id=current_user.id).first()
+        if film:
+            on_user_list = True
+            film_list_item_id = film.id
+
+        # on_user_list = True if film else False
+        print(f"On user list? {on_user_list}, id: {film_list_item_id}")
+
     # No point in searching for a movie review if release year is unknown.
     if movie.release_year is not None and movie.release_year != 0:
         # Try this first.
@@ -498,7 +514,7 @@ def movie_info(tmdb_id):
         return render_template("movie.html",
                                 movie=movie,
                                 review=None,
-                                on_user_list=None)
+                                on_user_list=on_user_list)
 
     # NYT request failed.
     if not result['success'] and result['status_code'] != 200:
@@ -517,21 +533,21 @@ def movie_info(tmdb_id):
     # Looks like a review has been returned. Get it.
     review = result['review']
 
-    # See whether movie is already on user's list.
-    on_user_list, film_list_item_id = False, None
-
-    # To check a user's list we need to know who were checkinguser must be
-    # logged in.
-    if current_user.is_authenticated:
-        print("Checking whether film on user list...")
-        film = FilmListItem.query.filter_by(tmdb_id=tmdb_id,
-                                            user_id=current_user.id).first()
-        if film:
-            on_user_list = True
-            film_list_item_id = film.id
-
-        # on_user_list = True if film else False
-        print(f"On user list? {on_user_list}, id: {film_list_item_id}")
+    # # See whether movie is already on user's list.
+    # on_user_list, film_list_item_id = False, None
+    #
+    # # To check a user's list we need to know who were checkinguser must be
+    # # logged in.
+    # if current_user.is_authenticated:
+    #     print("Checking whether film on user list...")
+    #     film = FilmListItem.query.filter_by(tmdb_id=tmdb_id,
+    #                                         user_id=current_user.id).first()
+    #     if film:
+    #         on_user_list = True
+    #         film_list_item_id = film.id
+    #
+    #     # on_user_list = True if film else False
+    #     print(f"On user list? {on_user_list}, id: {film_list_item_id}")
 
     # Check whether review has been flagged as being potentially wrong.
     review_warning = None

@@ -505,11 +505,13 @@ class TmdbMovie(Movie):
             print("Extracting movie data from TMDB JSON response....")
             tmdb_movie_data = res.json()
 
-            # Get year movie was released.
+            # Get year movie was released. Should a release date no exist,
+            # set it to zero: we users to be able to add the movie to
+            # their personal lists even if not all the important info is there.
             if tmdb_movie_data.get('release_date'):
                 release_year = int(tmdb_movie_data['release_date'].split('-')[0].strip())
             else:
-                release_year = None
+                release_year = 0    # release year unknown
 
             # Build full url for movie poster.
             poster_full_url = None

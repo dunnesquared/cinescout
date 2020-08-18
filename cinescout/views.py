@@ -113,7 +113,7 @@ def add_to_list():
         tmdb_id = int(request.form.get("tmdb_id"))
         title = request.form.get("title").strip()
         year = int(request.form.get("year"))
-        date = request.form.get("date").strip()
+        date = request.form.get("date")
         original_title = request.form.get("original_title").strip()
 
         # Check for bad values.
@@ -457,7 +457,7 @@ def movie_info(tmdb_id):
     movie = result['movie']
 
     # No point in searching for a movie review if release year is unknown.
-    if movie.release_year is not None:
+    if movie.release_year is not None and movie.release_year != 0:
         # Try this first.
         print(f"Fetching NYT movie review for '{movie.title}' ({movie.release_year})...")
         print("Making first attempt...")

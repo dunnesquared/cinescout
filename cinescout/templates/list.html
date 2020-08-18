@@ -41,7 +41,7 @@
             </td>
 
             <td>
-              {% if film.date is not none %}
+              {% if film.date is not none and film.date != '' %}
                 {{ film.date }}
               {% else %}
                <span>Unknown</span>

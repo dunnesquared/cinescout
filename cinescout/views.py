@@ -109,12 +109,33 @@ def add_to_list():
         print("Request received to add film to list...")
         print("Retrieving POST data...", end="")
 
-        # Get data.
+        # Get minimum data. An exception should be thrown if there's a problem
+        # and the program should fail gracefully.
         tmdb_id = int(request.form.get("tmdb_id"))
         title = request.form.get("title").strip()
-        year = int(request.form.get("year"))
+
+        # Get non-essential data. Appropriate placeholders should be
+        # used if data values are blank.
+
+        # Film release year.
+        # TypeError if None, ValueError if string: ''
+        try:
+            year = int(request.form.get("year"))
+        except (TypeError, ValueError):
+            print("POST value 'year' not an integer. Setting year to zero.")
+            year = 0
+
+        # Film release date.
         date = request.form.get("date")
-        original_title = request.form.get("original_title").strip()
+
+        if date is None:
+            date = '';
+
+        # Original title
+        original_title = request.form.get("original_title")
+
+        if original_title:
+            original_title = original_title.strip()
 
         # Check for bad values.
         if year < 0:
@@ -522,6 +543,7 @@ def movie_info(tmdb_id):
                             review=review,
                             on_user_list=on_user_list,
                             review_warning=review_warning)
+
 # OLD CODE
 # Previous version of movie_info view calling old NYTMovieReview algorirthm.
 # @app.route("/movie/<int:tmdb_id>", methods=["GET"])

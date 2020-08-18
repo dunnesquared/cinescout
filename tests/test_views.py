@@ -497,6 +497,17 @@ class RouteTests(unittest.TestCase):
         data = json.loads(response.get_data(as_text=True))
         self.assertFalse(data['success'])
 
+    def test_movie_page_add_no_date_year(self):
+        self.login("Alex", "123")
+        # Add film.
+        response = self.app.post('/add-to-list',
+                data=dict(tmdb_id="1018", title="Mulholland Drive",
+                        year="", date=None,
+                        original_title="Mulholland Drive"),
+                        follow_redirects=True)
+        data = json.loads(response.get_data(as_text=True))
+        self.assertTrue(data['success'])
+
     # Remove movie from list
     # Remove when not logged in
     def test_movie_page_remove_not_logged_in(self):
@@ -664,6 +675,17 @@ class RouteTests(unittest.TestCase):
         response = self.app.get('/movie-list')
         self.assertIn(b'Mulholland Drive', response.data)
 
+    # See whether film release date flagged as 'Unknown' if no release info
+    # provided
+    def test_user_list_release_date_unknown(self):
+    	# Login and add a film.
+        self.login("Alex", "123")
+        self.add_film_to_list(tmdb_id="1018", title="Mulholland Drive",
+                            year=None, date=None,
+                            original_title="Mulholland Drive")
+
+        response = self.app.get('/movie-list')
+        self.assertIn(b'Unknown', response.data)
 
     # BROWSE
     # Get page when not logged in

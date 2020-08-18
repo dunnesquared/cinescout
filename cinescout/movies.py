@@ -850,7 +850,7 @@ class NytMovieReview(MovieReview):
 
         def nyt_api_title_release_year_query(title, release_year):
             """First query made to NYT api to find movie review.
-            Results in ascending ordred per review publication date.
+            Results in ascending ordred per review publication year.
 
             Args:
                 title: String representing film's title.
@@ -875,8 +875,8 @@ class NytMovieReview(MovieReview):
             return res
 
         def nyt_api_title_release_date_query(title, release_date):
-            """First query made to NYT api to find movie review.
-            Results in ascending ordred per review publication date.
+            """Second query made to NYT api to find movie review.
+            Results in ascending ordred per opening date.
 
             Args:
                 title: String representing film's title.

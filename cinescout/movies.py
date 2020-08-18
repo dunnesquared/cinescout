@@ -300,12 +300,16 @@ class TmdbMovie(Movie):
             result: A dictionary with four fields fields:
                 success: True or False, depending on wheter person found.
                 status_code: Status code of Http response of api call.
+                name: String representing cast/crew member's 'working' name
                 image_url: String representing absolute url for cast/crew
                            member's image. Returns None if you no image foud.
         """
 
         # Setup return value
-        result = {'success': True, 'status_code': 200, 'image_url': None}
+        result = {'success': True,
+                  'status_code': 200,
+                  'name': None,
+                  'image_url': None}
 
 
         # Make request.
@@ -328,6 +332,10 @@ class TmdbMovie(Movie):
 
         # Deserialize JSON response object
         tmdb_person_data = res.json()
+
+        # Useful to double-check we're getting the data for the person
+        # we really want to know about.
+        result['name'] = tmdb_person_data['name']
 
         # See whether relative url or null returned.
         if tmdb_person_data['profile_path'] is None:

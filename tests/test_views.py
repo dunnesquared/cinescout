@@ -383,6 +383,38 @@ class RouteTests(unittest.TestCase):
         response = self.app.get(f'person-search?')
         self.assertIn(b'422', response.data)
 
+    # *** FILMOGRAPHY ***
+
+    def test_filmography_good_parameters(self):
+        firstname = "Ingmar"
+        lastname = "Bergman"
+        id = 6648
+        response = self.app.get(f'/person/{id}?name={firstname}+{lastname}')
+        self.assertIn(b'Winter Light', response.data)
+
+    def test_filmography_blank_name(self):
+        firstname = ""
+        lastname = ""
+        id = 6648
+        response = self.app.get(f'/person/{id}?name={firstname}+{lastname}')
+        self.assertIn(b'URL person name and TMDB person name do not match',
+                        response.data)
+
+    def test_filmography_no_name(self):
+        id = 6648
+        response = self.app.get(f'/person/{id}')
+        self.assertIn(b'Winter Light', response.data)
+
+    def test_filmography_wrong_name(self):
+        firstname = "Miranda"
+        lastname = "Otto"
+        id = 6648
+        response = self.app.get(f'/person/{id}?name={firstname}+{lastname}')
+        self.assertIn(b'URL person name and TMDB person name do not match',
+                        response.data)
+
+
+
     # *** MOVIE PAGE ***
     # All major headings there
     def test__movie_page_good(self):

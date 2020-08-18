@@ -445,6 +445,26 @@ def filmography(person_id):
         if bio_data['status_code'] != 200:
             abort(bio_data['status_code'])
 
+    # Double checking whether person queried is actually who we're looking
+    # for.
+    tmdb_person_name = bio_data['name']
+
+    # Possibility name erased from url. In that case, just set it to the
+    # name from the query.
+
+    print("Double-checking whether person name in url goes with data fetched...")
+    if tmdb_person_name:
+        if name is None:
+            print("Name not specified in URL; assuming TMDB name is correct.")
+            name = tmdb_person_name
+        elif name.lower().strip() != tmdb_person_name.lower().strip():
+            # Some other error, e.g. 429: too many request.
+            err_message = f"URL person name and TMDB person name do not match: '{name}' vs. '{tmdb_person_name}'."
+            print(err_message)
+            return render_template("errors/misc-error.html",
+                                    err_message=err_message)
+
+
     return render_template("filmography.html",
                              cast=filmography_data.get('cast'),
                              crew=filmography_data.get('crew'),
@@ -483,7 +503,7 @@ def movie_info(tmdb_id):
     # To check a user's list we need to know who were checkinguser must be
     # logged in.
     if current_user.is_authenticated:
-        print(f"Checking whether {movie.title} on user list...")
+        print(f"Checking whether '{movie.title}' on user list...")
         film = FilmListItem.query.filter_by(tmdb_id=tmdb_id,
                                             user_id=current_user.id).first()
         if film:

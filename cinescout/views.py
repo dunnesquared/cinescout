@@ -109,12 +109,33 @@ def add_to_list():
         print("Request received to add film to list...")
         print("Retrieving POST data...", end="")
 
-        # Get data.
+        # Get minimum data. An exception should be thrown if there's a problem
+        # and the program should fail gracefully.
         tmdb_id = int(request.form.get("tmdb_id"))
         title = request.form.get("title").strip()
-        year = int(request.form.get("year"))
-        date = request.form.get("date").strip()
-        original_title = request.form.get("original_title").strip()
+
+        # Get non-essential data. Appropriate placeholders should be
+        # used if data values are blank.
+
+        # Film release year.
+        # TypeError if None, ValueError if string: ''
+        try:
+            year = int(request.form.get("year"))
+        except (TypeError, ValueError):
+            print("POST value 'year' not an integer. Setting year to zero.")
+            year = 0
+
+        # Film release date.
+        date = request.form.get("date")
+
+        if date is None:
+            date = '';
+
+        # Original title
+        original_title = request.form.get("original_title")
+
+        if original_title:
+            original_title = original_title.strip()
 
         # Check for bad values.
         if year < 0:
@@ -424,6 +445,26 @@ def filmography(person_id):
         if bio_data['status_code'] != 200:
             abort(bio_data['status_code'])
 
+    # Double checking whether person queried is actually who we're looking
+    # for.
+    tmdb_person_name = bio_data['name']
+
+    # Possibility name erased from url. In that case, just set it to the
+    # name from the query.
+
+    print("Double-checking whether person name in url goes with data fetched...")
+    if tmdb_person_name:
+        if name is None:
+            print("Name not specified in URL; assuming TMDB name is correct.")
+            name = tmdb_person_name
+        elif name.lower().strip() != tmdb_person_name.lower().strip():
+            # Some other error, e.g. 429: too many request.
+            err_message = f"URL person name and TMDB person name do not match: '{name}' vs. '{tmdb_person_name}'."
+            print(err_message)
+            return render_template("errors/misc-error.html",
+                                    err_message=err_message)
+
+
     return render_template("filmography.html",
                              cast=filmography_data.get('cast'),
                              crew=filmography_data.get('crew'),
@@ -456,8 +497,24 @@ def movie_info(tmdb_id):
     # Collect movie object.
     movie = result['movie']
 
+    # See whether movie is already on user's list.
+    on_user_list, film_list_item_id = False, None
+
+    # To check a user's list we need to know who were checkinguser must be
+    # logged in.
+    if current_user.is_authenticated:
+        print(f"Checking whether '{movie.title}' on user list...")
+        film = FilmListItem.query.filter_by(tmdb_id=tmdb_id,
+                                            user_id=current_user.id).first()
+        if film:
+            on_user_list = True
+            film_list_item_id = film.id
+
+        # on_user_list = True if film else False
+        print(f"On user list? {on_user_list}, id: {film_list_item_id}")
+
     # No point in searching for a movie review if release year is unknown.
-    if movie.release_year is not None:
+    if movie.release_year is not None and movie.release_year != 0:
         # Try this first.
         print(f"Fetching NYT movie review for '{movie.title}' ({movie.release_year})...")
         print("Making first attempt...")
@@ -477,7 +534,7 @@ def movie_info(tmdb_id):
         return render_template("movie.html",
                                 movie=movie,
                                 review=None,
-                                on_user_list=None)
+                                on_user_list=on_user_list)
 
     # NYT request failed.
     if not result['success'] and result['status_code'] != 200:
@@ -496,21 +553,21 @@ def movie_info(tmdb_id):
     # Looks like a review has been returned. Get it.
     review = result['review']
 
-    # See whether movie is already on user's list.
-    on_user_list, film_list_item_id = False, None
-
-    # To check a user's list we need to know who were checkinguser must be
-    # logged in.
-    if current_user.is_authenticated:
-        print("Checking whether film on user list...")
-        film = FilmListItem.query.filter_by(tmdb_id=tmdb_id,
-                                            user_id=current_user.id).first()
-        if film:
-            on_user_list = True
-            film_list_item_id = film.id
-
-        # on_user_list = True if film else False
-        print(f"On user list? {on_user_list}, id: {film_list_item_id}")
+    # # See whether movie is already on user's list.
+    # on_user_list, film_list_item_id = False, None
+    #
+    # # To check a user's list we need to know who were checkinguser must be
+    # # logged in.
+    # if current_user.is_authenticated:
+    #     print("Checking whether film on user list...")
+    #     film = FilmListItem.query.filter_by(tmdb_id=tmdb_id,
+    #                                         user_id=current_user.id).first()
+    #     if film:
+    #         on_user_list = True
+    #         film_list_item_id = film.id
+    #
+    #     # on_user_list = True if film else False
+    #     print(f"On user list? {on_user_list}, id: {film_list_item_id}")
 
     # Check whether review has been flagged as being potentially wrong.
     review_warning = None
@@ -522,6 +579,7 @@ def movie_info(tmdb_id):
                             review=review,
                             on_user_list=on_user_list,
                             review_warning=review_warning)
+
 # OLD CODE
 # Previous version of movie_info view calling old NYTMovieReview algorirthm.
 # @app.route("/movie/<int:tmdb_id>", methods=["GET"])

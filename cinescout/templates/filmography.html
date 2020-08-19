@@ -42,7 +42,12 @@
             {% else %}
               (Release date: Unknown,
             {% endif %}
-            Character: {{ cast_item['character'] }})
+            Character:
+            {% if cast_item['character'] %}
+              {{ cast_item['character'] }})
+            {% else %}
+              ???)
+            {% endif %}
             <span class="spinner-border spinner-border-sm"></span>
           </a>
         </li>

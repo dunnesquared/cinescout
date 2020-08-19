@@ -383,6 +383,38 @@ class RouteTests(unittest.TestCase):
         response = self.app.get(f'person-search?')
         self.assertIn(b'422', response.data)
 
+    # *** FILMOGRAPHY ***
+
+    def test_filmography_good_parameters(self):
+        firstname = "Ingmar"
+        lastname = "Bergman"
+        id = 6648
+        response = self.app.get(f'/person/{id}?name={firstname}+{lastname}')
+        self.assertIn(b'Winter Light', response.data)
+
+    def test_filmography_blank_name(self):
+        firstname = ""
+        lastname = ""
+        id = 6648
+        response = self.app.get(f'/person/{id}?name={firstname}+{lastname}')
+        self.assertIn(b'URL person name and TMDB person name do not match',
+                        response.data)
+
+    def test_filmography_no_name(self):
+        id = 6648
+        response = self.app.get(f'/person/{id}')
+        self.assertIn(b'Winter Light', response.data)
+
+    def test_filmography_wrong_name(self):
+        firstname = "Miranda"
+        lastname = "Otto"
+        id = 6648
+        response = self.app.get(f'/person/{id}?name={firstname}+{lastname}')
+        self.assertIn(b'URL person name and TMDB person name do not match',
+                        response.data)
+
+
+
     # *** MOVIE PAGE ***
     # All major headings there
     def test__movie_page_good(self):
@@ -496,6 +528,17 @@ class RouteTests(unittest.TestCase):
                         follow_redirects=True)
         data = json.loads(response.get_data(as_text=True))
         self.assertFalse(data['success'])
+
+    def test_movie_page_add_no_date_year(self):
+        self.login("Alex", "123")
+        # Add film.
+        response = self.app.post('/add-to-list',
+                data=dict(tmdb_id="1018", title="Mulholland Drive",
+                        year="", date=None,
+                        original_title="Mulholland Drive"),
+                        follow_redirects=True)
+        data = json.loads(response.get_data(as_text=True))
+        self.assertTrue(data['success'])
 
     # Remove movie from list
     # Remove when not logged in
@@ -664,6 +707,17 @@ class RouteTests(unittest.TestCase):
         response = self.app.get('/movie-list')
         self.assertIn(b'Mulholland Drive', response.data)
 
+    # See whether film release date flagged as 'Unknown' if no release info
+    # provided
+    def test_user_list_release_date_unknown(self):
+    	# Login and add a film.
+        self.login("Alex", "123")
+        self.add_film_to_list(tmdb_id="1018", title="Mulholland Drive",
+                            year=None, date=None,
+                            original_title="Mulholland Drive")
+
+        response = self.app.get('/movie-list')
+        self.assertIn(b'Unknown', response.data)
 
     # BROWSE
     # Get page when not logged in

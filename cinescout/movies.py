@@ -300,12 +300,16 @@ class TmdbMovie(Movie):
             result: A dictionary with four fields fields:
                 success: True or False, depending on wheter person found.
                 status_code: Status code of Http response of api call.
+                name: String representing cast/crew member's 'working' name
                 image_url: String representing absolute url for cast/crew
                            member's image. Returns None if you no image foud.
         """
 
         # Setup return value
-        result = {'success': True, 'status_code': 200, 'image_url': None}
+        result = {'success': True,
+                  'status_code': 200,
+                  'name': None,
+                  'image_url': None}
 
 
         # Make request.
@@ -328,6 +332,10 @@ class TmdbMovie(Movie):
 
         # Deserialize JSON response object
         tmdb_person_data = res.json()
+
+        # Useful to double-check we're getting the data for the person
+        # we really want to know about.
+        result['name'] = tmdb_person_data['name']
 
         # See whether relative url or null returned.
         if tmdb_person_data['profile_path'] is None:
@@ -505,11 +513,13 @@ class TmdbMovie(Movie):
             print("Extracting movie data from TMDB JSON response....")
             tmdb_movie_data = res.json()
 
-            # Get year movie was released.
+            # Get year movie was released. Should a release date no exist,
+            # set it to zero: we users to be able to add the movie to
+            # their personal lists even if not all the important info is there.
             if tmdb_movie_data.get('release_date'):
                 release_year = int(tmdb_movie_data['release_date'].split('-')[0].strip())
             else:
-                release_year = None
+                release_year = 0    # release year unknown
 
             # Build full url for movie poster.
             poster_full_url = None
@@ -848,7 +858,7 @@ class NytMovieReview(MovieReview):
 
         def nyt_api_title_release_year_query(title, release_year):
             """First query made to NYT api to find movie review.
-            Results in ascending ordred per review publication date.
+            Results in ascending ordred per review publication year.
 
             Args:
                 title: String representing film's title.
@@ -873,8 +883,8 @@ class NytMovieReview(MovieReview):
             return res
 
         def nyt_api_title_release_date_query(title, release_date):
-            """First query made to NYT api to find movie review.
-            Results in ascending ordred per review publication date.
+            """Second query made to NYT api to find movie review.
+            Results in ascending ordred per opening date.
 
             Args:
                 title: String representing film's title.

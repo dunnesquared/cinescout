@@ -106,6 +106,7 @@ and `context.py` make running these tests possible.
 - `context.py`: Ensures Python can find `Cinescout` modules and objects for test files.
 - `test_view.py`: Performs unit test on functions in `views.py`.
 - `test_movies.py`: Performs unit test on class methods in `movies.py`.
+- `test.db`: SQLite database, mainly used by `test_views.py` script.
 
 To execute the test scripts, run the following on the console:
 
@@ -132,10 +133,10 @@ Finally, a special thanks to LK for all her support and patience during the
 several weeks it took me put together this app. It took me *way longer* than
 I had originally thought.
 
-Alex Dunne, 2020-08-19
+Alex Dunne, August 2020
 
-[1^]  This script applies to MacOS and *nix operating systems. I'm
-unsure how to setup this app on Windows. That said, the principles for the simplest
-setup are the same: create an 'app.db' in the root of the project directory;
-enter your keys in whatever environment variable manager Windows uses. The script
-is nice-to-have, but not strictly necessary to setup `Cinescout`.
+[1^]  This script applies to MacOS and *nix operating systems; I'm
+unsure how to setup `Cinescout` on Windows. That said, the script just
+automates a few simple tasks that can be done manually. For the simplest setup
+here's what you need to do: 1) Create an 'app.db' file in the root of the project directory, and 2) Enter your keys in whatever environment variable manager Windows
+uses. How you want to set your Flask environment variables, I'll leave to you.

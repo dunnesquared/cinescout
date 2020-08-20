@@ -13,6 +13,8 @@ printf "FLASK_DEBUG=%s\n" $FLASK_DEBUG
 # Setup database.
 echo "Setting up database..."
 
+TEST_DB=tests/test.db
+
 # app.db exists.
 if [ -f app.db ]; then
   echo -n "File 'app.db' detected in current directory. Would you like to continue using this file? [y/n] "
@@ -156,6 +158,13 @@ else
 
 fi
 
+# Create test database for unittests scripts should database not exist
+# N.B. This is strictly not necessary as test script will create db if dne
+if [ ! -f "$TEST_DB" ]; then
+  echo "Creating SQLite test database..."
+  touch tests/test.db
+fi
+
 echo "Database setup complete!"
 echo "Don't forget to populate the database by running './scripts/film_data.py."
 
@@ -193,4 +202,5 @@ if [[ $ans == 'y' ]]; then
     export TMDB_API_KEY=$TMDB_API_KEY
     printf "Key setup complete!\n"
   fi
+
 fi

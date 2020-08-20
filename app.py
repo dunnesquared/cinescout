@@ -1,6 +1,10 @@
 """Entry module for flask to launch app."""
 
-print("Executing app.py")
+VERSION = 1.0
+
+print(f"\nWelcome to Cinescout, v{VERSION}")
+print("============================")
+print("***Executing app.py...***")
 
 from cinescout import app # Get app object from __init__.py
 print("Importing app object from cinescout package: __init.py__...")

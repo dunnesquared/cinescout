@@ -1,32 +1,24 @@
-# Final Project
+# Cinescout🎞 (version 1.0)
 
-Web Programming with Python and JavaScript
-
-# Cinescout (version 0.1)
 `Cinescout` is a Flask-based, mobile-responsive web tool that allows you to learn
 more about almost any film or person in the world of cinema. With `Cinescout` you can:
 
 - Read a brief synopsis of a film from [The Movie Database](https://www.themoviedb.org/), as well as a review summary from [The New York Times](https://nytimes.com).
 - Discover the filmography of your favourite cast or crew member.
 - Create an account to add movies to a personal list for later reference.
-- Browse through a list of critically-acclaimed films from The Criterion Collection.
+- Browse through a list of critically-acclaimed films from [The Criterion Collection](https://www.criterion.com/).
 
-## Exceeding minimal requirements
-`Cinescout` uses Python, Javascript and an SQL ORM to implement its features.
-Flask and SQLAlchemy are used for the backend, whereas JavaScript is used
-for asynchronous AJAX client requests and some frontend UI magic.
+## Short History
+`Cinescout`  came to be as my final project submission for Harvard
+University's online cont-ed course, 'CS50W: Web Programming with Python and JavaScript.'  
+As a regular movie watcher, I wanted to create a tool that would help me
+pick out good movies. I also liked working with APIs: extracting data and functionality
+from external systems excited me: with just a little bit of code I could make something
+big (or at least felt that way).
 
-`Cinescout` is a mobile-responsive web application that relies on `Bootstrap 4.5`
-for its look, feel and behaviour.
-
-`Cinescout` exceeds the complexity of previous projects in the following ways:
-- Uses two external APIs for its data; previous projects only required one.
-- The problem of getting a NYT movie review for a particular movie is a *hard* problem. My code to heuristically find and identify the correct movie is sophisticated, takes into account edge cases, uses Levenshtein distance ratios.... All previous assignments had problems that could be solved with relatively straightforward deterministic solutions.
-- A script is used to scrape data from *The Movie Database*, so the data can then be imported into the app's database. Previous projects did not have this requirement.
-- I wrote a `bash` setup script to make it easier for developers to set up the app. Not required in previous projects.
-- The app's routes are thoroughly unit-tested with the `unittest` framework. No testing was required in previous projects.
-- Passwords are stored as hashed strings in the database, a minimal security standard. Not expected in previous projects.
-- The project used multiple external dependencies (see below), many of which were neither discussed in the lectures nor used in previous projects.
+While `version 0.1` of `Cinescout` satisfied the course's requirements, I wanted to seriously
+improve my app before pushing the code to my github account. Hence, `version 1` was
+born.
 
 ## External dependencies
 This project depends on several external packages. Using these extensions
@@ -56,25 +48,14 @@ own.
 3. Containerize and activate the app in a virtual environment. `virtualenv` is good.
 4. Download all external Python dependencies: `pip install -r requirements.txt`.
 5. Create a secret key. Several Python packages depend on it. It's highly recommended you use a strong random key. See https://docs.python.org/3/library/secrets.html for more info on how to do this.
-6.  Run `source setup.sh` to enter your API keys and secret key. This script will save your keys as environment variables, as well as some Flask config settings. You'll also be prompted as to whether you want to create a local database file or use the one specified in DATABASE_URL, should it exist. If the latter, it's assumed you're setup to connect an external database (e.g. Postgres database on Heroku). Otherwise, a default `mysql` database will be used.[^1]
-7. Ensure your console is in the project's root folder, i.e  the same level as `app.py`.
-8. Make sure you are **connected** to the Internet!!
-9. Type `flask run` into your Terminal and hit Enter.
-10. Open a web browser and go to `http://127.0.0.1:5000/` to start using `Cinescout`!
-
-### Important
- If, for some reason, the database happens to be empty, run the `film_data.py`
- script:
-
-```sh
-python scripts/film_data.py
-```
-
-This will re-populate the database. Two demo users are created:
-'Alex' and 'Yoda'. The script prompts you to enter passwords for them.
+6. Ensure your console is in the project's root folder, i.e  the same level as `app.py`.
+7.  Run `source setup.sh`. This script will save your keys as environment variables, as well as some Flask config settings. You'll also be prompted as to whether you want to create a local database file or use the one specified in DATABASE_URL, should it exist. If the latter, it's assumed you're setup to connect an external database (e.g. Postgres database on Heroku). Otherwise, a default `SQLite` database will be used.[^1]
+8. Populate the database by running `python scripts/film_data.py`. The script creates two demo users: 'Alex' and 'Yoda'. The script prompts you to enter passwords for them.
+9. Make sure you are **connected** to the Internet.
+10. Type `flask run` into your Terminal and hit Enter.
+11. Open a web browser and go to `http://127.0.0.1:5000/` to start using `Cinescout`!
 
 ## Files of note
-
 To keep things straight, let's look at the contents of each folder in the project, beginning at the project's root.
 
 ### `/` (project root)
@@ -105,7 +86,7 @@ Folder containing CSV files which in turn contain movie data.
 - `notfound.csv:`  Contains list of movies `tmdb_data.py` failed to find on TMDB. Output file of `tmdb_data.py` script.
 
 ### `/migrations`
-Folder containing databaase migration scripts auto-generated with `Flask-Migrate` extension.
+Folder containing database migration scripts auto-generated with `Flask-Migrate` extension.
 
 ### `/scripts`
 Folder containing scripts to scrape data and populate the database. To run successfully,
@@ -114,42 +95,48 @@ execute the scripts from the project's root directory.
 - `tmdb_data.py`: Script that requests movie data from TMDB api. Uses `films.csv` as input; outputs
 to `found.csv` and `notfound.csv.` READ WARNING BELOW!
 
-**WARNING!** Do not run `tmdb_data.py` at this moment! If you do, please do not overwrite the contents of  `criterion.csv` with  `found.csv`. Because some movie titles have commas in them I had to manually use another character to replace the commas so the titles would be accepted by `film_data.py`. If you run the `film_data.py` with an unedited `criterion.csv` as input, `film_data.py` will crash and your database will not be populated. I hope to find an elegant solution to this problem in a future version. In the case
-you've already gone ahead and run `tmdb_data.py` I've created `criterion_BACKUP.csv` should you need to restore `criterion.csv` to its desired state.
+**WARNING!** Do not run `tmdb_data.py` at this moment! If you do, please do not overwrite the contents of `criterion.csv` with `found.csv`. Because some movie titles have commas in them I had to manually use another character to replace the commas so the titles would be accepted by `film_data.py`. If you run the `film_data.py` with an unedited `criterion.csv` as input, `film_data.py` will crash and your database will not be populated. I hope to find an elegant solution to this problem in a future version. In the case you've already gone ahead and run `tmdb_data.py` I've created `criterion_BACKUP.csv` should you need to restore `criterion.csv` to its desired state.
 
 ### `/tests`
 Unit-testing package. Contains files to run `unittest` framework tests on app.
-To execute the tests, run the following on the console.
-
-```sh
-python tests/test_views.py
-```
-
-There are (on last count) 52 tests that take about 30 seconds on my machine.
-On yours it might be faster but probably not by much (Read 'Too Many Requests' section below.)
+There are two test files: `test_views.py` and `test_movies.py`; `__init__.py`
+and `context.py` make running these tests possible.
 
 - `__init__.py`: Turns parent folder into a Python package.
 - `context.py`: Ensures Python can find `Cinescout` modules and objects for test files.
 - `test_view.py`: Performs unit test on functions in `views.py`.
+- `test_movies.py`: Performs unit test on class methods in `movies.py`.
+- `test.db`: SQLite database, mainly used by `test_views.py` script.
 
+To execute the test scripts, run the following on the console:
+
+```sh
+python tests/test_views.py
+python tests/test_movies.py
+```
+
+N.B. The script `test_movies.py` will take around four minutes to run as it
+currently stands. Each call to the NYT API has to be delayed by six seconds
+to prevent being locked out. Read 'HTTP Error 429: Too Many Requests' below.
 
 ## HTTP Error 429: Too Many Requests
 If you use this app long enough, you'll eventually get a an HTTP response 429
 error, aka Too Many Requests. This is almost certainly because the NYT only allows
 for 10 requests per minute (Read https://developer.nytimes.com/faq#a11). As
-searching for a review with `Cinescout` requires at least one NYT API call but as many four, it's quite easy to hit this ceiling if you're looking at one movie after another. The NYT recommends setting the delay between calls to six seconds, but I've
-set it to three, as that is as much as my patience can bear.
+searching for a review with `Cinescout` requires at least one NYT API call but as many four, it's quite easy to hit this ceiling if you're looking at one movie after another. The NYT recommends setting the delay between calls to six seconds, but I've set it to three, as that is as much as my patience can bear.
 
-
-## Thanks
+## Special Thanks
 In addition to CS50W's illuminating lessons and solid instruction from Brian Yu,
-I'd like to thank Miguel Gringberg for his helpful [tutorials](https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-i-hello-world) on how to set up a Flask-based Python project in a more professional manner than I would've otherwise done left to my own devices. A general thank you
-to all the authors of resources I used and learned from.
+I'd like to thank Miguel Gringberg for his helpful [tutorials](https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-i-hello-world) on how to set up a Flask-based Python project in a more professional manner than I would've otherwise done left to my own devices. A general thank you to all the authors of resources I used and learned from.
 
 Finally, a special thanks to LK for all her support and patience during the
-several weeks it took me put together this app. It took me *way longer* than I originally thought. Our mutual love of film inspired this project;
-I hope `Cinescout` will be a useful tool for us for years to come.
+several weeks it took me put together this app. It took me *way longer* than
+I had originally thought.
 
-Alex Dunne, 2020-06-25
+Alex Dunne, August 2020
 
-[1^]  Windows users will likely need to set their environment variables manually as Windows does not support Bash natively the last time I checked.
+[1^]  This script applies to MacOS and *nix operating systems; I'm
+unsure how to setup `Cinescout` on Windows. That said, the script just
+automates a few simple tasks that can be done manually. For the simplest setup
+here's what you need to do: 1) Create an 'app.db' file in the root of the project directory, and 2) Enter your keys in whatever environment variable manager Windows
+uses. How you want to set your Flask environment variables, I'll leave to you.

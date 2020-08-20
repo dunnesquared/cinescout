@@ -1,6 +1,12 @@
 {% extends "base.html" %}
 
-{% block title %}"{{ movie.title }}" ({{movie.release_year}}) {% endblock %} 
+{% block title %}"{{ movie.title }}"
+  {% if movie.release_year %}
+    ({{movie.release_year}})
+  {% else %}
+    (????)
+  {% endif %}
+{% endblock %}
 
 {% block javascript %}
   <script src="{{ url_for('static', filename='js/addremove.js') }}"></script>
@@ -122,13 +128,12 @@
       </div>
     </div>
 
-    {% if review_warning %}
+    {% if review_warning is true %}
       <div class="movie-section-row" id="review-warning">
         <sup>☂︎</sup>
         <em>
-          Because of a difference between the release and review dates,
-          the movie review presented may be for another movie of the
-          same title.
+          Because the release and review years are different,
+          this movie review might be for another movie of a similar title.
         </em>
       </div>
     {% endif %}

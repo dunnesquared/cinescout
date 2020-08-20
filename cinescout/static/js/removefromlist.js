@@ -2,6 +2,17 @@
  * @file Removes movie from user list.
  */
 
+ // Need to prevent possible cross-site-requeest-forgery attacks
+ // made using AJAX requests that modify the database.
+ var csrftoken = document.querySelector("meta[name=csrf-token]").content;
+
+ // Just in case...
+ if (csrftoken)
+   console.log("CSRF token loaded.")
+ else
+   console.error("CSRF token invalid.")
+
+
 document.addEventListener('DOMContentLoaded', () => {
 
   console.log('removefromlist.js');
@@ -27,6 +38,10 @@ document.addEventListener('DOMContentLoaded', () => {
         // Initialize new AJAX request to remove film.
         const request = new XMLHttpRequest();
         request.open('POST', '/remove-from-list');
+
+        // Add CSRF token to AJAX request (NB: request must be open first before
+        // adding token).
+        request.setRequestHeader('X-CSRF-Token', csrftoken);
 
         // Call back function to execute once request completed.
         request.onload = function() {

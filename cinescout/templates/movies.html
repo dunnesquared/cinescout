@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 
-{% block title %}Movie Results{% endblock %}
+{% block title %}Movie Results for "{{ form_title }}"{% endblock %}
+
+{% block javascript %}
+<script type="module" src="{{ url_for('static', filename='js/loadspinner.js') }}"></script>
+{% endblock %}
 
 {% block body %}
   <h1>Movie Results</h1>
@@ -12,7 +16,7 @@
   {% for movie in movies %}
 
     <li>
-      <a href="{{ url_for('movie_info', tmdb_id=movie.id )}}" class="text-white">
+      <a href="{{ url_for('movie_info', tmdb_id=movie.id )}}" class="movie-link text-white">
         <strong>{{ movie.title }}</strong>
         {% if movie.release_date != '0001-01-01' %}
           (Release date: {{ movie.release_date }})
@@ -22,6 +26,7 @@
         {% if movie.title != movie.original_title and movie.original_title is not none %}
           [Original title: {{ movie.original_title }}]
         {% endif %}
+        <span class="spinner-border spinner-border-sm"></span>
       </a>
     </li>
 

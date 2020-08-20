@@ -5,7 +5,7 @@ import unittest
 import json
 
 # Add this line to whatever test script you write
-from context import app, db, basedir, User
+from context import app, db, basedir, User, Film, CriterionFilm
 
 
 class RouteTests(unittest.TestCase):
@@ -61,14 +61,31 @@ class RouteTests(unittest.TestCase):
         return self.app.post('/add-to-list',
                    data=dict(tmdb_id=tmdb_id, title=title,
                            year=year, date=date,
-                           original_title=original_title,
-                           follow_redirects=True))
+                           original_title=original_title),
+                           follow_redirects=True)
 
     def remove_film_from_list(self, tmdb_id=None):
         return self.app.post('/remove-from-list',
-              data=dict(tmdb_id=tmdb_id,
-                      follow_redirects=True))
+              data=dict(tmdb_id=tmdb_id),
+                      follow_redirects=True)
 
+    def add_MulhollandDrive_to_criterion_browse_list(self):
+        title = "Mulholland Dr."
+        release_year = 2001
+        tmdb_id = 1018
+        director = "David Lynch"
+
+        # Create film in db
+        film = Film(title=title, year=release_year,
+                    tmdb_id=tmdb_id, director=director)
+        db.session.add(film)
+        db.session.commit()
+
+        # Ensure that film is known as a Criterion Film
+        film_id = film.id
+        criterion_film = CriterionFilm(film_id=film_id)
+        db.session.add(criterion_film)
+        db.session.commit()
     # +++++++++++++++++++++++++++++++ TESTS +++++++++++++++++++++++++++++++++
 
     # *** INDEX ***
@@ -263,6 +280,27 @@ class RouteTests(unittest.TestCase):
             data=dict(title=None), follow_redirects=True)
         self.assertIn(b'This field is required.', response.data)
 
+    def test_search_title_GET(self):
+        title="Mulholland Drive"
+        response = self.app.get(f'movie-search-results?movie_title={title}')
+        self.assertIn(b'2001-09-08', response.data)
+
+    def test_search_title_GET_not_exist(self):
+        title="eiwr43t984h3tkjdnfg,df.gmdf.glkto"
+        response = self.app.get(f'movie-search-results?movie_title={title}')
+        self.assertIn(b'There are no movies matching that title.',
+                        response.data)
+
+    def test_search_title_GET_blank(self):
+        title=""
+        response = self.app.get(f'movie-search-results?movie_title={title}')
+        self.assertIn(b'422', response.data)
+
+    def test_search_title_GET_None(self):
+        response = self.app.get(f'movie-search-results?')
+        self.assertIn(b'422', response.data)
+
+
     # *** SEARCH - Person Search ***
     def test_search_page_person(self):
         response = self.app.get('/search', follow_redirects=True)
@@ -272,22 +310,22 @@ class RouteTests(unittest.TestCase):
     def test_search_person_exists(self):
         response = self.app.post(
             '/person-search-results',
-            data=dict(name="Gabriel Byrne", known_for="Acting",
-                    follow_redirects=True))
+            data=dict(name="Gabriel Byrne", known_for="Acting"),
+                    follow_redirects=True)
         self.assertIn(b'Gabriel Byrne', response.data)
 
     def test_search_person_not_exist(self):
         response = self.app.post(
             '/person-search-results',
-            data=dict(name="433u5h6krbtrbhtertkejb56k5363", known_for="All",
-                     follow_redirects=True))
+            data=dict(name="433u5h6krbtrbhtertkejb56k5363", known_for="All"),
+                     follow_redirects=True)
         self.assertIn(b'No persons matching description found.', response.data)
 
     def test_search_person_blank(self):
         response = self.app.post(
             '/person-search-results',
-            data=dict(name="\t\n\r    ", known_for="All",
-                     follow_redirects=True))
+            data=dict(name="\t\n\r    ", known_for="All"),
+                     follow_redirects=True)
         self.assertIn(b'This field is required.', response.data)
 
     def test_search_person_valid_id(self):
@@ -319,6 +357,62 @@ class RouteTests(unittest.TestCase):
         id = "\n\t    \r    "
         response = self.app.get(f'/person/{id}')
         self.assertIn(b'404: Page Not Found', response.data)
+
+    def test_search_person_GET(self):
+        name = "Paul Newman"
+        known_for = "All"
+        response = self.app.get(f'person-search?name={name}&known_for={known_for}')
+        self.assertIn(b'Harry Paul Newman', response.data)
+
+    def test_search_person_GET_name_not_exist(self):
+        known_for = "All"
+        response = self.app.get(f'person-search?name=&known_for={known_for}')
+        self.assertIn(b'422', response.data)
+
+    def test_search_person_GET_known_for_not_exist(self):
+        name = "Paul Newman"
+        response = self.app.get(f'person-search?name={name}&known_for=')
+        self.assertIn(b'422', response.data)
+
+    def test_search_person_GET_name_exists_not_known_for(self):
+        name = "Paul Newman"
+        response = self.app.get(f'person-search?name={name}')
+        self.assertIn(b'Harry Paul Newman', response.data)
+
+    def test_search_person_GET_no_values(self):
+        response = self.app.get(f'person-search?')
+        self.assertIn(b'422', response.data)
+
+    # *** FILMOGRAPHY ***
+
+    def test_filmography_good_parameters(self):
+        firstname = "Ingmar"
+        lastname = "Bergman"
+        id = 6648
+        response = self.app.get(f'/person/{id}?name={firstname}+{lastname}')
+        self.assertIn(b'Winter Light', response.data)
+
+    def test_filmography_blank_name(self):
+        firstname = ""
+        lastname = ""
+        id = 6648
+        response = self.app.get(f'/person/{id}?name={firstname}+{lastname}')
+        self.assertIn(b'URL person name and TMDB person name do not match',
+                        response.data)
+
+    def test_filmography_no_name(self):
+        id = 6648
+        response = self.app.get(f'/person/{id}')
+        self.assertIn(b'Winter Light', response.data)
+
+    def test_filmography_wrong_name(self):
+        firstname = "Miranda"
+        lastname = "Otto"
+        id = 6648
+        response = self.app.get(f'/person/{id}?name={firstname}+{lastname}')
+        self.assertIn(b'URL person name and TMDB person name do not match',
+                        response.data)
+
 
 
     # *** MOVIE PAGE ***
@@ -353,8 +447,8 @@ class RouteTests(unittest.TestCase):
     def test_movie_page_add_not_logged_in(self):
         response = self.app.post(
             '/add-to-list',
-            data=dict(tmdb_id="1018", title="Mulholland Drive", year="2001",
-                    follow_redirects=True))
+            data=dict(tmdb_id="1018", title="Mulholland Drive", year="2001"),
+                    follow_redirects=True)
 
         self.assertIn(b'Access Denied', response.data)
 
@@ -364,8 +458,8 @@ class RouteTests(unittest.TestCase):
         response = self.app.post('/add-to-list',
                 data=dict(tmdb_id="1018", title="Mulholland Drive",
                         year="2001", date="2001-09-08",
-                        original_title="Mulholland Drive",
- 						follow_redirects=True))
+                        original_title="Mulholland Drive"),
+ 						follow_redirects=True)
         data = json.loads(response.get_data(as_text=True))
         self.assertTrue(data['success'])
 
@@ -376,8 +470,8 @@ class RouteTests(unittest.TestCase):
         response = self.app.post('/add-to-list',
                 data=dict(tmdb_id="1018", title="Mulholland Drive",
                         year="2001", date="2001-09-08",
-                        original_title="Mulholland Drive",
-                        follow_redirects=True))
+                        original_title="Mulholland Drive"),
+                        follow_redirects=True)
         data = json.loads(response.get_data(as_text=True))
         self.assertTrue(data['success'])
 
@@ -385,8 +479,8 @@ class RouteTests(unittest.TestCase):
         response = self.app.post('/add-to-list',
                    data=dict(tmdb_id="1018", title="Mulholland Drive",
                            year="2001", date="2001-09-08",
-                           original_title="Mulholland Drive",
-                           follow_redirects=True))
+                           original_title="Mulholland Drive"),
+                           follow_redirects=True)
         data = json.loads(response.get_data(as_text=True))
         self.assertFalse(data['success'])
 
@@ -398,16 +492,16 @@ class RouteTests(unittest.TestCase):
         response = self.app.post('/add-to-list',
                  data=dict(tmdb_id="", title=" ",
                          year=" ", date="",
-                         original_title="  ",
-                         follow_redirects=True))
+                         original_title="  "),
+                         follow_redirects=True)
         data = json.loads(response.get_data(as_text=True))
         self.assertFalse(data['success'])
 
         # None types
         response = self.app.post('/add-to-list',
                 data=dict(tmdb_id=None, title=None, year=None,
-                        original_title=None, date=None,
-                        follow_redirects=True))
+                        original_title=None, date=None),
+                        follow_redirects=True)
         data = json.loads(response.get_data(as_text=True))
         self.assertFalse(data['success'])
 
@@ -419,8 +513,8 @@ class RouteTests(unittest.TestCase):
         response = self.app.post('/add-to-list',
                 data=dict(tmdb_id=movie_id, title="Mulholland Drive",
                         year="2001", date="2001-09-08",
-                        original_title="Mulholland Drive",
-                        follow_redirects=True))
+                        original_title="Mulholland Drive"),
+                        follow_redirects=True)
         data = json.loads(response.get_data(as_text=True))
         self.assertFalse(data['success'])
 
@@ -430,17 +524,28 @@ class RouteTests(unittest.TestCase):
         response = self.app.post('/add-to-list',
                 data=dict(tmdb_id=movie_id, title="Mulholland Drive",
                         year=year, date="2001-09-08",
-                        original_title="Mulholland Drive",
-                        follow_redirects=True))
+                        original_title="Mulholland Drive"),
+                        follow_redirects=True)
         data = json.loads(response.get_data(as_text=True))
         self.assertFalse(data['success'])
+
+    def test_movie_page_add_no_date_year(self):
+        self.login("Alex", "123")
+        # Add film.
+        response = self.app.post('/add-to-list',
+                data=dict(tmdb_id="1018", title="Mulholland Drive",
+                        year="", date=None,
+                        original_title="Mulholland Drive"),
+                        follow_redirects=True)
+        data = json.loads(response.get_data(as_text=True))
+        self.assertTrue(data['success'])
 
     # Remove movie from list
     # Remove when not logged in
     def test_movie_page_remove_not_logged_in(self):
       	response = self.app.post(
           '/remove-from-list',
-          data=dict(tmdb_id="1018", follow_redirects=True))
+          data=dict(tmdb_id="1018"), follow_redirects=True)
 
       	self.assertIn(b'Access Denied', response.data)
 
@@ -452,12 +557,12 @@ class RouteTests(unittest.TestCase):
       	self.app.post('/add-to-list', data=dict(tmdb_id="1018",
       				title="Mulholland Drive",
                             year="2001", date="2001-09-08",
-                            original_title="Mulholland Drive",
-                            follow_redirects=True))
+                            original_title="Mulholland Drive"),
+                            follow_redirects=True)
 
       	response = self.app.post('/remove-from-list',
-              data=dict(tmdb_id="1018",
-                      follow_redirects=True))
+              data=dict(tmdb_id="1018"),
+                      follow_redirects=True)
 
       	data = json.loads(response.get_data(as_text=True))
       	self.assertTrue(data['success'])
@@ -468,8 +573,8 @@ class RouteTests(unittest.TestCase):
 
         # List is empty.
       	response = self.app.post('/remove-from-list',
-              data=dict(tmdb_id="1018",
-                      follow_redirects=True))
+              data=dict(tmdb_id="1018"),
+                      follow_redirects=True)
 
       	data = json.loads(response.get_data(as_text=True))
       	self.assertFalse(data['success'])
@@ -482,20 +587,20 @@ class RouteTests(unittest.TestCase):
         self.app.post('/add-to-list', data=dict(tmdb_id="1018",
                     title="Mulholland Drive",
                             year="2001", date="2001-09-08",
-                            original_title="Mulholland Drive",
-                            follow_redirects=True))
+                            original_title="Mulholland Drive"),
+                            follow_redirects=True)
 
         # Blank data
         response = self.app.post('/remove-from-list',
-              data=dict(tmdb_id="\n\t ",
-                      follow_redirects=True))
+              data=dict(tmdb_id="\n\t "),
+                      follow_redirects=True)
         data = json.loads(response.get_data(as_text=True))
         self.assertFalse(data['success'])
 
         # Blank data
         response = self.app.post('/remove-from-list',
-              data=dict(tmdb_id=None,
-                      follow_redirects=True))
+              data=dict(tmdb_id=None),
+                      follow_redirects=True)
         data = json.loads(response.get_data(as_text=True))
         self.assertFalse(data['success'])
 
@@ -507,13 +612,13 @@ class RouteTests(unittest.TestCase):
         self.app.post('/add-to-list', data=dict(tmdb_id="1018",
                     title="Mulholland Drive",
                             year="2001", date="2001-09-08",
-                            original_title="Mulholland Drive",
-                           follow_redirects=True))
+                            original_title="Mulholland Drive"),
+                           follow_redirects=True)
 
         # Bad id
         response = self.app.post('/remove-from-list',
-              data=dict(tmdb_id="-1018",
-                      follow_redirects=True))
+              data=dict(tmdb_id="-1018"),
+                      follow_redirects=True)
         data = json.loads(response.get_data(as_text=True))
         self.assertFalse(data['success'])
 
@@ -602,6 +707,17 @@ class RouteTests(unittest.TestCase):
         response = self.app.get('/movie-list')
         self.assertIn(b'Mulholland Drive', response.data)
 
+    # See whether film release date flagged as 'Unknown' if no release info
+    # provided
+    def test_user_list_release_date_unknown(self):
+    	# Login and add a film.
+        self.login("Alex", "123")
+        self.add_film_to_list(tmdb_id="1018", title="Mulholland Drive",
+                            year=None, date=None,
+                            original_title="Mulholland Drive")
+
+        response = self.app.get('/movie-list')
+        self.assertIn(b'Unknown', response.data)
 
     # BROWSE
     # Get page when not logged in
@@ -614,6 +730,33 @@ class RouteTests(unittest.TestCase):
         self.login("Alex", "123")
         response = self.app.get('/browse')
         self.assertIn(b'Criterion Collection', response.data)
+
+    # Check if Criterion film on browse list
+    # N.B. This test won't work because relies on JS to execute on client
+    # side to display movies in browser, not HTML rendered server-side.
+    # def test_browse_film_on_list(self):
+    #     self.add_MulhollandDrive_to_criterion_browse_list()
+    #     response = self.app.get('/browse')
+    #     self.assertIn(b'Mulholland Dr.', response.data)
+
+    # CRITERION API
+    # No movies in db table
+    def test_criterion_api_no_entries(self):
+        response = self.app.get('/api/criterion-films', data=dict())
+        data = json.loads(response.get_data(as_text=True))
+        self.assertFalse(data['success'])
+        self.assertIn('no films', data['err_message'])
+
+    # One Criterion movie in db
+    def test_criterion_api_ok(self):
+        self.add_MulhollandDrive_to_criterion_browse_list()
+        response = self.app.get('/api/criterion-films', data=dict())
+        data = json.loads(response.get_data(as_text=True))
+        self.assertTrue(data['success'])
+        self.assertEqual(data['num_results'], 1)
+        self.assertIn(data['results'][0]['title'], 'Mulholland Dr.')
+        self.assertIn(data['results'][0]['directors'][0], 'David Lynch')
+
 
 
 if __name__ == "__main__":

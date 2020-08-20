@@ -20,15 +20,15 @@
 }
 
 .browselist-col-title{
-  width: 25%;
+  width: 40%;
 }
 
 .browselist-col-year{
-  width: 25%;
+  width: 20%;
 }
 
 .browselist-col-director{
-  width: 50%;
+  width: 40%;
 }
 
 .publication {
@@ -62,4 +62,41 @@ Thanks: https://stackoverflow.com/questions/47518911/boostrap-4-navbar-collapse-
 */
 .nav-item{
    text-align: right;
+}
+
+.navbar-nav > li:hover{
+  background-color: #4d4d4d;
+  border-radius: 4px;
+}
+
+.navbar-nav > li > a{
+  margin-left: 10px;
+  margin-right: 10px;
+  font-weight: bold;
+}
+
+.navbar-collapse {
+  padding-top: 0.5em;
+}
+
+#mynavbar{
+  padding-bottom: 0.3em;
+  padding-top: 0.3em;
+}
+
+#mynavlogo{
+  padding-bottom: 0px;
+}
+
+/*
+Used to pad and left-align the Search box provided via the jQuery TableData
+plug-in
+*/
+#criterion-table_filter {
+  padding-top: 1em;
+  text-align: left;
+}
+
+.table-cell {
+  word-wrap: break-word;
 }

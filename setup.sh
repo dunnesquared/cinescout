@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # Script to setup project environment variables.
 # To run type the following on the console: "source setup.sh"
 echo "Setting up Flask environment variables..."

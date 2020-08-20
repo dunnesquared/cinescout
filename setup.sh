@@ -19,6 +19,16 @@ if [ -f app.db ]; then
   if [[ $ans == 'y' || $ans == 'Y' || $ans == 'yes' || $ans == 'Yes' ]]; then
     echo "Okay."
 
+    if [ ! -z "${DATABASE_URL}" ]; then
+        echo "DATABASE_URL exists."
+
+        echo "Saving former DATABASE_URL value under DATABASE_URL_PREV..."
+        export DATABASE_URL_PREV="${DATABASE_URL}"
+
+        echo "Unsetting DATABASE_URL..."
+        unset DATABASE_URL
+    fi
+
   elif [[ $ans == 'n' || $ans == 'N' || $ans == 'no' || $ans == 'No' ]]; then
     if [ -z "${DATABASE_URL}" ]; then
         echo "DATABASE_URL does not exist."
@@ -147,13 +157,14 @@ fi
 echo "Database setup complete!"
 echo "Don't forget to populate the database by running './scripts/film_data.py."
 
-
-echo "Don't forget to set your API and secret keys!"
-echo -n "Would you like to enter them now? [y/n]: "
+echo "Setting up API and secret keys..."
+echo "WARNING! This action will overwrite previous values for SECRET_KEY, NYT_API_KEY, and TMDB_API_KEY."
+echo -n "Would you like to enter the keys now? [y/n]: "
 read ans
 if [[ $ans == 'y' ]]; then
   echo "Hint: For your secret key, try using Python's secret.token_bytes."
 
+  echo "Unsetting all keys..."
   unset SECRET_KEY
   unset NYT_API_KEY
   unset TMDB_API_KEY
@@ -165,6 +176,12 @@ if [[ $ans == 'y' ]]; then
   echo -n "TMDB_API_KEY="
   read TMDB_API_KEY
 
+  if [ -z "$SECRET_KEY" ] || [ -z "$NYT_API_KEY" ] || [ -z "$TMDB_API_KEY" ]; then
+    echo "One or more keys empty."
+    echo "Bad input. Quitting setup.sh."
+    kill -INT $$
+  fi
+
   echo -n "Are you sure you want to export these keys? [y/n]: "
   read ans
   if [[ $ans == 'y' ]]; then
@@ -172,6 +189,6 @@ if [[ $ans == 'y' ]]; then
     export SECRET_KEY=$SECRET_KEY
     export NYT_API_KEY=$NYT_API_KEY
     export TMDB_API_KEY=$TMDB_API_KEY
-    printf "Done!\n"
+    printf "Key setup complete!\n"
   fi
 fi

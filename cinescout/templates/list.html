@@ -3,8 +3,8 @@
 {% block title %}{{ current_user.username }}'s List{% endblock %}
 
 {% block javascript %}
-  <script src="{{ url_for('static', filename='js/removefromlist.js') }}"></script>
-  <script type="module" src="{{ url_for('static', filename='js/loadspinner.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/removefromlist.js') }}" crossorigin="anonymous"></script>
+  <script type="module" src="{{ url_for('static', filename='js/loadspinner.js') }}" crossorigin="anonymous"></script>
 {% endblock %}
 
 {% block body %}

@@ -3,15 +3,15 @@
 {% block title %}Browse{% endblock %}
 
 {% block css %}
-  <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/dataTables.bootstrap4.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/dataTables.bootstrap4.min.css" crossorigin="anonymous">
 {% endblock %}
 
 
 {% block javascript %}
-  <script type="module" src="{{ url_for('static', filename='js/loadspinner.js') }}"></script>
-  <script type="module" src="{{ url_for('static', filename='js/browse.js') }}"></script>
-  <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
-  <script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js"></script>
+  <script type="module" src="{{ url_for('static', filename='js/loadspinner.js') }}" crossorigin="anonymous"></script>
+  <script type="module" src="{{ url_for('static', filename='js/browse.js') }}" crossorigin="anonymous"></script>
+  <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js" crossorigin="anonymous"></script>
 {% endblock %}
 
 {% block body %}

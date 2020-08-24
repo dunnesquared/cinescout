@@ -35,7 +35,7 @@
           <tr>
             <td>
               <a href="{{ url_for('movie_info', tmdb_id=film.tmdb_id )}}" class="movie-link text-white">
-                {{ film.title }}
+                <i>{{ film.title }}</i>
                 <span class="spinner-border spinner-border-sm"></span>
               </a>
             </td>
@@ -50,7 +50,7 @@
 
             <td>
               {% if film.title != film.original_title and film.original_title is not none %}
-                {{ film.original_title }}
+                <i>{{ film.original_title }}</i>
               {% else %}
                <span>Idem.</span>
               {% endif %}

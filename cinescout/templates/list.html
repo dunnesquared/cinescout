@@ -4,7 +4,7 @@
 
 {% block javascript %}
   <script src="{{ url_for('static', filename='js/removefromlist.js') }}" crossorigin="anonymous"></script>
-  <script type="module" src="{{ url_for('static', filename='js/loadspinner.js') }}" crossorigin="anonymous"></script>
+  {# <script type="module" src="{{ url_for('static', filename='js/loadspinner.js') }}" crossorigin="anonymous"></script> #}
 {% endblock %}
 
 {% block body %}
@@ -36,7 +36,7 @@
             <td>
               <a href="{{ url_for('movie_info', tmdb_id=film.tmdb_id )}}" class="movie-link text-white">
                 <i>{{ film.title }}</i>
-                <span class="spinner-border spinner-border-sm"></span>
+                {# <span class="spinner-border spinner-border-sm"></span> #}
               </a>
             </td>
 

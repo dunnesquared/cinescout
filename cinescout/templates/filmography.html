@@ -2,7 +2,7 @@
 {% block title %}Filmography of {{ name }}{% endblock %}
 
 {% block javascript %}
-<script type="module" src="{{ url_for('static', filename='js/loadspinner.js') }}" crossorigin="anonymous"></script>
+{# <script type="module" src="{{ url_for('static', filename='js/loadspinner.js') }}" crossorigin="anonymous"></script> #}
 {% endblock %}
 
 {% block body %}
@@ -48,7 +48,7 @@
             {% else %}
               ???)
             {% endif %}
-            <span class="spinner-border spinner-border-sm"></span>
+            {# <span class="spinner-border spinner-border-sm"></span> #}
           </a>
         </li>
       {% endfor %}
@@ -78,7 +78,7 @@
               (Release date: Unknown,
             {% endif %}
             Job: {{ crew_item['job'] }})
-            <span class="spinner-border spinner-border-sm"></span>
+            {# <span class="spinner-border spinner-border-sm"></span> #}
           </a>
         </li>
       {% endfor %}

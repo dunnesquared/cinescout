@@ -3,7 +3,7 @@
 {% block title %}Movie Results for "{{ form_title }}"{% endblock %}
 
 {% block javascript %}
-<script type="module" src="{{ url_for('static', filename='js/loadspinner.js') }}" crossorigin="anonymous"></script>
+{# <script type="module" src="{{ url_for('static', filename='js/loadspinner.js') }}" crossorigin="anonymous"></script> #}
 {% endblock %}
 
 {% block body %}
@@ -26,7 +26,7 @@
         {% if movie.title != movie.original_title and movie.original_title is not none %}
           [Original title: <i>{{ movie.original_title }}</i>]
         {% endif %}
-        <span class="spinner-border spinner-border-sm"></span>
+        {# <span class="spinner-border spinner-border-sm"></span> #}
       </a>
     </li>
 

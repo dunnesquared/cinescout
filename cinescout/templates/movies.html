@@ -19,9 +19,9 @@
       <a href="{{ url_for('movie_info', tmdb_id=movie.id )}}" class="movie-link text-white">
         <strong><i>{{ movie.title }}</i></strong>
         {% if movie.release_date != '0001-01-01' %}
-          (Release date: {{ movie.release_date }})
+          (Released: {{ movie.release_date }})
         {% else %}
-          (Release date: Unknown)
+          (Released: ???)
         {% endif %}
         {% if movie.title != movie.original_title and movie.original_title is not none %}
           [Original title: <i>{{ movie.original_title }}</i>]

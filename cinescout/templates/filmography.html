@@ -2,7 +2,7 @@
 {% block title %}Filmography of {{ name }}{% endblock %}
 
 {% block javascript %}
-<script type="module" src="{{ url_for('static', filename='js/loadspinner.js') }}"></script>
+{# <script type="module" src="{{ url_for('static', filename='js/loadspinner.js') }}" crossorigin="anonymous"></script> #}
 {% endblock %}
 
 {% block body %}
@@ -31,24 +31,24 @@
 
         <li>
           <a href="{{ url_for('movie_info', tmdb_id=cast_item['movie'].id )}}" class="movie-link text-white">
-            <strong>{{ cast_item['movie'].title }}</strong>
+            <strong><i>{{ cast_item['movie'].title }}</i></strong>
 
             {% if cast_item['movie'].title != cast_item['movie'].original_title and cast_item['movie'].original_title is not none %}
-               [Original title: {{ cast_item['movie'].original_title }}]
+               [Original title: <i>{{ cast_item['movie'].original_title }}]</i>
             {% endif %}
 
             {% if cast_item['movie'].release_date != '0001-01-01' %}
-              (Release date: {{ cast_item['movie'].release_date }},
+              (Released: {{ cast_item['movie'].release_date }},
             {% else %}
-              (Release date: Unknown,
+              (Released: ???,
             {% endif %}
-            Character:
+            Role:
             {% if cast_item['character'] %}
               {{ cast_item['character'] }})
             {% else %}
               ???)
             {% endif %}
-            <span class="spinner-border spinner-border-sm"></span>
+            {# <span class="spinner-border spinner-border-sm"></span> #}
           </a>
         </li>
       {% endfor %}
@@ -66,19 +66,19 @@
       {% for crew_item in crew %}
         <li>
           <a href="{{ url_for('movie_info', tmdb_id=crew_item['movie'].id )}}" class="movie-link text-white">
-            <strong>{{ crew_item['movie'].title }}</strong>
+            <strong><i>{{ crew_item['movie'].title }}</i></strong>
 
             {% if crew_item['movie'].title != crew_item['movie'].original_title and crew_item['movie'].original_title is not none %}
-               [Original title: {{ crew_item['movie'].original_title }}]
+               [Original title: <i>{{ crew_item['movie'].original_title }}</i>]
             {% endif %}
 
             {% if crew_item['movie'].release_date != '0001-01-01' %}
-              (Release date: {{ crew_item['movie'].release_date }},
+              (Released: {{ crew_item['movie'].release_date }},
             {% else %}
-              (Release date: Unknown,
+              (Released: ???,
             {% endif %}
             Job: {{ crew_item['job'] }})
-            <span class="spinner-border spinner-border-sm"></span>
+            {# <span class="spinner-border spinner-border-sm"></span> #}
           </a>
         </li>
       {% endfor %}

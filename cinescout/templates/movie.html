@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block javascript %}
-  <script src="{{ url_for('static', filename='js/addremove.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/addremove.js') }}" crossorigin="anonymous"></script>
 {% endblock %}
 
 {% block body %}
@@ -53,7 +53,7 @@
     {% if movie.title != movie.original_title and movie.original_title is not none %}
     <div class="movie-section-row">
         <div class="movie-section-heading">Original Title</div>
-        <div> {{ movie.original_title }} </div>
+        <div> <i> {{ movie.original_title }} </i> </div>
     </div>
     {% endif %}
 

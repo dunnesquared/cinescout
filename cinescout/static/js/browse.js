@@ -2,7 +2,8 @@
 *@file Renders dynamic table of movies from The Criterion Collection.
 **/
 
-import { showMovieSpinners } from './loadspinner.js'
+// ** DISABLE until back/forward cache issue resolved ***
+// import { showMovieSpinners } from './loadspinner.js'
 
 // Timeout function's time limit, in milliseconds.
 const TIME_MAX = 800;
@@ -63,7 +64,9 @@ function fetchCriterionTableData() {
 
         const films = data.results;
         populateTable(films);
-        showMovieSpinners(MOVIE_SPINNER_DELAY);
+
+        // ** DISABLE until back/forward cache issue resolved ***
+        // showMovieSpinners(MOVIE_SPINNER_DELAY);
 
         // Display table.
         document.querySelector("#table-footnote-container").style.visibility = 'visible';
@@ -109,10 +112,13 @@ function populateTable (films) {
     linkTitle.appendChild(textTitle);
     // Add a space between the spinner and the title's text.
     linkTitle.innerHTML += '&nbsp;';
-    // Append spinner to movie titles that shows when title is clicked.
-    const spinnerTitle = document.createElement('span');
-    spinnerTitle.className = "spinner-border spinner-border-sm";
-    linkTitle.appendChild(spinnerTitle);
+
+    // ** DISABLE spinners until you can resolve the back/forward cache issue **
+    // // Append spinner to movie titles that shows when title is clicked.
+    // const spinnerTitle = document.createElement('span');
+    // spinnerTitle.className = "spinner-border spinner-border-sm";
+    // linkTitle.appendChild(spinnerTitle);
+
     // Ready to add title to cell to cell.
     cellTitle.append(linkTitle);
 

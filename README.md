@@ -1,8 +1,9 @@
-# Cinescout🎞 (version 1.0)
+# Cinescout🎞 (v1.0.1)
 
-`Cinescout` is a Flask-based, mobile-responsive web tool that allows you to learn
-more about almost any film or person in the world of cinema. With `Cinescout` you can:
+`Cinescout` is a Flask-based, mobile-responsive, web tool that allows you to learn
+more about almost any film or person in the world of cinema.
 
+With `Cinescout` you can:
 - Read a brief synopsis of a film from [The Movie Database](https://www.themoviedb.org/), as well as a review summary from [The New York Times](https://nytimes.com).
 - Discover the filmography of your favourite cast or crew member.
 - Create an account to add movies to a personal list for later reference.
@@ -11,14 +12,45 @@ more about almost any film or person in the world of cinema. With `Cinescout` yo
 ## Short History
 `Cinescout`  came to be as my final project submission for Harvard
 University's online cont-ed course, 'CS50W: Web Programming with Python and JavaScript.'  
-As a regular movie watcher, I wanted to create a tool that would help me
-pick out good movies. I also liked working with APIs: extracting data and functionality
-from external systems excited me: with just a little bit of code I could make something
-big (or at least felt that way).
+As a movie buff, I wanted to create a tool that would help me find great movies.
+I also liked working with APIs. Extracting data and functionality from
+external systems excited me.
 
-While `version 0.1` of `Cinescout` satisfied the course's requirements, I wanted to seriously
-improve my app before pushing the code to my github account. Hence, `version 1` was
+Although I received a passing grade for my project submission, `Cinescout, v0.1`,  
+I wanted to seriously improve the app before pushing its code to `github`.
+So, I worked on it for a few more more weeks, and, eventually, `version 1.x` was
 born.
+
+## Demo and Video
+A online demo of the `Cinescout` exists, but I've walled it off from the
+public because it's not production-ready, so to speak. It exists for
+personal use and finding bugs I would only be able to find when the app
+is hosted on a live server.
+
+I hope to have some version of app available for general use some day.
+There are several, non-trivial issues that need to be solved first (e.g.
+migration to a robust database; data backups; API request limits, etc.).
+
+All that said, I have created an award-winning screencast of `Cinescout`
+you can enjoy. I hear it works wonders for insomnia :-p. Check it out!
+
+If you would like to try the demo and we're on friendly terms,
+please contact me by the channel you currently possess;
+I'll see what I can do.
+
+## APIs
+`Cinescout` retrieves all movie data from two places: *The New York Times* (NYT)
+and the *The Movie Database* (TMDB). Movie reviews are retrieved from the former;
+general movie vitals from the latter.
+
+API keys are required to access these resources. For security reasons
+no keys are provided with this app: go to each website and get your
+own.
+
+## Python version
+I wrote `Cinescout` using `Python 3.6.1`. Any version higher than that
+until `Python 3.8.5` (the latest version from which `Cinescout` was run)
+should be fine (I hope).
 
 ## External dependencies
 This project depends on several external packages. Using these extensions
@@ -33,16 +65,8 @@ code. Notable dependencies include
 - `requests` to interact the external APIs.
 - `fuzzywuzzy` to determine how similar two movie titles are to each other.
 
-## APIs
-`Cinescout` retrieves all movie data from two places: *The New York Times* (NYT)
-and the *The Movie Database* (TMDB). Movie reviews are retrieved from the former;
-general movie vitals from the latter.
 
-API keys are required to access these resources. For security reasons
-no keys are provided with this app: go to each website and get your
-own.
-
-## Running `Cinescout` on your machine
+## Running `Cinescout` on macOS, 'nix
 1. Download or clone this project from `github`.
 2. Create accounts and API keys at https://developer.nytimes.com and https://developers.themoviedb.org.
 3. Containerize and activate the app in a virtual environment. `virtualenv` is good.
@@ -54,6 +78,17 @@ own.
 9. Make sure you are **connected** to the Internet.
 10. Type `flask run` into your Terminal and hit Enter.
 11. Open a web browser and go to `http://127.0.0.1:5000/` to start using `Cinescout`!
+
+## Running `Cinescout` on Windows
+You can do all of the above, except, I suspect, running `setup.sh` (Step 7). That's okay: the script just automates a few simple tasks that can be done manually. It's helpful but not really necessary.
+
+All other things being equal, here's what you need to do for the simplest setup on your machine:
+1. Create an `app.db` file in the root of the project directory.
+2. Enter your keys in whatever environment variable manager Windows uses.
+3. Ditto for Flask environment variables. You can find the default values of those at the top of `setup.sh`.
+
+Note that this assumes you're okay using the default SQLite database. I'll leave it up to you
+if you want to use something else.
 
 ## Files of note
 To keep things straight, let's look at the contents of each folder in the project, beginning at the project's root.
@@ -119,6 +154,7 @@ N.B. The script `test_movies.py` will take around four minutes to run as it
 currently stands. Each call to the NYT API has to be delayed by six seconds
 to prevent being locked out. Read 'HTTP Error 429: Too Many Requests' below.
 
+
 ## HTTP Error 429: Too Many Requests
 If you use this app long enough, you'll eventually get a an HTTP response 429
 error, aka Too Many Requests. This is almost certainly because the NYT only allows
@@ -129,14 +165,9 @@ searching for a review with `Cinescout` requires at least one NYT API call but a
 In addition to CS50W's illuminating lessons and solid instruction from Brian Yu,
 I'd like to thank Miguel Gringberg for his helpful [tutorials](https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-i-hello-world) on how to set up a Flask-based Python project in a more professional manner than I would've otherwise done left to my own devices. A general thank you to all the authors of resources I used and learned from.
 
-Finally, a special thanks to LK for all her support and patience during the
+Finally, a special thanks to my partner for all her support and patience during the
 several weeks it took me put together this app. It took me *way longer* than
 I had originally thought.
 
-Alex Dunne, August 2020
-
-[1^]  This script applies to MacOS and *nix operating systems; I'm
-unsure how to setup `Cinescout` on Windows. That said, the script just
-automates a few simple tasks that can be done manually. For the simplest setup
-here's what you need to do: 1) Create an 'app.db' file in the root of the project directory, and 2) Enter your keys in whatever environment variable manager Windows
-uses. How you want to set your Flask environment variables, I'll leave to you.
+## Feedback
+Any positive or constructive feedback is welcome.

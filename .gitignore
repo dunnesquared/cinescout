@@ -1,8 +1,3 @@
-### User-generated project files ###
-TODO.txt
-*.pdf
-
-
 ### Python ###
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -14,12 +9,6 @@ __pycache__/
 style.css.map
 .pytest_cache
 
-### Ignore database files to avoid merge conflict later
+### Ignore database files to avoid merge conflicts later
 app.db
 test.db
-
-### Ignore csv files - don't want to have to commit them every time they change.
-### *.csv
-
-### Backup duplicates
-*.bak

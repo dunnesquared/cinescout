@@ -69,7 +69,6 @@ print("cinescout.movies imported.")
 admin.add_view(ModelView(models.User, db.session))
 admin.add_view(ModelView(models.Film, db.session))
 admin.add_view(ModelView(models.CriterionFilm, db.session))
-admin.add_view(ModelView(models.PersonalFilm, db.session))
 admin.add_view(ModelView(models.FilmListItem, db.session))
 
 print("***End of __init__.py***")

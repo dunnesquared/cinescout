@@ -1,0 +1,19 @@
+{#  Modifies admin panel menu; ensures that logout button appears on every db view in panel.
+Code adapted from:
+https://github.com/flask-admin/flask-admin/tree/master/examples/auth-flask-login 
+Many thanks. #}
+
+{% extends 'admin/base.html' %}
+
+{% block access_control %}
+    {% if current_user.is_authenticated %}
+        <div class="btn-group pull-right">
+            <li>
+                <a class="btn btn-secondary" href="{{ url_for('admin.logout_view') }}">
+                    Log out
+                </a>
+            </li>
+        </div>
+    {% endif %}
+{% endblock %}
+

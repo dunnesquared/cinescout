@@ -10,8 +10,9 @@ from flask_login import current_user, login_user, logout_user, login_required
 
 from cinescout import app, db # Get app, db object defined in __init__.py
 from cinescout.models import User, Film, CriterionFilm, PersonalFilm, FilmListItem
-from cinescout.forms import LoginForm, RegistrationForm, SearchByTitleForm, SearchByPersonForm
+from cinescout.forms import LoginForm, RegistrationForm, SearchByTitleForm, SearchByPersonForm, AdminLoginForm
 from cinescout.movies import TmdbMovie, NytMovieReview, Person
+
 
 # Won't be able to access the NYT or The Movie Database without these.
 NYT_API_KEY = app.config['NYT_API_KEY']
@@ -563,3 +564,71 @@ def movie_info(tmdb_id):
                             review=review,
                             on_user_list=on_user_list,
                             review_warning=review_warning)
+
+
+# ==================================    ADMIN VIEWS    ==========================================
+# Code adapted from:
+# https://github.com/flask-admin/flask-admin/tree/master/examples/auth-flask-login 
+# Many thanks.
+
+import flask_admin as admin
+from flask_admin.contrib import sqla
+from flask_admin import helpers, expose
+from flask_admin.contrib.sqla import ModelView
+
+from cinescout.forms import AdminLoginForm
+
+# Create customized model view class.
+class CinescoutModelView(ModelView):
+    """Handles admin panel display of database models and what actions can be taken on them."""
+
+    def is_accessible(self):
+        """Defines who can access the admin panel."""
+        return current_user.is_authenticated and current_user.username == 'admin'
+
+# Create customized index view class that handles login & registration.
+class MyAdminIndexView(admin.AdminIndexView):
+    """Creates views for admin panel part of website."""
+
+    @expose('/')
+    def index(self):
+        """Point of entry. Any unauthenticated user that is not admin is redirected to login.
+        Otherwise, allow access to database views.
+        """
+        if not current_user.is_authenticated or current_user.username != 'admin':
+            return redirect(url_for('.login_view'))
+
+        # admin logged in. Make database models available in admin panel.
+        return super(MyAdminIndexView, self).index()
+
+    @expose('/login/', methods=('GET', 'POST'))
+    def login_view(self):
+        """Processes posted login form data. Otherwise returns login form fields for
+        non-logged in users."""
+        form = AdminLoginForm()
+
+        # Assuming form data has been POSTED...
+        if form.validate_on_submit():
+            user = User.query.filter_by(username=form.username.data).first()
+
+            if user is None or not user.check_password(form.password.data) or user.username != 'admin':
+                flash('Invalid username or password.', 'error')
+                return redirect(url_for('.login_view'))
+            
+            # admin gets access.
+            login_user(user)
+        
+        # admin already logged in. Make database tables available...
+        if current_user.is_authenticated and current_user.username == 'admin':
+            return redirect(url_for('.index'))
+
+        # GET request made by non-logged in user. Return login form so it can be displayed.
+        self._template_args['form'] = form
+
+        return super(MyAdminIndexView, self).index()
+
+        
+    @expose('/logout/')
+    def logout_view(self):
+        logout_user()
+        return redirect(url_for('.index'))

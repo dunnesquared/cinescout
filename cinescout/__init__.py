@@ -20,13 +20,6 @@ print("LoginManager imported.")
 from flask_wtf.csrf import CSRFProtect
 print("Flask_wtf CSRFProtect imported.")
 
-from flask_admin import Admin
-print("Flask_Admin imported.")
-
-from flask_admin.contrib.sqla import ModelView
-print("Flask_Admin ModelView imported.")
-
-
 # Initialize and configure objects.
 app = Flask(__name__)
 print("app object created.")
@@ -48,9 +41,6 @@ csrf = CSRFProtect()
 csrf.init_app(app)
 print("CSRF object created and applied to app.")
 
-admin = Admin()
-admin.init_app(app)
-print("FlaskAdmin object created and applied to app.")
 
 # Import application modules.
 from cinescout import views
@@ -65,10 +55,28 @@ print("cinescout.errors imported.")
 from cinescout import movies
 print("cinescout.movies imported.")
 
-# More configuration...
-admin.add_view(ModelView(models.User, db.session))
-admin.add_view(ModelView(models.Film, db.session))
-admin.add_view(ModelView(models.CriterionFilm, db.session))
-admin.add_view(ModelView(models.FilmListItem, db.session))
+# ========== Admin panel configuration ===============
+# Code adapted from:
+# https://github.com/flask-admin/flask-admin/tree/master/examples/auth-flask-login 
+# Many thanks.
+
+print("Setting up admin panel...")
+
+from flask_admin import Admin, AdminIndexView
+from flask_admin.contrib.sqla import ModelView
+print("flask_admin classes imported.")
+
+# Link admin panel with map. 
+admin = Admin(app, 'Cinescout: Admin Panel', 
+              index_view=views.MyAdminIndexView(),
+              base_template="admin/accesscontrol.html")
+print("FlaskAdmin object initialized and applied to app.")
+
+# Add which views of database tables you want authenticated supersuser(s) to see.
+admin.add_view(views.CinescoutModelView(models.User, db.session))
+admin.add_view(views.CinescoutModelView(models.Film, db.session))
+admin.add_view(views.CinescoutModelView(models.CriterionFilm, db.session))
+admin.add_view(views.CinescoutModelView(models.FilmListItem, db.session))
+print("flask_admin database views added.")
 
 print("***End of __init__.py***")

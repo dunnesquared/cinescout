@@ -93,3 +93,13 @@ class SearchByPersonForm(FlaskForm):
                              validators=[DataRequired()],
                              validate_choice=True)
     submit = SubmitField('Search')
+
+
+# =====================  ADMIN FORMS  =======================
+# Code adapted from:
+# https://github.com/flask-admin/flask-admin/tree/master/examples/auth-flask-login 
+# Many thanks.
+
+class AdminLoginForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired()])

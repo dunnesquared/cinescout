@@ -7,12 +7,16 @@ Many thanks. #}
 
 {% block access_control %}
     {% if current_user.is_authenticated %}
+         <a class="btn btn-secondary" href="{{ url_for('admin.add_user') }}">Add user</a>
+         <a class="btn btn-secondary" href="{{ url_for('admin.reset_password') }}">
+            Reset password</a>
+
         <div class="btn-group pull-right">
+         <ul>
             <li>
-                <a class="btn btn-secondary" href="{{ url_for('admin.logout_view') }}">
-                    Log out
-                </a>
+                <a class="btn btn-secondary" href="{{ url_for('admin.logout_view') }}">Log out</a>
             </li>
+         </ul>
         </div>
     {% endif %}
 {% endblock %}

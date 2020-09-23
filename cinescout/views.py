@@ -627,6 +627,19 @@ class MyAdminIndexView(admin.AdminIndexView):
 
         return super(MyAdminIndexView, self).index()
 
+    @expose('/add-user', methods=('GET', 'POST'))
+    def add_user(self):
+        if not current_user.is_authenticated or current_user.username != 'admin':
+            return redirect(url_for('.login_view'))
+
+        return "User added."
+    
+    @expose('/reset-password', methods=('GET', 'POST'))
+    def reset_password(self):
+        if not current_user.is_authenticated or current_user.username != 'admin':
+            return redirect(url_for('.login_view'))
+            
+        return "Password reset."
         
     @expose('/logout/')
     def logout_view(self):

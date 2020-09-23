@@ -14,12 +14,29 @@ Many thanks. #}
     <div>
         {% if current_user.is_authenticated %}
           <h1>Cinescout: Admin Panel</h1>
+          <br>
           <p class="lead">
-              Authentication accepted.
+              {{ title }}
           </p>
-          <p>
-            Use this page for various tasks such as adding a new user or changing a users password.
-          </p>
+            {% if adduser %}
+            <form method="POST" action="">
+                {{ form.hidden_tag() if form.hidden_tag }}
+                {% for f in form if f.type != 'CSRFTokenField' %}
+                <div>
+                {{ f.label }}
+                {{ f }}
+                {% if f.errors %}
+                <ul>
+                    {% for e in f.errors %}
+                    <li>{{ e }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+                </div>
+                {% endfor %}
+                <button class="btn" type="submit">Submit</button>
+            </form>
+            {% endif %}
 
         {% else %}
           {# User not logged in. Display login form. #}

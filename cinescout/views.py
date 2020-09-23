@@ -576,7 +576,7 @@ from flask_admin.contrib import sqla
 from flask_admin import helpers, expose
 from flask_admin.contrib.sqla import ModelView
 
-from cinescout.forms import AdminLoginForm
+from cinescout.forms import AdminLoginForm, AdminAddUserForm
 
 # Create customized model view class.
 class CinescoutModelView(ModelView):
@@ -629,11 +629,32 @@ class MyAdminIndexView(admin.AdminIndexView):
 
     @expose('/add-user', methods=('GET', 'POST'))
     def add_user(self):
+        """Adds new Cinescout user."""
+
+        # Only web admin can add users. 
         if not current_user.is_authenticated or current_user.username != 'admin':
             return redirect(url_for('.login_view'))
+        
+        form = AdminAddUserForm()
 
-        return "User added."
-    
+         # Assuming form data has been POSTED, check various fields for proper input. 
+        if form.validate_on_submit():
+            user = User(username=form.username.data, email=form.email.data)
+            user.set_password(form.password.data)
+            db.session.add(user)
+            db.session.commit()
+            flash(f'User "{form.username.data}" added to database.', 'success')
+            return redirect(url_for('.add_user'))
+
+        # Render add-user form (GET request)   
+        # Args to be used in /admin/index.html
+        self._template_args['adduser'] = True
+        self._template_args['title'] = "Add User"
+        self._template_args['form'] = form
+
+        return super(MyAdminIndexView, self).index()
+
+
     @expose('/reset-password', methods=('GET', 'POST'))
     def reset_password(self):
         if not current_user.is_authenticated or current_user.username != 'admin':

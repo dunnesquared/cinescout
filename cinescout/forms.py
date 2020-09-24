@@ -101,8 +101,31 @@ class SearchByPersonForm(FlaskForm):
 # Many thanks.
 
 class AdminLoginForm(FlaskForm):
+    """Form for admin to login into admin panel with views to database."""
     username = StringField('Username', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
+
+
+def userlist():
+    """Helper functions that builds value-pairs used in the Reset Password form's dropdown list"""
+    # Get names from from users' list.
+    usernames = [ user.username for user in User.query.all() ]
+
+    # Build value-label list for dropdown menu.
+    valuelabels = [ (name, name) for name in usernames ]
+    valuelabels.insert(0, (None, "Select a name"))
+    return valuelabels
+
+
+class AdminResetPasswordForm(FlaskForm):
+    """Form to change password of existing user. Useful in case user forgets password."""
+    username = SelectField('Username',
+                             choices=userlist(),
+                             validators=[DataRequired()],
+                             validate_choice=True)
+
+    password = PasswordField('New Password', validators=[DataRequired(), Length(min=8,
+                                  message="Password must be at least 8 characters long.")])
 
 
 class AdminAddUserForm(FlaskForm):

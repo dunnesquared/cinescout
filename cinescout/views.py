@@ -576,7 +576,7 @@ from flask_admin.contrib import sqla
 from flask_admin import helpers, expose
 from flask_admin.contrib.sqla import ModelView
 
-from cinescout.forms import AdminLoginForm, AdminAddUserForm
+from cinescout.forms import AdminLoginForm, AdminAddUserForm, AdminResetPasswordForm
 
 # Create customized model view class.
 class CinescoutModelView(ModelView):
@@ -654,13 +654,42 @@ class MyAdminIndexView(admin.AdminIndexView):
 
         return super(MyAdminIndexView, self).index()
 
-
     @expose('/reset-password', methods=('GET', 'POST'))
     def reset_password(self):
+        """Allows site administator to reset user password in case forgotten, e.g."""
+
         if not current_user.is_authenticated or current_user.username != 'admin':
             return redirect(url_for('.login_view'))
             
-        return "Password reset."
+        form = AdminResetPasswordForm()
+
+         # Assuming form data has been POSTED, check various fields for proper input. 
+        if form.validate_on_submit():
+
+            # Get data.
+            username = form.username.data.strip()
+            new_password = form.password.data
+
+            # See whether specified user in db. 
+            user = User.query.filter_by(username=username).first()
+            if user == None:
+                flash("Reset password failed: username not in database.", "error")
+                return redirect(url_for('.reset_password'))
+
+            # Reset users password to something new.
+            user.set_password(password=new_password)
+            db.session.commit()
+
+            flash(f'Password for user "{username}" updated!', 'success')
+            return redirect(url_for('.reset_password'))
+
+        # Render add-user form (GET request)   
+        # Args to be used in /admin/index.html
+        self._template_args['resetpw'] = True
+        self._template_args['title'] = "Reset Password"
+        self._template_args['form'] = form
+
+        return super(MyAdminIndexView, self).index()
         
     @expose('/logout/')
     def logout_view(self):

@@ -6,7 +6,7 @@ Many thanks. #}
 {% extends 'admin/base.html' %}
 
 {% block access_control %}
-    {% if current_user.is_authenticated %}
+    {% if current_user.is_authenticated and current_user.username == 'admin' %}
          <a class="btn btn-secondary" href="{{ url_for('admin.add_user') }}">Add user</a>
          <a class="btn btn-secondary" href="{{ url_for('admin.reset_password') }}">
             Reset password</a>

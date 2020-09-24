@@ -12,13 +12,13 @@ Many thanks. #}
 <div class="row-fluid">
    
     <div>
-        {% if current_user.is_authenticated %}
+        {% if current_user.is_authenticated and current_user.username == 'admin'%}
           <h1>Cinescout: Admin Panel</h1>
           <br>
           <p class="lead">
               {{ title }}
           </p>
-            {% if adduser %}
+            {% if adduser or resetpw %}
             <form method="POST" action="">
                 {{ form.hidden_tag() if form.hidden_tag }}
                 {% for f in form if f.type != 'CSRFTokenField' %}

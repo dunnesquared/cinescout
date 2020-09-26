@@ -631,9 +631,9 @@ class MyAdminIndexView(admin.AdminIndexView):
     def add_user(self):
         """Adds new Cinescout user."""
 
-        # Only web admin can add users. 
+        # Only web admin can add users. Forbid access otherwise.
         if not current_user.is_authenticated or current_user.username != 'admin':
-            return redirect(url_for('.login_view'))
+            abort(403)
         
         form = AdminAddUserForm()
 
@@ -658,8 +658,9 @@ class MyAdminIndexView(admin.AdminIndexView):
     def reset_password(self):
         """Allows site administator to reset user password in case forgotten, e.g."""
 
+        # Forbid access.
         if not current_user.is_authenticated or current_user.username != 'admin':
-            return redirect(url_for('.login_view'))
+            abort(403)
             
         form = AdminResetPasswordForm()
 

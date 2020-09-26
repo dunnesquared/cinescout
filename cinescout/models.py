@@ -6,6 +6,7 @@ from flask_login import UserMixin
 from cinescout import db
 from cinescout import login_manager
 
+
 @login_manager.user_loader
 def load_user(id):
     """Helps flask_login to get user information from database."""
@@ -46,11 +47,14 @@ class Film(db.Model):
 
 
 class CriterionFilm(db.Model):
-    """Nodel that represents films from The Criterion Collection."""
+    """Model that represents films from The Criterion Collection."""
 
     __tablename__ = "criterion_films"
     id = db.Column(db.Integer, primary_key=True)
     film_id = db.Column(db.Integer, db.ForeignKey('films.id'), nullable=False)
+    
+    # Create a backref so foreign keys can show up in flask-admin.
+    films = db.relationship('Film', backref=db.backref('CriterionFilm', lazy=True))
 
     def __repr__(self):
         return f"{self.id}, film_id: {self.film_id}"
@@ -78,6 +82,9 @@ class FilmListItem(db.Model):
     tmdb_id = db.Column(db.Integer, nullable=True)
     date = db.Column(db.String(10), nullable=True)
     original_title = db.Column(db.String(80), nullable=True)
+
+    # Create a backref so foreign keys can show up in flask-admin.
+    users = db.relationship('User', backref=db.backref('FilmListItem', lazy=True))
 
     def __repr__(self):
         return f"{self.id}, user_id: {self.user_id}, title: {self.title}, year: {self.year}, tmdb_id: {self.tmdb_id}, date: {self.date}, original title: {self.original_title}"

@@ -1,0 +1,68 @@
+{#  Entry page to admin panel; shows login form if user not already logged in.
+Code adapted from:
+https://github.com/flask-admin/flask-admin/tree/master/examples/auth-flask-login 
+Many thanks. #}
+
+{% extends 'admin/master.html' %}
+
+{% block body %}
+
+{{ super() }}
+
+<div class="row-fluid">
+   
+    <div>
+        {% if current_user.is_authenticated and current_user.username == 'admin'%}
+          <h1>Cinescout: Admin Panel</h1>
+          <br>
+          <p class="lead">
+              {{ title }}
+          </p>
+            {% if adduser or resetpw %}
+            <form method="POST" action="">
+                {{ form.hidden_tag() if form.hidden_tag }}
+                {% for f in form if f.type != 'CSRFTokenField' %}
+                <div>
+                {{ f.label }}
+                {{ f }}
+                {% if f.errors %}
+                <ul>
+                    {% for e in f.errors %}
+                    <li>{{ e }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+                </div>
+                {% endfor %}
+                <button class="btn" type="submit">Submit</button>
+            </form>
+            {% endif %}
+
+        {% else %}
+          {# User not logged in. Display login form. #}
+          <form method="POST" action="">
+              {{ form.hidden_tag() if form.hidden_tag }}
+              {% for f in form if f.type != 'CSRFTokenField' %}
+              <div>
+              {{ f.label }}
+              {{ f }}
+              {% if f.errors %}
+              <ul>
+                  {% for e in f.errors %}
+                  <li>{{ e }}</li>
+                  {% endfor %}
+              </ul>
+              {% endif %}
+              </div>
+              {% endfor %}
+              <button class="btn" type="submit">Submit</button>
+          </form>
+          {# {{ link | safe }} #}
+        {% endif %}
+    </div>
+
+    <a class="btn btn-primary" href="/"><i class="icon-arrow-left icon-white"></i>
+      Return to Cinescout
+    </a>
+</div>
+{% endblock body %}

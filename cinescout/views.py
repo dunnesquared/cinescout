@@ -10,8 +10,9 @@ from flask_login import current_user, login_user, logout_user, login_required
 
 from cinescout import app, db # Get app, db object defined in __init__.py
 from cinescout.models import User, Film, CriterionFilm, PersonalFilm, FilmListItem
-from cinescout.forms import LoginForm, RegistrationForm, SearchByTitleForm, SearchByPersonForm
+from cinescout.forms import LoginForm, RegistrationForm, SearchByTitleForm, SearchByPersonForm, AdminLoginForm
 from cinescout.movies import TmdbMovie, NytMovieReview, Person
+
 
 # Won't be able to access the NYT or The Movie Database without these.
 NYT_API_KEY = app.config['NYT_API_KEY']
@@ -33,28 +34,28 @@ def index():
     """Home page."""
     return render_template("index.html")
 
+# Disabled as of version 1.1.0
+# @app.route('/register', methods=['GET', 'POST'])
+# def register():
+#     """Allows non-logged in users to register for account."""
 
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    """Allows non-logged in users to register for account."""
+#     # Logged in users shouldn't be allowed to register.
+#     if current_user.is_authenticated:
+#         return redirect(url_for('index'))
 
-    # Logged in users shouldn't be allowed to register.
-    if current_user.is_authenticated:
-        return redirect(url_for('index'))
+#     form = RegistrationForm()
 
-    form = RegistrationForm()
+#     # Ensure user-entered data is good. If so, register and take to login page!
+#     if form.validate_on_submit():
+#         user = User(username=form.username.data, email=form.email.data)
+#         user.set_password(form.password.data)
+#         db.session.add(user)
+#         db.session.commit()
+#         flash(f'Welcome to Cinescout, {form.username.data}! Now login to get started.', 'success')
+#         return redirect(url_for('login'))
 
-    # Ensure user-entered data is good. If so, register and take to login page!
-    if form.validate_on_submit():
-        user = User(username=form.username.data, email=form.email.data)
-        user.set_password(form.password.data)
-        db.session.add(user)
-        db.session.commit()
-        flash(f'Welcome to Cinescout, {form.username.data}! Now login to get started.', 'success')
-        return redirect(url_for('login'))
-
-    # When users GET the register page
-    return render_template('register.html', title='Register', form=form)
+#     # When users GET the register page
+#     return render_template('register.html', title='Register', form=form)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -497,12 +498,20 @@ def movie_info(tmdb_id):
     # Collect movie object.
     movie = result['movie']
 
-    # See whether movie is already on user's list.
+    # To check a user's personal movie list, user must be logged in.
+    # Also, limiting the fetching of NYT movie reviews to authenticated users.
+    # This will speed up display of movie info for anonymous users as NYT review
+    # fetching requires time delays between API requests.
+
+     # See whether movie is already on user's list.
     on_user_list, film_list_item_id = False, None
 
-    # To check a user's list we need to know who were checkinguser must be
-    # logged in.
+    # To ref before assignment errors in the case of anonymous users requesting movie info.
+    review, review_warning = None, None
+
     if current_user.is_authenticated:
+
+        # CHECK PERSONAL MOVIE LIST!!!
         print(f"Checking whether '{movie.title}' on user list...")
         film = FilmListItem.query.filter_by(tmdb_id=tmdb_id,
                                             user_id=current_user.id).first()
@@ -513,53 +522,186 @@ def movie_info(tmdb_id):
         # on_user_list = True if film else False
         print(f"On user list? {on_user_list}, id: {film_list_item_id}")
 
-    # No point in searching for a movie review if release year is unknown.
-    if movie.release_year is not None and movie.release_year != 0:
-        # Try this first.
-        print(f"Fetching NYT movie review for '{movie.title}' ({movie.release_year})...")
-        print("Making first attempt...")
-        result = NytMovieReview.get_movie_review(movie)
+        # GET MOVIE REVIEW!!!
+        # No point in searching for a movie review if release year is unknown.
+        if movie.release_year is not None and movie.release_year != 0:
+            # Try this first.
+            print(f"Fetching NYT movie review for '{movie.title}' ({movie.release_year})...")
+            print("Making first attempt...")
+            result = NytMovieReview.get_movie_review(movie)
 
-        # If the above doesn't work, give this a shot.
-        # Note that there is no point doing a second attempt for a film
-        # that hasn't come out yet.
-        if not result['review'] and not result['future_release']:
-            print("Making second attempt...")
-            print(f"Waiting {NytMovieReview.delay} seconds...")
-            NytMovieReview.delay_next()
-            result = NytMovieReview.get_movie_review(movie, first_try=False)
+            # If the above doesn't work, give this a shot.
+            # Note that there is no point doing a second attempt for a film
+            # that hasn't come out yet.
+            if not result['review'] and not result['future_release']:
+                print("Making second attempt...")
+                print(f"Waiting {NytMovieReview.delay} seconds...")
+                NytMovieReview.delay_next()
+                result = NytMovieReview.get_movie_review(movie, first_try=False)
 
-    else:
-        print("Unable to fetch review: Movie has no review year.")
-        return render_template("movie.html",
-                                movie=movie,
-                                review=None,
-                                on_user_list=on_user_list)
-
-    # NYT request failed.
-    if not result['success'] and result['status_code'] != 200:
-        # Too many requests
-        if result['status_code'] == 429:
-            print("Error!")
-            abort(429)
         else:
-            # Movie may not have a review yet because it hasn't been released.
-            # This is not an error, and so should not be handled as such.
-            if not result['future_release']:
+            print("Unable to fetch review: Movie has no review year.")
+            return render_template("movie.html",
+                                    movie=movie,
+                                    review=None,
+                                    on_user_list=on_user_list)
+
+        # NYT request failed.
+        if not result['success'] and result['status_code'] != 200:
+            # Too many requests
+            if result['status_code'] == 429:
                 print("Error!")
-                err_message = f"NYT API query failed; HTTP response = {result['status_code']}  description={result['message']}"
-                return render_template("errors/misc-error.html", err_message=err_message)
+                abort(429)
+            else:
+                # Movie may not have a review yet because it hasn't been released.
+                # This is not an error, and so should not be handled as such.
+                if not result['future_release']:
+                    print("Error!")
+                    err_message = f"NYT API query failed; HTTP response = {result['status_code']}  description={result['message']}"
+                    return render_template("errors/misc-error.html", err_message=err_message)
 
-    # Looks like a review has been returned. Get it.
-    review = result['review']
+        # Looks like a review has been returned. Get it.
+        review = result['review']
 
-    # Check whether review has been flagged as being potentially wrong.
-    review_warning = None
-    if result['bullseye'] is not None:
-        review_warning = not result['bullseye']
+        # Check whether review has been flagged as being potentially wrong.
+        review_warning = None
+        if result['bullseye'] is not None:
+            review_warning = not result['bullseye']
 
     return render_template("movie.html",
                             movie=movie,
                             review=review,
                             on_user_list=on_user_list,
                             review_warning=review_warning)
+
+
+# ==================================    ADMIN VIEWS    ==========================================
+# Code adapted from:
+# https://github.com/flask-admin/flask-admin/tree/master/examples/auth-flask-login 
+# Many thanks.
+
+import flask_admin as admin
+from flask_admin.contrib import sqla
+from flask_admin import helpers, expose
+from flask_admin.contrib.sqla import ModelView
+
+from cinescout.forms import AdminLoginForm, AdminAddUserForm, AdminResetPasswordForm
+
+# Create customized model view class.
+class CinescoutModelView(ModelView):
+    """Handles admin panel display of database models and what actions can be taken on them."""
+
+    def is_accessible(self):
+        """Defines who can access the admin panel."""
+        return current_user.is_authenticated and current_user.username == 'admin'
+
+# Create customized index view class that handles login & registration.
+class MyAdminIndexView(admin.AdminIndexView):
+    """Creates views for admin panel part of website."""
+
+    @expose('/')
+    def index(self):
+        """Point of entry. Any unauthenticated user that is not admin is redirected to login.
+        Otherwise, allow access to database views.
+        """
+        if not current_user.is_authenticated or current_user.username != 'admin':
+            return redirect(url_for('.login_view'))
+
+        # admin logged in. Make database models available in admin panel.
+        return super(MyAdminIndexView, self).index()
+
+    @expose('/login/', methods=('GET', 'POST'))
+    def login_view(self):
+        """Processes posted login form data. Otherwise returns login form fields for
+        non-logged in users."""
+        form = AdminLoginForm()
+
+        # Assuming form data has been POSTED...
+        if form.validate_on_submit():
+            user = User.query.filter_by(username=form.username.data).first()
+
+            if user is None or not user.check_password(form.password.data) or user.username != 'admin':
+                flash('Invalid username or password.', 'error')
+                return redirect(url_for('.login_view'))
+            
+            # admin gets access.
+            login_user(user)
+        
+        # admin already logged in. Make database tables available...
+        if current_user.is_authenticated and current_user.username == 'admin':
+            return redirect(url_for('.index'))
+
+        # GET request made by non-logged in user. Return login form so it can be displayed.
+        self._template_args['form'] = form
+
+        return super(MyAdminIndexView, self).index()
+
+    @expose('/add-user', methods=('GET', 'POST'))
+    def add_user(self):
+        """Adds new Cinescout user."""
+
+        # Only web admin can add users. Forbid access otherwise.
+        if not current_user.is_authenticated or current_user.username != 'admin':
+            abort(403)
+        
+        form = AdminAddUserForm()
+
+         # Assuming form data has been POSTED, check various fields for proper input. 
+        if form.validate_on_submit():
+            user = User(username=form.username.data, email=form.email.data)
+            user.set_password(form.password.data)
+            db.session.add(user)
+            db.session.commit()
+            flash(f'User "{form.username.data}" added to database.', 'success')
+            return redirect(url_for('.add_user'))
+
+        # Render add-user form (GET request)   
+        # Args to be used in /admin/index.html
+        self._template_args['adduser'] = True
+        self._template_args['title'] = "Add User"
+        self._template_args['form'] = form
+
+        return super(MyAdminIndexView, self).index()
+
+    @expose('/reset-password', methods=('GET', 'POST'))
+    def reset_password(self):
+        """Allows site administator to reset user password in case forgotten, e.g."""
+
+        # Forbid access.
+        if not current_user.is_authenticated or current_user.username != 'admin':
+            abort(403)
+            
+        form = AdminResetPasswordForm()
+
+         # Assuming form data has been POSTED, check various fields for proper input. 
+        if form.validate_on_submit():
+
+            # Get data.
+            username = form.username.data.strip()
+            new_password = form.password.data
+
+            # See whether specified user in db. 
+            user = User.query.filter_by(username=username).first()
+            if user == None:
+                flash("Reset password failed: username not in database.", "error")
+                return redirect(url_for('.reset_password'))
+
+            # Reset users password to something new.
+            user.set_password(password=new_password)
+            db.session.commit()
+
+            flash(f'Password for user "{username}" updated!', 'success')
+            return redirect(url_for('.reset_password'))
+
+        # Render add-user form (GET request)   
+        # Args to be used in /admin/index.html
+        self._template_args['resetpw'] = True
+        self._template_args['title'] = "Reset Password"
+        self._template_args['form'] = form
+
+        return super(MyAdminIndexView, self).index()
+        
+    @expose('/logout/')
+    def logout_view(self):
+        logout_user()
+        return redirect(url_for('.index'))

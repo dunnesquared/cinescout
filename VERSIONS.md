@@ -2,6 +2,12 @@
 
 ## Version Tracker
 
+### 1.1.0
+- Addition of admin panel to view/modify database via Flask-Admin
+- Forms for easy user registration and password change from admin panel
+- Removal of view that allowed users to register for Cinescout; now exclusive domain of admin
+- No longer displaying NYT movie reviews to anonymous users; now only for registered users
+
 ### 1.0.1
 - Fixed Cross-Origin-Request errors blocking JS scripts in Safari in live demo
 - Disabled movie-link spinners until back-forward cache issue resolved

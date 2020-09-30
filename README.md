@@ -6,18 +6,16 @@ more about almost any film or person in the world of cinema.
 With `Cinescout` you can:
 - Read a brief synopsis of a film from [The Movie Database](https://www.themoviedb.org/), as well as a review summary from [The New York Times](https://nytimes.com).
 - Discover the filmography of your favourite cast or crew member.
-- Create an account to add movies to a personal list for later reference.
+- Add movies to a personal list for later reference.
 - Browse through a list of critically-acclaimed films from [The Criterion Collection](https://www.criterion.com/).
 
 ## Short History
 `Cinescout`  came to be as my final project submission for Harvard
-University's online cont-ed course, 'CS50W: Web Programming with Python and JavaScript.'  
-As a movie buff, I wanted to create a tool that would help me find great movies.
+University's online cont-ed course, 'CS50W: Web Programming with Python and JavaScript.' As a movie buff, I wanted to create a tool that would help me find great movies.
 I also liked working with APIs. Extracting data and functionality from
 external systems excited me.
 
-Although I received a passing grade for my project submission, `Cinescout, v0.1`,  
-I wanted to seriously improve the app before pushing its code to `github`.
+Although I received a passing grade for my project submission, `Cinescout, v0.1`,  I wanted to seriously improve the app before pushing its code to `github`.
 So, I worked on it for a few more more weeks, and, eventually, `version 1.x` was
 born.
 
@@ -31,7 +29,7 @@ I hope to have some version of app available for general use some day.
 There are several, non-trivial issues that need to be solved first (e.g.
 migration to a robust database; data backups; API request limits, etc.).
 
-All that said, I have created an award-winning screencast of `Cinescout`
+All that said, I have created an award-winning screencast of `Cinescout v1.0`
 you can enjoy. I hear it works wonders for insomnia :-p. Check it out!
 
 If you would like to try the demo and we're on friendly terms,
@@ -62,9 +60,9 @@ code. Notable dependencies include
 - `Flask-Migrate` to help migrate changes to database models.
 - `Flask-SqlAlchemy` to help create and manage the app's database.
 - `Flask-WTF` to write secure web forms quickly.
+- `Flask-Admin` to create a UI to administer the user logins, passwords and other database tasks.
 - `requests` to interact the external APIs.
 - `fuzzywuzzy` to determine how similar two movie titles are to each other.
-
 
 ## Running `Cinescout` on macOS, 'nix
 1. Download or clone this project from `github`.
@@ -79,6 +77,7 @@ code. Notable dependencies include
 10. Type `flask run` into your Terminal and hit Enter.
 11. Open a web browser and go to `http://127.0.0.1:5000/` to start using `Cinescout`!
 
+
 ## Running `Cinescout` on Windows
 You can do all of the above, except, I suspect, running `setup.sh` (Step 7). That's okay: the script just automates a few simple tasks that can be done manually. It's helpful but not really necessary.
 
@@ -89,6 +88,12 @@ All other things being equal, here's what you need to do for the simplest setup 
 
 Note that this assumes you're okay using the default SQLite database. I'll leave it up to you
 if you want to use something else.
+ 
+## Accessing the admin panel
+1. After setting up `Cinescout` per the instructions above, run `flask shell`.
+2. Create user `admin` via SQLAlchemy API calls. Please look up how to do this; as an admin you 
+should know how. Please choose a strong password if you're making this project public in any way.
+3. Go to `http://127.0.0.1:5000/admin` and login. 
 
 ## Files of note
 To keep things straight, let's look at the contents of each folder in the project, beginning at the project's root.
@@ -154,12 +159,12 @@ N.B. The script `test_movies.py` will take around four minutes to run as it
 currently stands. Each call to the NYT API has to be delayed by six seconds
 to prevent being locked out. Read 'HTTP Error 429: Too Many Requests' below.
 
-
 ## HTTP Error 429: Too Many Requests
 If you use this app long enough, you'll eventually get a an HTTP response 429
 error, aka Too Many Requests. This is almost certainly because the NYT only allows
 for 10 requests per minute (Read https://developer.nytimes.com/faq#a11). As
 searching for a review with `Cinescout` requires at least one NYT API call but as many four, it's quite easy to hit this ceiling if you're looking at one movie after another. The NYT recommends setting the delay between calls to six seconds, but I've set it to three, as that is as much as my patience can bear.
+
 
 ## Special Thanks
 In addition to CS50W's illuminating lessons and solid instruction from Brian Yu,

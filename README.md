@@ -20,21 +20,12 @@ So, I worked on it for a few more more weeks, and, eventually, `version 1.x` was
 born.
 
 ## Demo and Video
-A online demo of the `Cinescout` exists, but I've walled it off from the
-public because it's not production-ready, so to speak. It exists for
-personal use and finding bugs I would only be able to find when the app
-is hosted on a live server.
+You can try out `Cinescout` in its current state [here](https://dunnesquared.pythonanywhere.com).
+You'll be able to search for films and crew members, but won't be able to create an account, maintain a movie list
+or see NYT movie reviews. For security and maintainability reasons, I've made myself the gatekeeper and limited these features to registered users. See [README-LIVE](https://github.com/dunnesquared/cinescout/blob/master/README-LIVE.md) if you're curious to know more.
 
-I hope to have some version of app available for general use some day.
-There are several, non-trivial issues that need to be solved first (e.g.
-migration to a robust database; data backups; API request limits, etc.).
-
-All that said, I have created an award-winning screencast of `Cinescout v1.0`
-you can enjoy. I hear it works wonders for insomnia :-p. Check it out!
-
-If you would like to try the demo and we're on friendly terms,
-please contact me by the channel you currently possess;
-I'll see what I can do.
+That said, you can get some idea of what these features look like by watching my Razzie-winning [screencast of `Cinescout v1.0`](https://vimeo.com/450192710). It's a bit out of date UI-wise, but you'll get the picture. 
+I hear watching the video works wonders for insomnia :-p.
 
 ## APIs
 `Cinescout` retrieves all movie data from two places: *The New York Times* (NYT)

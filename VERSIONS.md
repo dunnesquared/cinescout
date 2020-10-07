@@ -2,6 +2,9 @@
 
 ## Version Tracker
 
+### 1.1.1
+- Minor bug fix to ensure unittest script `test_views.py` runs correctly
+
 ### 1.1.0
 - Addition of admin panel to view/modify database via Flask-Admin
 - Forms for easy user registration and password change from admin panel

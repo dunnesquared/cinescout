@@ -1,4 +1,4 @@
-# Cinescout – Live Site
+# Cinescout: Live Site
 
 ## Important information regarding v1.1.0 
 ### Septemeber 30, 2020

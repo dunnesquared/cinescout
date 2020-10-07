@@ -22,11 +22,11 @@ class RouteTests(unittest.TestCase):
         # print("TEST DB setup!")
         # print(f"{User.query.all()}")
 
-        # Create a default user
-        u = User(username="Alex", email="alex@test.com")
-        u.set_password("123")
-        db.session.add(u)
-        db.session.commit()
+        # See whether Alex in db. If not add him. 
+        default_user = User.query.filter_by(username="Alex").first()
+        if not default_user:
+            print("Creating default user 'Alex'...")
+            self.create_user(name="Alex", email="alex@test.com", password="123")
 
         # Placeholder variables to make testing easier
         self.dummy_pw = "12345678"
@@ -39,6 +39,18 @@ class RouteTests(unittest.TestCase):
         db.drop_all()
 
     # **** HELPER METHODS ****
+    def create_user(self, name, email, password):
+        u = User(username=name, email=email)
+        u.set_password(password)
+        db.session.add(u)
+        db.session.commit()
+        return u
+    
+    def remove_user(self, user):
+        db.session.delete(user)
+        db.session.commit()
+
+
     def register(self, username, email, password, confirm):
         # Implement next time...
         pass
@@ -98,11 +110,13 @@ class RouteTests(unittest.TestCase):
         response = self.login(username="Alex", password="123")
         self.assertIn(b'You have been logged in!', response.data)
 
-    def test_invalid_login(self):
+    def test_invalid_login_bad_password(self):
         # Bad password.
+        # self.create_user(name='xyz', email="alex@test.com", password="123")
         response = self.login(username="Alex", password="789")
         self.assertIn(b'Invalid username or password', response.data)
-
+    
+    def test_invalid_login_user_dne(self):
         # User does not exist.
         response = self.login(username="AlexO324", password="123")
         self.assertIn(b'Invalid username or password', response.data)
@@ -138,117 +152,118 @@ class RouteTests(unittest.TestCase):
         self.assertIn(b'Access Denied', response.data)
 
 
-    # *** REGISTER ***
-    def test_register_page_anonymous(self):
-        response = self.app.get('/register', follow_redirects=True)
-        self.assertEqual(response.status_code, 200)
-        self.assertIn(b'Register', response.data)
+    # # *** REGISTER ***
+    # ==============  TESTS OBSOLETE AS OF v1.1.0 =====================
+    # def test_register_page_anonymous(self):
+    #     response = self.app.get('/register', follow_redirects=True)
+    #     self.assertEqual(response.status_code, 200)
+    #     self.assertIn(b'Register', response.data)
 
-    def test_register_page_authenticated(self):
-        response = self.login(username="Alex", password="123")
-        response = self.app.get('/register', follow_redirects=True)
-        self.assertEqual(response.status_code, 200)
-        self.assertIn(b'Welcome', response.data)
+    # def test_register_page_authenticated(self):
+    #     response = self.login(username="Alex", password="123")
+    #     response = self.app.get('/register', follow_redirects=True)
+    #     self.assertEqual(response.status_code, 200)
+    #     self.assertIn(b'Welcome', response.data)
 
-    def test_register_valid_data(self):
-        username = "borat"
-        email = "borat@borat.com"
-        password = self.dummy_pw
-        password2 = self.dummy_pw
-        response = self.app.post(
-            '/register',
-            data=dict(username=username, email=email, password=password, password2=password2),
-            follow_redirects=True
-        )
-        self.assertIn(b'Welcome to Cinescout, borat! Now login to get started.', response.data)
+    # def test_register_valid_data(self):
+    #     username = "borat"
+    #     email = "borat@borat.com"
+    #     password = self.dummy_pw
+    #     password2 = self.dummy_pw
+    #     response = self.app.post(
+    #         '/register',
+    #         data=dict(username=username, email=email, password=password, password2=password2),
+    #         follow_redirects=True
+    #     )
+    #     self.assertIn(b'Welcome to Cinescout, borat! Now login to get started.', response.data)
 
-    def test_register_blank_fields(self):
-        # Empty string: ""
-        username = ""
-        email = ""
-        password = ""
-        password2 = ""
-        response = self.app.post(
-            '/register',
-            data=dict(username=username, email=email, password=password, password2=password2),
-            follow_redirects=True
-        )
-        self.assertIn(b'This field is required.', response.data)
+    # def test_register_blank_fields(self):
+    #     # Empty string: ""
+    #     username = ""
+    #     email = ""
+    #     password = ""
+    #     password2 = ""
+    #     response = self.app.post(
+    #         '/register',
+    #         data=dict(username=username, email=email, password=password, password2=password2),
+    #         follow_redirects=True
+    #     )
+    #     self.assertIn(b'This field is required.', response.data)
 
-        # Whitespace strings: "     "
-        # Empty string: ""
-        username = "\n\t\r"
-        email = "    "
-        password = "    "
-        password2 = "     "
-        response = self.app.post(
-            '/register',
-            data=dict(username=username, email=email, password=password, password2=password2),
-            follow_redirects=True
-        )
-        self.assertIn(b'This field is required.', response.data)
+    #     # Whitespace strings: "     "
+    #     # Empty string: ""
+    #     username = "\n\t\r"
+    #     email = "    "
+    #     password = "    "
+    #     password2 = "     "
+    #     response = self.app.post(
+    #         '/register',
+    #         data=dict(username=username, email=email, password=password, password2=password2),
+    #         follow_redirects=True
+    #     )
+    #     self.assertIn(b'This field is required.', response.data)
 
-        # No data passed
-        response = self.app.post(
-            '/register',
-            data=dict(username=None, email=None, password=None, password2=None),
-            follow_redirects=True
-        )
-        self.assertIn(b'This field is required.', response.data)
+    #     # No data passed
+    #     response = self.app.post(
+    #         '/register',
+    #         data=dict(username=None, email=None, password=None, password2=None),
+    #         follow_redirects=True
+    #     )
+    #     self.assertIn(b'This field is required.', response.data)
 
-    def test_taken_username_email(self):
-        # Taken username
-        response = self.app.post(
-            '/register',
-            data=dict(username="Alex", email="a@a.com", password=123, password2=123),
-            follow_redirects=True
-        )
-        self.assertIn(b'Username already taken.', response.data)
+    # def test_taken_username_email(self):
+    #     # Taken username
+    #     response = self.app.post(
+    #         '/register',
+    #         data=dict(username="Alex", email="a@a.com", password=123, password2=123),
+    #         follow_redirects=True
+    #     )
+    #     self.assertIn(b'Username already taken.', response.data)
 
-        # Taken email
-        response = self.app.post(
-            '/register',
-            data=dict(username="Random", email="alex@test.com", password=123, password2=123),
-            follow_redirects=True
-        )
-        self.assertIn(b'An account already exists with this email address.', response.data)
+    #     # Taken email
+    #     response = self.app.post(
+    #         '/register',
+    #         data=dict(username="Random", email="alex@test.com", password=123, password2=123),
+    #         follow_redirects=True
+    #     )
+    #     self.assertIn(b'An account already exists with this email address.', response.data)
 
-    def test_bad_input(self):
-        # Non alphanumeric characters in username
-        response = self.app.post(
-            '/register',
-            data=dict(username="Sheryl?Lee", email="shery@lee.com",
-            password=123, password2=123),
-            follow_redirects=True
-        )
-        self.assertIn(b'Username must contain only alphanumeric or underscore characters.', response.data)
+    # def test_bad_input(self):
+    #     # Non alphanumeric characters in username
+    #     response = self.app.post(
+    #         '/register',
+    #         data=dict(username="Sheryl?Lee", email="shery@lee.com",
+    #         password=123, password2=123),
+    #         follow_redirects=True
+    #     )
+    #     self.assertIn(b'Username must contain only alphanumeric or underscore characters.', response.data)
 
-        # Bad email
-        response = self.app.post(
-            '/register',
-            data=dict(username="SherylLee", email="shery?lee.com",
-            password=123, password2=123),
-            follow_redirects=True
-        )
-        self.assertIn(b'Invalid email address.', response.data)
+    #     # Bad email
+    #     response = self.app.post(
+    #         '/register',
+    #         data=dict(username="SherylLee", email="shery?lee.com",
+    #         password=123, password2=123),
+    #         follow_redirects=True
+    #     )
+    #     self.assertIn(b'Invalid email address.', response.data)
 
-    def test_different_passwords(self):
-        response = self.app.post(
-            '/register',
-            data=dict(username="SherylLee", email="shery@lee.com",
-            password=123, password2=456),
-            follow_redirects=True
-        )
-        self.assertIn(b'Passwords do not match.', response.data)
+    # def test_different_passwords(self):
+    #     response = self.app.post(
+    #         '/register',
+    #         data=dict(username="SherylLee", email="shery@lee.com",
+    #         password=123, password2=456),
+    #         follow_redirects=True
+    #     )
+    #     self.assertIn(b'Passwords do not match.', response.data)
 
-    def test_password_length(self):
-        response = self.app.post(
-            '/register',
-            data=dict(username="SherylLee", email="shery@lee.com",
-            password=123, password2=123),
-            follow_redirects=True
-        )
-        self.assertIn(b'Password must be at least 8 characters long.', response.data)
+    # def test_password_length(self):
+    #     response = self.app.post(
+    #         '/register',
+    #         data=dict(username="SherylLee", email="shery@lee.com",
+    #         password=123, password2=123),
+    #         follow_redirects=True
+    #     )
+    #     self.assertIn(b'Password must be at least 8 characters long.', response.data)
 
 
     # *** SEARCH - Title Search ***
@@ -423,10 +438,12 @@ class RouteTests(unittest.TestCase):
         self.assertIn(b'Release Date', response.data)
         self.assertIn(b'Overview', response.data)
         self.assertIn(b'Runtime', response.data)
-        self.assertIn(b'Movie Review', response.data)
         self.assertIn(b'TMDB Link', response.data)
         self.assertIn(b'IMDB Link', response.data)
-        self.assertIn(b'Critic\'s Pick', response.data)
+
+        # v1.1+: User must be logged-in to see reviews.
+        # self.assertIn(b'Movie Review', response.data 
+        # self.assertIn(b'Critic\'s Pick', response.data)
 
     # Bad movie id
     def test__movie_page_bad_id(self):

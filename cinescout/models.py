@@ -30,6 +30,9 @@ class User(UserMixin, db.Model):
 
     def __repr__(self):
         return f"{self.username}, {self.email}"
+    
+    # Ensure that all films on user's personal list are deleted when the user has been. 
+    filmlistitems = db.relationship("FilmListItem", cascade="all, delete-orphan")
 
 
 class Film(db.Model):

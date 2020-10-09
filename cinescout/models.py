@@ -45,6 +45,10 @@ class Film(db.Model):
     tmdb_id = db.Column(db.Integer, nullable=True)
     director = db.Column(db.String(80), nullable=True)
 
+    # Ensure that when a film has been deleted from Film, it will no longer
+    # appear in any children tables either (e.g. CriterionFilm). 
+    criterionfilms = db.relationship("CriterionFilm", cascade="all, delete-orphan")
+
     def __repr__(self):
         return f"{self.id}, {self.title}, {self.year}, {self.tmdb_id}, {self.director}"
 

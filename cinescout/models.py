@@ -30,6 +30,9 @@ class User(UserMixin, db.Model):
 
     def __repr__(self):
         return f"{self.username}, {self.email}"
+    
+    # Ensure that all films on user's personal list are deleted when the user has been. 
+    filmlistitems = db.relationship("FilmListItem", cascade="all, delete-orphan")
 
 
 class Film(db.Model):
@@ -41,6 +44,10 @@ class Film(db.Model):
     year = db.Column(db.Integer, nullable=False)
     tmdb_id = db.Column(db.Integer, nullable=True)
     director = db.Column(db.String(80), nullable=True)
+
+    # Ensure that when a film has been deleted from Film, it will no longer
+    # appear in any children tables either (e.g. CriterionFilm). 
+    criterionfilms = db.relationship("CriterionFilm", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"{self.id}, {self.title}, {self.year}, {self.tmdb_id}, {self.director}"

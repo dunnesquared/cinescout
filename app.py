@@ -1,6 +1,6 @@
 """Entry module for flask to launch app."""
 
-VERSION = "1.1.1"
+VERSION = "1.1.2"
 
 print(f"\nWelcome to Cinescout, v{VERSION}")
 print("============================")

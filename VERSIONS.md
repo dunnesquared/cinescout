@@ -1,5 +1,8 @@
 # Cinescout🎞: Version Tracker
 
+### 1.1.2
+- Minor bug fix to ensure deletion of records in parent tables also deletes records in child tables
+
 ### 1.1.1
 - Minor bug fix to ensure unittest script `test_views.py` runs correctly
 

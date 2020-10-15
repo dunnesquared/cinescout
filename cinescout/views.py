@@ -575,6 +575,10 @@ def movie_info(tmdb_id):
                             review_warning=review_warning)
 
 
+@app.route("/about", methods=['GET'])
+def about():
+    return render_template("about.html")
+
 # ==================================    ADMIN VIEWS    ==========================================
 # Code adapted from:
 # https://github.com/flask-admin/flask-admin/tree/master/examples/auth-flask-login 

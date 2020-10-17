@@ -3,6 +3,90 @@
 {% block body %}
 <h1>About</h1>
 
-hello world.
+<div id="about-container">
+    <article>
+        <div class="question">What is Cinescout?</div>
+        <div class="answer">
+            Read <a class="text-info" href="{{  url_for('index') }}">here.</a>
+        </div> 
+    </article>
+
+    <article>
+        <div class="question">Who created Cinescout?</div>
+        <div class="answer">
+            <a class="text-info" href="https://dunnesquared.github.io">Me!</a>
+        </div>
+    </article>
+
+    <article>
+        <div class="question">Hey! How come I can't see NYT reviews or create a personal movie list?
+            You lied to me!</div>
+        <div class="answer">
+            These features are for registered users only. Ideally, they would be available to
+            all, but due to NYT's API request limit and my desire to avoid maintaining an 
+            ever-growing database of users, I've limited access to these features to a small group of people.
+        </div>
+    </article>
+
+    <article>
+        <div class="question">Can you create a user account for me?</div>
+        <div class="answer">
+            If I know you and like you, sure! Just get in touch. Otherwise, probably not. 
+        </div>
+    </article>
+
+    <article>
+        <div class="question">I'm a registered user, and I've noticed that it's often slower to
+            pull up movie info when I'm logged in than when I'm not. Are you warping time or 
+            is something else going on here?</div>
+        <div class="answer">
+            NYT's API has a max request limit of 10 requests per minute, so I have to delay certain 
+            API calls by six seconds. For some movies, it may take several calls to search for a 
+            review, resulting in longer wait times. I have a design fix to reduce the wait time 
+            for movie info, which I hope implement in the future. 
+        </div>
+    </article>
+
+
+    <article>
+        <div class="question">Is the code for this sketchy site posted anywhere?</div>
+        <div class="answer">
+            <a class='text-info' href="https://github.com/dunnesquared/cinescout">Github.</a>
+        </div>
+    </article>
+
+    <article> 
+        <div class="question">Ouch. Among other unpleasant things I saw in your codebase,
+            I found a security vulnerability. Should I hack you or tell you?</div>
+        <div class="answer">
+            Please tell me! I'd really appreciate it. If you are so inclined, 
+            you can fork the project and make a pull request. I will gladly review your changes.
+        </div>
+    </article>
+   
+    <article>
+        <div class="question">
+            Why should I even bother to use this site? IMDB and TMDB do the same things and more.
+        </div>
+        <div class="answer">
+            Indeed they do, and I'm especially impressed with
+            <a class=text-info href="https://www.themoviedb.org/">TMDB</a>. 
+            <div>Don't use Cinescout if you don't want
+            to — it's a personal project that I've decided to share with the world, nothing more. 
+            That said, you can always trust that you will never have to suffer ads or tracking 
+            cookies on Cinescout; it's my intent to keep the interface simple and uncluttered.</div>
+        </div>
+    </article>
+    
+    <article>
+        <div class="question">What version am I using?</div>
+        <div class="answer">
+            1.1.2
+        </div>
+    </article>
+
+</div>
+
+
 
 {% endblock %}

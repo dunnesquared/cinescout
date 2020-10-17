@@ -13,6 +13,11 @@ from cinescout import db
 from cinescout.models import User, Film, CriterionFilm, PersonalFilm, FilmListItem
 print("Importing db and models to configure 'flask shell' context...")
 
+@app.context_processor
+def inject_version():
+    """Makes version numbers accessible across all templates."""
+    return dict(version=VERSION)
+
 @app.shell_context_processor
 def make_shell_context():
     """Makes it so 'flask shell' already has db and models imported

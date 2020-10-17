@@ -774,6 +774,24 @@ class RouteTests(unittest.TestCase):
         self.assertIn(data['results'][0]['title'], 'Mulholland Dr.')
         self.assertIn(data['results'][0]['directors'][0], 'David Lynch')
 
+    # ABOUT
+    def test_about_menubar_anonymous(self):
+        response = self.app.get('/')
+        self.assertIn(b'About', response.data)
+    
+    def test_about_menubar_loggedin(self):
+        self.login("Alex", "123")
+        response = self.app.get('/')
+        self.assertIn(b'About', response.data)
+
+    def test_about_page_exists_anonymous(self):
+        response = self.app.get('/about')
+        self.assertIn(b'version', response.data)
+    
+    def test_about_page_exists_loggedin(self):
+        self.login("Alex", "123")
+        response = self.app.get('/about')
+        self.assertIn(b'version', response.data)
 
 
 if __name__ == "__main__":

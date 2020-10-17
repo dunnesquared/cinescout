@@ -100,3 +100,20 @@ plug-in
 .table-cell {
   word-wrap: break-word;
 }
+
+/* About page */
+#about-container {
+  margin-top: 2em;
+}
+#about-container article {
+  margin-bottom: 1.5em;
+}
+
+.question {
+  font-weight: bolder;
+  font-size: large;
+}
+
+.answer{
+  margin-top: 0.3em;
+}

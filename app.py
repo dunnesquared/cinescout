@@ -1,6 +1,6 @@
 """Entry module for flask to launch app."""
 
-VERSION = "1.1.2"
+VERSION = "1.2"
 
 print(f"\nWelcome to Cinescout, v{VERSION}")
 print("============================")
@@ -12,6 +12,11 @@ print("Importing app object from cinescout package: __init.py__...")
 from cinescout import db
 from cinescout.models import User, Film, CriterionFilm, PersonalFilm, FilmListItem
 print("Importing db and models to configure 'flask shell' context...")
+
+@app.context_processor
+def inject_version():
+    """Makes version numbers accessible across all templates."""
+    return dict(version=VERSION)
 
 @app.shell_context_processor
 def make_shell_context():

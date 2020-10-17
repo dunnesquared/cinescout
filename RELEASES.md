@@ -1,5 +1,10 @@
 # Cinescout🎞: Releases
 
+### 1.2
+- New 'About' page
+- Version number accessible across templates
+- Minor changes
+
 ### 1.1.2
 - Minor bug fix to ensure deletion of records in parent tables also deletes records in child tables
 

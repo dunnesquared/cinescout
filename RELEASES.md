@@ -1,4 +1,4 @@
-# Cinescout🎞: Version Tracker
+# Cinescout🎞: Releases
 
 ### 1.1.2
 - Minor bug fix to ensure deletion of records in parent tables also deletes records in child tables

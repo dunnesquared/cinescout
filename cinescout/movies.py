@@ -42,7 +42,7 @@ class Movie:
     """
     def __init__(self, id=None, title=None,
                 release_year=None, release_date=None, overview=None,
-                runtime=None, original_title=None):
+                runtime=None, original_title=None, filmcredits=None):
                  self.id = id
                  self.title = title
                  self.release_year = release_year
@@ -50,6 +50,7 @@ class Movie:
                  self.overview = overview
                  self.runtime = runtime
                  self.original_title = original_title
+                 self.filmcredits = filmcredits
 
 
     @classmethod
@@ -134,10 +135,10 @@ class TmdbMovie(Movie):
 
     def __init__(self, id=None, title=None,
                  release_year=None, release_date=None, overview=None,
-                 runtime=None, original_title=None, poster_full_url=None,
+                 runtime=None, original_title=None, filmcredits=None, poster_full_url=None,
                  imdb_full_url=None, tmdb_full_url=None):
         Movie.__init__(self, id, title, release_year, release_date,
-                        overview, runtime, original_title)
+                        overview, runtime, original_title, filmcredits)
         self.poster_full_url = poster_full_url
         self.imdb_full_url = imdb_full_url
         self.tmdb_full_url = tmdb_full_url
@@ -499,7 +500,7 @@ class TmdbMovie(Movie):
         print(f"Requesting movie data from TMDB api with movie_id={id}...",
                 end="")
         res = requests.get(f"https://api.themoviedb.org/3/movie/{id}",
-                            params={"api_key": cls.api_key})
+                            params={"api_key": cls.api_key, "append_to_response": "credits"})
 
         # Check whether movie found
         if res.status_code != 200:
@@ -534,6 +535,22 @@ class TmdbMovie(Movie):
             # Build full url for TMDB
             tmdb_full_url = cls.tmdb_base_url + str(id)
 
+            # Extract credits data
+            if tmdb_movie_data['credits']:
+                # Iterate over response dict to extract essesntial info.
+                filmcredits = {'cast': [], 'crew':[]}
+                tmdbcredits = tmdb_movie_data['credits']
+                # Cast
+                for credit in tmdbcredits['cast']:
+                    filmcredits['cast'].append({'name':credit.get('name', None), 
+                                                'character': credit.get('character', None),
+                                                'id': credit.get('id', None)})
+                # Crew
+                for credit in tmdbcredits['crew']:
+                    filmcredits['crew'].append({'name': credit.get('name', None), 
+                                                'job': credit.get('job', None),
+                                                'id':  credit.get('id', None)})
+
             print("Building Movie object...")
             movie = cls(id=id, title=tmdb_movie_data['title'],
                         release_year=release_year,
@@ -543,8 +560,8 @@ class TmdbMovie(Movie):
                         original_title=tmdb_movie_data.get('original_title'),
                         poster_full_url=poster_full_url,
                         imdb_full_url=imdb_full_url,
-                        tmdb_full_url=tmdb_full_url)
-
+                        tmdb_full_url=tmdb_full_url,
+                        filmcredits=filmcredits)
 
             result['movie'] = movie
 

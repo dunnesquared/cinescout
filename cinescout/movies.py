@@ -536,6 +536,7 @@ class TmdbMovie(Movie):
             tmdb_full_url = cls.tmdb_base_url + str(id)
 
             # Extract credits data
+            filmcredits = None
             if tmdb_movie_data['credits']:
                 # Iterate over response dict to extract essesntial info.
                 filmcredits = {'cast': [], 'crew':[]}

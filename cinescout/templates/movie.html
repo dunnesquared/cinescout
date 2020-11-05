@@ -131,7 +131,7 @@
       </div>
     </div>
 
-     <div class="movie-section-row">
+     <div>
       <div class="movie-section-heading">Cast</div>
         <table class="table table-sm table-hover table-dark">
           
@@ -152,12 +152,15 @@
                 {% else %}
                   ???
                 {% endif %}
-              </td> 
+              </td>
+            </tr>
+          {% else %}
+            <span> No data available. </span> 
           {% endfor %}
         </table>
     </div>
 
-    <div class="movie-section-row">
+    <div>
       <div class="movie-section-heading">Crew</div>
         <table class="table table-sm table-hover table-dark">
 
@@ -179,6 +182,9 @@
                       ???
                     {% endif %}
                   </td> 
+                </tr>
+            {% else %}
+             <span> No data available. </span> 
             {% endfor %}
         </table>
     </div>

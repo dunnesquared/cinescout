@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% block title %}About{% endblock %}
+
 {% block body %}
 <h1>About</h1>
 
@@ -81,7 +83,11 @@
     <article>
         <div class="question">What version am I using?</div>
         <div class="answer">
-            {{ version }}
+            {%  if version %}
+                {{ version }} :-) 
+            {% else %}
+                1.3
+            {% endif %}
         </div>
     </article>
 

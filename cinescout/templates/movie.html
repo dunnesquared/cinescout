@@ -104,6 +104,7 @@
       </div>
     {% endif %}
 
+   
     <div class="movie-section-row">
       <div class="movie-section-heading">TMDB Link</div>
       <div>
@@ -128,6 +129,64 @@
           <span> There is no IMDB link for this film. </span>
         {% endif %}
       </div>
+    </div>
+
+     <div>
+      <div class="movie-section-heading">Cast</div>
+        <table class="table table-sm table-hover table-dark">
+          
+          <colgroup>
+            <col span=1 class="creditslist-col-name">
+            <col span=1 class="creditslist-col-rolejob">
+          </colgroup>
+
+          {% for credit in movie.filmcredits['cast'] %}
+            <tr>
+              <td>
+                <a href="/person/{{ credit['id'] }}" class="text-white">{{ credit['name'] }}</a>
+                &nbsp
+              </td>
+              <td>
+                {% if credit['character'] %}
+                {{ credit['character'] }}
+                {% else %}
+                  ???
+                {% endif %}
+              </td>
+            </tr>
+          {% else %}
+            <span> No data available. </span> 
+          {% endfor %}
+        </table>
+    </div>
+
+    <div>
+      <div class="movie-section-heading">Crew</div>
+        <table class="table table-sm table-hover table-dark">
+
+          <colgroup>
+            <col span=1 class="creditslist-col-name">
+            <col span=1 class="creditslist-col-rolejob">
+          </colgroup>
+
+          {% for credit in movie.filmcredits['crew'] %}
+              <tr>
+                  <td>
+                    <a href="/person/{{ credit['id'] }}" class="text-white">{{ credit['name'] }}</a>
+                    &nbsp
+                  </td>
+                  <td>
+                    {% if credit['job'] %}
+                      {{ credit['job'] }}
+                    {% else %}
+                      ???
+                    {% endif %}
+                  </td> 
+                </tr>
+            {% else %}
+             <span> No data available. </span> 
+            {% endfor %}
+        </table>
     </div>
 
     {% if current_user.is_authenticated %}

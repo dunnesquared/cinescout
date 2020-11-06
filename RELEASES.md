@@ -1,5 +1,10 @@
 # Cinescout🎞: Releases
 
+### 1.3
+- Display cast and crew credits for a searched film
+- Minor bug fixes
+
+
 ### 1.2
 - New 'About' page
 - Version number accessible across templates

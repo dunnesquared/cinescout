@@ -356,7 +356,7 @@ class RouteTests(unittest.TestCase):
     def test_search_person_invalid_id_02(self):
         id = 123445465465765767687687980879686787567744566765756
         response = self.app.get(f'/person/{id}')
-        self.assertIn(b'404: Page Not Found', response.data)
+        self.assertIn(b'Internal Server Error', response.data)
 
     def test_search_person_invalid_id_03(self):
         id = "sdjkfdkbgkfdbgkfdsjgb"
@@ -440,11 +440,23 @@ class RouteTests(unittest.TestCase):
         self.assertIn(b'Runtime', response.data)
         self.assertIn(b'TMDB Link', response.data)
         self.assertIn(b'IMDB Link', response.data)
+        self.assertIn(b'Cast', response.data)
+        self.assertIn(b'Crew', response.data)
 
         # v1.1+: User must be logged-in to see reviews.
         # self.assertIn(b'Movie Review', response.data 
         # self.assertIn(b'Critic\'s Pick', response.data)
 
+    def test_moviepage_creditsok(self):
+        movie_id = "1018"
+        response = self.app.get(f'/movie/{movie_id}')
+        self.assertIn(b'Adam Kesher', response.data)
+    
+    def test_moviepage_credits_nocastcrew(self):
+        movie_id = "669330" # Retour à Mulholland Drive
+        response = self.app.get(f'/movie/{movie_id}')
+        self.assertIn(b'No data available.', response.data)
+    
     # Bad movie id
     def test__movie_page_bad_id(self):
         movie_id = "-1018"
@@ -638,7 +650,7 @@ class RouteTests(unittest.TestCase):
                       follow_redirects=True)
         data = json.loads(response.get_data(as_text=True))
         self.assertFalse(data['success'])
-
+    
 
     # USER LIST
     # Tests:

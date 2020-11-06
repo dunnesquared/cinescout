@@ -117,3 +117,33 @@ plug-in
 .answer{
   margin-top: 0.3em;
 }
+
+
+.creditslist-col-name{
+  width: 15%;
+}
+
+.creditslist-col-rolejob{
+  width: 85%;
+}
+
+@media (max-width: 776px) {
+  .creditslist-col-name{
+    width: 30%;
+  }
+  
+  .creditslist-col-rolejob{
+    width: 70%;
+  }
+}
+
+
+@media (max-width: 576px) {
+  .creditslist-col-name{
+    width: 50%;
+  }
+  
+  .creditslist-col-rolejob{
+    width: 50%;
+  }
+}

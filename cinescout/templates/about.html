@@ -83,7 +83,11 @@
     <article>
         <div class="question">What version am I using?</div>
         <div class="answer">
-            {{ version }}
+            {%  if version %}
+                {{ version }} :-) 
+            {% else %}
+                1.2
+            {% endif %}
         </div>
     </article>
 

@@ -6,6 +6,7 @@ import json
 from datetime import datetime
 
 import requests
+from urllib import parse
 from textwrap import dedent
 
 # For determining how similar two movie titles are.
@@ -79,6 +80,29 @@ class Movie:
     def get_movie_info_by_id(cls, id):
         """Builds Movie object with id to search external api db."""
         pass
+
+    
+    def googlequery(self):
+        """Returns URL to learn more about film using Google's search engine
+        
+        Returns:
+            query: String containing url that will query movie on Google.
+        """
+        if not self.title and not self.original_title:
+            raise ValueError("Query must have title data.")
+        
+        base_url = "https://www.google.com/search?q="
+
+        # Prefer the original title of foreign films over the English one.
+        title = self.original_title if self.original_title else self.title
+
+        if self.release_year:
+            query = base_url + parse.quote(f"{title} {self.release_year} film", safe=[])
+        else:
+            query = base_url + parse.quote(f"{title} film", safe=[])
+            
+        return query
+
 
     def __str__(self):
         return dedent(f"""

@@ -544,7 +544,8 @@ def movie_info(tmdb_id):
             return render_template("movie.html",
                                     movie=movie,
                                     review=None,
-                                    on_user_list=on_user_list)
+                                    on_user_list=on_user_list,
+                                    googlequery=movie.googlequery())
 
         # NYT request failed.
         if not result['success'] and result['status_code'] != 200:
@@ -572,7 +573,8 @@ def movie_info(tmdb_id):
                             movie=movie,
                             review=review,
                             on_user_list=on_user_list,
-                            review_warning=review_warning)
+                            review_warning=review_warning, 
+                            googlequery=movie.googlequery())
 
 
 @app.route("/about", methods=['GET'])

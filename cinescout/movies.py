@@ -85,22 +85,30 @@ class Movie:
     def googlequery(self):
         """Returns URL to learn more about film using Google's search engine
         
+        Raises:
+            ValueError: if title attribute is None or empty string.
+
         Returns:
             query: String containing url that will query movie on Google.
         """
-        if not self.title and not self.original_title:
+        # No null titles, no blank titles. 
+        if not self.title or not self.title.strip():
             raise ValueError("Query must have title data.")
-        
+
         base_url = "https://www.google.com/search?q="
 
         # Prefer the original title of foreign films over the English one.
-        title = self.original_title if self.original_title else self.title
+        if self.original_title and self.original_title.strip():
+            print("******  original title used!")
+            title = self.original_title.strip()
+        else:
+            title = self.title.strip()
 
         if self.release_year:
             query = base_url + parse.quote(f"{title} {self.release_year} film", safe=[])
         else:
             query = base_url + parse.quote(f"{title} film", safe=[])
-            
+
         return query
 
 

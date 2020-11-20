@@ -8,6 +8,73 @@ import unittest
 # Add this line to whatever test script you write
 from context import app, NytMovieReview, Movie, TmdbMovie
 
+class MovieTests(unittest.TestCase):
+     # Setup/teardown
+    def setUp(self):
+        # """Executes before each test."""
+        print("Setting up  MovieTests...")
+        app.config['TESTING'] = True
+        app.config['DEBUG'] = False
+        self.app = app.test_client()
+        self.testmovie = Movie(id=577922, title="Tenet", release_year=2020, 
+                                release_date='2020-08-22',
+                                original_title='Tenet')
+
+    def tearDown(self):
+        """Executes after each test."""
+        print("Tearing down MovieTests...")
+    
+    # googlequery
+    # -----------
+    def testGoogleQueryNormal(self):
+        expected = "https://www.google.com/search?q=Tenet%202020%20film"
+        result = self.testmovie.googlequery()
+        self.assertEqual(expected, result)
+        
+    def testGoogleQueryNoTitles(self):
+        self.testmovie.title = None
+        self.testmovie.original_title = None
+        self.assertRaises(ValueError, self.testmovie.googlequery)
+
+    def testGoogleQueryOriginalTitleOnly(self):
+        self.testmovie.title = None
+        self.testmovie.original_title = 'Tenet'
+        self.assertRaises(ValueError, self.testmovie.googlequery)
+    
+    def testGoogleQueryEnglishTitleOnly(self):
+        self.testmovie.original_title = None
+        expected = "https://www.google.com/search?q=Tenet%202020%20film"
+        result = self.testmovie.googlequery()
+        self.assertEqual(expected, result)
+    
+    def testGoogleQueryBlankSpacesBothTitles(self):
+        self.testmovie.title = '    '
+        self.testmovie.original_title ='\n\t  '
+        self.assertRaises(ValueError, self.testmovie.googlequery)
+    
+    def testGoogleQueryNoReleaseYear(self):
+        self.testmovie.release_year = None
+        expected = "https://www.google.com/search?q=Tenet%20film"
+        result = self.testmovie.googlequery()
+        self.assertEqual(expected, result)
+    
+    def testGoogleQueryBadReleaseYear(self):
+        self.testmovie.release_year = "-128"
+        expected = "https://www.google.com/search?q=Tenet%20-128%20film"
+        result = self.testmovie.googlequery()
+        self.assertEqual(expected, result)
+
+        
+
+
+    # Test Google query feature
+    # Normal
+    # title = None, original title = None
+    # title = None, original title not None
+    # title blank spaces = "   ", original title = "   "
+    # Unsafe strings: eval('print("hello")')
+    # No release year
+
 
 class NytMovieReviewTests(unittest.TestCase):
 

@@ -1,5 +1,8 @@
 # Cinescout🎞: Releases
 
+### 1.4
+- Display hyperlink on Movie page that queries Google for more information on respective movie 
+
 ### 1.3
 - Display cast and crew credits for a searched film
 - Minor bug fixes

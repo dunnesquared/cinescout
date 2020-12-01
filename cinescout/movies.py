@@ -93,6 +93,19 @@ class Movie:
         """
         base_url = "https://www.google.com/search?q="
         return self.commonquery(base_url=base_url)
+    
+
+    def duckduckgoquery(self):
+        """Returns URL to learn more about film using Google's search engine
+        
+        Raises:
+            ValueError: if title attribute is None or empty string.
+
+        Returns:
+            query: String containing url that will query movie on Google.
+        """
+        base_url = "https://duckduckgo.com/?q="
+        return self.commonquery(base_url=base_url)
 
 
     def commonquery(self, base_url: str) -> str:

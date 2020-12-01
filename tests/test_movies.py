@@ -64,6 +64,46 @@ class MovieTests(unittest.TestCase):
         result = self.testmovie.googlequery()
         self.assertEqual(expected, result)
 
+    # duckduckgoquery
+    # ---------------
+    def testDuckDuckGoQueryNormal(self):
+        expected = "https://duckduckgo.com/?q=Tenet%202020%20film"
+        result = self.testmovie.duckduckgoquery()
+        self.assertEqual(expected, result)
+        
+    def testDuckDuckGoQueryNoTitles(self):
+        self.testmovie.title = None
+        self.testmovie.original_title = None
+        self.assertRaises(ValueError, self.testmovie.duckduckgoquery)
+
+    def testDuckDuckGoQueryOriginalTitleOnly(self):
+        self.testmovie.title = None
+        self.testmovie.original_title = 'Tenet'
+        self.assertRaises(ValueError, self.testmovie.duckduckgoquery)
+    
+    def testDuckDuckGoQueryEnglishTitleOnly(self):
+        self.testmovie.original_title = None
+        expected = "https://duckduckgo.com/?q=Tenet%202020%20film"
+        result = self.testmovie.duckduckgoquery()
+        self.assertEqual(expected, result)
+    
+    def testDuckDuckGoQueryBlankSpacesBothTitles(self):
+        self.testmovie.title = '    '
+        self.testmovie.original_title ='\n\t  '
+        self.assertRaises(ValueError, self.testmovie.duckduckgoquery)
+    
+    def testDuckDuckGoQueryNoReleaseYear(self):
+        self.testmovie.release_year = None
+        expected = "https://duckduckgo.com/?q=Tenet%20film"
+        result = self.testmovie.duckduckgoquery()
+        self.assertEqual(expected, result)
+    
+    def testDuckDuckGoQueryBadReleaseYear(self):
+        self.testmovie.release_year = "-128"
+        expected = "https://duckduckgo.com/?q=Tenet%20-128%20film"
+        result = self.testmovie.duckduckgoquery()
+        self.assertEqual(expected, result)
+
     # commonquery
     # ----------- 
     def testCommonQueryBaseURLOK(self):

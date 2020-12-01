@@ -91,11 +91,27 @@ class Movie:
         Returns:
             query: String containing url that will query movie on Google.
         """
+        base_url = "https://www.google.com/search?q="
+        return self.commonquery(base_url=base_url)
+
+
+    def commonquery(self, base_url: str) -> str:
+        """Builds query based on common build-setup for different search engines. 
+
+        Args:
+            base_url: String object that represents the base url required to query a search engine.
+        
+        Raises:
+            ValueError: if base_url is empty.
+        Returns:
+            query: String containing url that will query movie on search engine.
+        """
+        if base_url is None or base_url.strip() == "": 
+            raise ValueError("Base url cannot be null or empty string.")
+        
         # No null titles, no blank titles. 
         if not self.title or not self.title.strip():
             raise ValueError("Query must have title data.")
-
-        base_url = "https://www.google.com/search?q="
 
         # Prefer the original title of foreign films over the English one.
         if self.original_title and self.original_title.strip():
@@ -110,8 +126,7 @@ class Movie:
             query = base_url + parse.quote(f"{title} film", safe=[])
 
         return query
-
-
+        
     def __str__(self):
         return dedent(f"""
         api-db id = {self.id}

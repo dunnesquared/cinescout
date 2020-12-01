@@ -64,7 +64,21 @@ class MovieTests(unittest.TestCase):
         result = self.testmovie.googlequery()
         self.assertEqual(expected, result)
 
-        
+    # commonquery
+    # ----------- 
+    def testCommonQueryBaseURLOK(self):
+        base_url = "https://www.google.com/search?q="
+        expected = "https://www.google.com/search?q=Tenet%202020%20film"
+        result = self.testmovie.commonquery(base_url=base_url)
+        self.assertEqual(expected, result)
+    
+    def testCommonQueryBaseURLNone(self):
+        base_url = None
+        self.assertRaises(ValueError, self.testmovie.commonquery, base_url)
+    
+    def testCommonQueryBaseURLBlank(self):
+        base_url = "      "
+        self.assertRaises(ValueError, self.testmovie.commonquery, base_url)
 
 
     # Test Google query feature

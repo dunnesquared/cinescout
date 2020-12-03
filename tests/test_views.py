@@ -442,6 +442,9 @@ class RouteTests(unittest.TestCase):
         self.assertIn(b'IMDB Link', response.data)
         self.assertIn(b'Cast', response.data)
         self.assertIn(b'Crew', response.data)
+        self.assertIn(b'Learn More', response.data)
+        self.assertIn(b'Google', response.data)
+        self.assertIn(b'DuckDuckGo', response.data)
 
         # v1.1+: User must be logged-in to see reviews.
         # self.assertIn(b'Movie Review', response.data 

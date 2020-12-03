@@ -119,15 +119,70 @@ class MovieTests(unittest.TestCase):
     def testCommonQueryBaseURLBlank(self):
         base_url = "      "
         self.assertRaises(ValueError, self.testmovie.commonquery, base_url)
+    
+    # querymaker
+    # ----------- 
+    def testQueryMakerGoogle(self):
+        search_engine = 'google'
+        result = self.testmovie.querymaker(search_engine=search_engine)
+        expected = self.testmovie.googlequery
+        self.assertEqual(expected, result)
+    
+    def testQueryMakerDuckDuckGo(self):
+        search_engine = 'duckduckgo'
+        result = self.testmovie.querymaker(search_engine=search_engine)
+        expected = self.testmovie.duckduckgoquery
+        self.assertEqual(expected, result)
+    
+    def testQueryMakerDiffCase(self):
+        search_engine = 'Duckduckgo'
+        result = self.testmovie.querymaker(search_engine=search_engine)
+        expected = self.testmovie.duckduckgoquery
+        self.assertEqual(expected, result)
+    
+    def testQueryMakerNone(self):
+        search_engine = None
+        self.assertRaises(ValueError, self.testmovie.querymaker, search_engine)
+    
+    def testQueryMakerBlank(self):
+        search_engine = "    "
+        self.assertRaises(ValueError, self.testmovie.querymaker, search_engine)
+    
+    def testQueryMakerBadName(self):
+        search_engine = "AskJeevus"
+        self.assertRaises(ValueError, self.testmovie.querymaker, search_engine)
 
-
-    # Test Google query feature
-    # Normal
-    # title = None, original title = None
-    # title = None, original title not None
-    # title blank spaces = "   ", original title = "   "
-    # Unsafe strings: eval('print("hello")')
-    # No release year
+    # get_query
+    # ----------- 
+    def testGetQueryGoogle(self):
+        search_engine = 'google'
+        result = self.testmovie.get_query(search_engine=search_engine)
+        expected = "https://www.google.com/search?q=Tenet%202020%20film"
+        self.assertEqual(expected, result)
+    
+    def testGetQueryDuckDuckGo(self):
+        search_engine = 'duckduckgo'
+        result = self.testmovie.get_query(search_engine=search_engine)
+        expected = "https://duckduckgo.com/?q=Tenet%202020%20film"
+        self.assertEqual(expected, result)
+    
+    def testGetQueryDiffCase(self):
+        search_engine = 'Duckduckgo'
+        result = self.testmovie.get_query(search_engine=search_engine)
+        expected = "https://duckduckgo.com/?q=Tenet%202020%20film"
+        self.assertEqual(expected, result)
+    
+    def testGetQueryNone(self):
+        search_engine = None
+        self.assertRaises(ValueError, self.testmovie.get_query, search_engine)
+    
+    def testGetQueryBlank(self):
+        search_engine = "    "
+        self.assertRaises(ValueError, self.testmovie.get_query, search_engine)
+    
+    def testGetQueryBadName(self):
+        search_engine = "AskJeevus"
+        self.assertRaises(ValueError, self.testmovie.get_query, search_engine)
 
 
 class NytMovieReviewTests(unittest.TestCase):

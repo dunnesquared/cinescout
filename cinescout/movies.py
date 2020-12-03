@@ -82,27 +82,65 @@ class Movie:
         pass
 
     
-    def googlequery(self):
-        """Returns URL to learn more about film using Google's search engine
+    def get_query(self, search_engine: str) -> str:
+        """Gets query url that can be used to search for movie info on a given search engine.
         
-        Raises:
-            ValueError: if title attribute is None or empty string.
+        Args:
+            search_engine: String object that represents different search engines, e.g. 'google'
+
+        Raise: 
+            ValueError: if search_engine is None or blank.
 
         Returns:
-            query: String containing url that will query movie on Google.
+            query_url: String object representing the url to query search engine specified for
+                       the movie this object models. 
+        """
+        if not search_engine or not search_engine.strip():
+            raise ValueError("Search engine parameter cannot be None or blank.")
+        queryfunc = self.querymaker(search_engine)
+        return queryfunc()
+
+
+    def querymaker(self, search_engine: str):
+        """Gets function that makes the query per search engine
+
+        Args:
+            search_engine: String object that represents different search engines, e.g. 'google'
+
+        Raise: 
+            ValueError: if search engine not recognized. 
+
+        Returns:
+            queryfunc: Function that builds the desired query for the target search engine. 
+        """
+        if not search_engine or not search_engine.strip():
+            raise ValueError("Search engine parameter cannot be None or blank.")
+        search_engine = search_engine.lower()
+        if search_engine == 'google':
+            queryfunc = self.googlequery
+        elif search_engine == 'duckduckgo':
+            queryfunc = self.duckduckgoquery
+        else:
+            raise ValueError(search_engine)
+        return queryfunc
+
+
+    def googlequery(self):
+        """Gets URL to learn more about film using Google's search engine
+        
+        Returns:
+            String containing url that will query movie on Google.
         """
         base_url = "https://www.google.com/search?q="
         return self.commonquery(base_url=base_url)
     
 
     def duckduckgoquery(self):
-        """Returns URL to learn more about film using Google's search engine
+        """Gets URL to learn more about film using DuckDuckGo's search engine
         
-        Raises:
-            ValueError: if title attribute is None or empty string.
 
         Returns:
-            query: String containing url that will query movie on Google.
+            String containing url that will query movie on DuckDuckGo.
         """
         base_url = "https://duckduckgo.com/?q="
         return self.commonquery(base_url=base_url)

@@ -133,9 +133,13 @@
 
     <div class="movie-section-row">
       <div class="movie-section-heading">Learn More:</div>
-      <a href="{{ googlequery }}" target="_blank" class="text-info">
-         Google
-      </a>
+      {% for search_engine, query in search_engines.items() %}
+        <div>
+         <a href="{{ query }}" target="_blank" class="text-info">
+         {{ search_engine }}
+        </a>
+        </div>
+      {% endfor %}
     </div>
 
      <div>

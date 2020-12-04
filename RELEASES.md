@@ -1,5 +1,8 @@
 # Cinescout🎞: Releases
 
+### 1.4.1
+- Add hyperlink on Movie page that queries DuckDuckGo for more information on respective movie 
+
 ### 1.4
 - Display hyperlink on Movie page that queries Google for more information on respective movie 
 

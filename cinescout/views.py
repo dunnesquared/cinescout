@@ -509,6 +509,12 @@ def movie_info(tmdb_id):
     # To ref before assignment errors in the case of anonymous users requesting movie info.
     review, review_warning = None, None
 
+    # Get search-engine queries for movie.
+    search_engines = {
+                        'Google': movie.get_query('google'),
+                        'DuckDuckGo': movie.get_query('duckduckgo')
+                     }
+
     if current_user.is_authenticated:
 
         # CHECK PERSONAL MOVIE LIST!!!
@@ -545,7 +551,7 @@ def movie_info(tmdb_id):
                                     movie=movie,
                                     review=None,
                                     on_user_list=on_user_list,
-                                    googlequery=movie.googlequery())
+                                    search_engines=search_engines)
 
         # NYT request failed.
         if not result['success'] and result['status_code'] != 200:
@@ -574,7 +580,7 @@ def movie_info(tmdb_id):
                             review=review,
                             on_user_list=on_user_list,
                             review_warning=review_warning, 
-                            googlequery=movie.googlequery())
+                            search_engines=search_engines)
 
 
 @app.route("/about", methods=['GET'])

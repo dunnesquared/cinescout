@@ -229,13 +229,6 @@ def browse():
                             criterion_films=criterion_films)
 
 
-@app.route("/browse_new")
-def browse_new():
-    """Displays list of critically-acclaimed movies."""
-    criterion_films = db.session.query(Film).join(CriterionFilm).all()
-    return render_template("browse_new.html",
-                            criterion_films=criterion_films)
-
 @app.route("/api/criterion-films")
 def criterionfilm_api():
     """Builds data object required to display a list of critically-acclaimed movies.

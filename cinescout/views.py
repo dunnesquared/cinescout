@@ -224,9 +224,9 @@ def remove_from_list():
 @app.route("/browse")
 def browse():
     """Displays list of critically-acclaimed movies."""
-    criterion_films = db.session.query(Film).join(CriterionFilm).all()
-    return render_template("browse.html",
-                            criterion_films=criterion_films)
+    # Ensure that film query works alright before trying to render anything on the template.
+    criterion_films_exist = True if db.session.query(Film).join(CriterionFilm).all() else False
+    return render_template("browse.html", criterion_films_exist=criterion_films_exist)
 
 
 @app.route("/api/criterion-films")

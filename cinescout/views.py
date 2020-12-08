@@ -224,17 +224,14 @@ def remove_from_list():
 @app.route("/browse")
 def browse():
     """Displays list of critically-acclaimed movies."""
-    criterion_films = db.session.query(Film).join(CriterionFilm).all()
-    return render_template("browse.html",
-                            criterion_films=criterion_films)
+    # Ensure that film query works alright before trying to render anything on the template.
+    if db.session.query(Film).join(CriterionFilm).all():
+        return render_template("browse.html", criterion_films_exist=True)
+    else:
+        err_message = f"Unable to load Criterion films: error fetching results from database."
+        print("ERROR! " + err_message)
+        return render_template("errors/misc-error.html", err_message=err_message)
 
-
-@app.route("/browse_new")
-def browse_new():
-    """Displays list of critically-acclaimed movies."""
-    criterion_films = db.session.query(Film).join(CriterionFilm).all()
-    return render_template("browse_new.html",
-                            criterion_films=criterion_films)
 
 @app.route("/api/criterion-films")
 def criterionfilm_api():

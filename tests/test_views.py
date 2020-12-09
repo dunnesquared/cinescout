@@ -49,6 +49,17 @@ class RouteTests(unittest.TestCase):
     def remove_user(self, user):
         db.session.delete(user)
         db.session.commit()
+    
+    def create_film(self, title, year, tmdb_id, director, criterionfilm=False):
+        film = Film(title=title, year=year, tmdb_id=tmdb_id, director=director)
+        db.session.add(film)
+        db.session.commit()
+        
+        if criterionfilm:
+            db.session.add(CriterionFilm(film_id=film.id))
+            db.session.commit()
+        
+        return film
 
 
     def register(self, username, email, password, confirm):
@@ -81,23 +92,6 @@ class RouteTests(unittest.TestCase):
               data=dict(tmdb_id=tmdb_id),
                       follow_redirects=True)
 
-    def add_MulhollandDrive_to_criterion_browse_list(self):
-        title = "Mulholland Dr."
-        release_year = 2001
-        tmdb_id = 1018
-        director = "David Lynch"
-
-        # Create film in db
-        film = Film(title=title, year=release_year,
-                    tmdb_id=tmdb_id, director=director)
-        db.session.add(film)
-        db.session.commit()
-
-        # Ensure that film is known as a Criterion Film
-        film_id = film.id
-        criterion_film = CriterionFilm(film_id=film_id)
-        db.session.add(criterion_film)
-        db.session.commit()
     # +++++++++++++++++++++++++++++++ TESTS +++++++++++++++++++++++++++++++++
 
     # *** INDEX ***
@@ -752,24 +746,33 @@ class RouteTests(unittest.TestCase):
         self.assertIn(b'Unknown', response.data)
 
     # BROWSE
-    # Get page when not logged in
+    # Check if Criterion film page loaded properly.
     def test_browse_not_logged_in(self):
+        title = "Mulholland Dr."
+        release_year = 2001
+        tmdb_id = 1018
+        director = "David Lynch"
+        self.create_film(title=title, year=release_year, tmdb_id=tmdb_id, director=director,
+                         criterionfilm=True)
         response = self.app.get('/browse')
         self.assertIn(b'Criterion Collection', response.data)
 
-    # Get page when logged in
+    # Get Browse page when logged in; see if it loaded correctly.
     def test_browse_logged_in(self):
+        title = "Mulholland Dr."
+        release_year = 2001
+        tmdb_id = 1018
+        director = "David Lynch"
+        self.create_film(title=title, year=release_year, tmdb_id=tmdb_id, director=director,
+                         criterionfilm=True)
         self.login("Alex", "123")
         response = self.app.get('/browse')
         self.assertIn(b'Criterion Collection', response.data)
 
-    # Check if Criterion film on browse list
-    # N.B. This test won't work because relies on JS to execute on client
-    # side to display movies in browser, not HTML rendered server-side.
-    # def test_browse_film_on_list(self):
-    #     self.add_MulhollandDrive_to_criterion_browse_list()
-    #     response = self.app.get('/browse')
-    #     self.assertIn(b'Mulholland Dr.', response.data)
+    # Check for error message if no Criterion films in database, so page cannot be loaded. 
+    def test_browse_list_empty(self):
+        response = self.app.get('/browse')
+        self.assertIn(b'Unable to load Criterion films', response.data)
 
     # CRITERION API
     # No movies in db table
@@ -781,7 +784,12 @@ class RouteTests(unittest.TestCase):
 
     # One Criterion movie in db
     def test_criterion_api_ok(self):
-        self.add_MulhollandDrive_to_criterion_browse_list()
+        title = "Mulholland Dr."
+        release_year = 2001
+        tmdb_id = 1018
+        director = "David Lynch"
+        self.create_film(title=title, year=release_year, tmdb_id=tmdb_id, director=director,
+                         criterionfilm=True)
         response = self.app.get('/api/criterion-films', data=dict())
         data = json.loads(response.get_data(as_text=True))
         self.assertTrue(data['success'])

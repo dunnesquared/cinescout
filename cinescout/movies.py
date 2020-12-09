@@ -225,7 +225,7 @@ class TmdbMovie(Movie):
     """
     # Class attributes
     api_key = os.getenv('TMDB_API_KEY')
-    poster_base_url = "http://image.tmdb.org/t/p/"
+    poster_base_url = "https://image.tmdb.org/t/p/"
     poster_size = "w300"
     delay = 1
     imdb_base_url = "https://www.imdb.com/title/"

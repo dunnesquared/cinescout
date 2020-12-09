@@ -1,5 +1,9 @@
 # Cinescout🎞: Releases
 
+### 1.4.2
+- Secure Movie and Person pages by requesting TMDB images over https and not http
+- Refactoring of Browse feature internals
+
 ### 1.4.1
 - Add hyperlink on Movie page that queries DuckDuckGo for more information on respective movie 
 

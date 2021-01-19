@@ -142,6 +142,38 @@
       {% endfor %}
     </div>
 
+    <div class="movie-section-row">
+      <div class="movie-section-heading">Where to Watch (Canada only):</div>
+      <div id="provider-parent">
+        {% if movie.providers['stream'] or movie.providers['rent'] %}
+          <div class="provider-section">
+            <div>Stream:</div>
+              <ul>
+                {% for provider in movie.providers['stream'] %}
+                    <li>{{ provider }}</li>
+                {% endfor %}
+              </ul>
+               {% if not movie.providers['stream'] %}
+                 <span>No streaming services listed.</span>
+               {% endif %}
+          </div>
+          <div class='provider-section'>
+            <div>Rent:</div>
+              <ul>
+                {% for provider in movie.providers['rent'] %}
+                    <li>{{ provider }}</li>
+                {% endfor %}
+              </ul>
+              {% if not movie.providers['rent'] %}
+                  <span>No rental services listed.</span>
+              {% endif %}
+          </div>
+        {% else %}
+          <div> No provider data available. </div>
+        {% endif %}
+      </div>
+    </div>
+
      <div>
       <div class="movie-section-heading">Cast</div>
         <table class="table table-sm table-hover table-dark">

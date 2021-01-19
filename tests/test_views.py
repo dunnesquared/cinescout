@@ -292,7 +292,7 @@ class RouteTests(unittest.TestCase):
     def test_search_title_GET(self):
         title="Mulholland Drive"
         response = self.app.get(f'movie-search-results?movie_title={title}')
-        self.assertIn(b'2001-09-08', response.data)
+        self.assertIn(b'2001-06-06', response.data)
 
     def test_search_title_GET_not_exist(self):
         title="eiwr43t984h3tkjdnfg,df.gmdf.glkto"

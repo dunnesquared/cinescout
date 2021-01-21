@@ -132,7 +132,7 @@
     </div>
 
     <div class="movie-section-row">
-      <div class="movie-section-heading">Learn More:</div>
+      <div class="movie-section-heading">Learn More</div>
       {% for search_engine, query in search_engines.items() %}
         <div>
          <a href="{{ query }}" target="_blank" class="text-info">
@@ -143,7 +143,7 @@
     </div>
 
     <div class="movie-section-row">
-      <div class="movie-section-heading">Where to Watch (Canada only):</div>
+      <div class="movie-section-heading">Where to Watch (Canada only)</div>
       <div id="provider-parent">
         {% if movie.providers['stream'] or movie.providers['rent'] %}
           <div class="provider-section">

@@ -292,7 +292,7 @@ class RouteTests(unittest.TestCase):
     def test_search_title_GET(self):
         title="Mulholland Drive"
         response = self.app.get(f'movie-search-results?movie_title={title}')
-        self.assertIn(b'2001-09-08', response.data)
+        self.assertIn(b'2001-06-06', response.data)
 
     def test_search_title_GET_not_exist(self):
         title="eiwr43t984h3tkjdnfg,df.gmdf.glkto"
@@ -426,7 +426,7 @@ class RouteTests(unittest.TestCase):
 
     # *** MOVIE PAGE ***
     # All major headings there
-    def test__movie_page_good(self):
+    def test_movie_page_good(self):
         movie_id = "1018" # Mulholland Drive (2001)
         response = self.app.get(f'/movie/{movie_id}')
         self.assertIn(b'Release Date', response.data)
@@ -439,11 +439,29 @@ class RouteTests(unittest.TestCase):
         self.assertIn(b'Learn More', response.data)
         self.assertIn(b'Google', response.data)
         self.assertIn(b'DuckDuckGo', response.data)
+        self.assertIn(b'Where to Watch', response.data)
 
         # v1.1+: User must be logged-in to see reviews.
         # self.assertIn(b'Movie Review', response.data 
         # self.assertIn(b'Critic\'s Pick', response.data)
 
+    # Where to watch
+    def test_moviepage_wheretowatch_ok(self):
+        movie_id = '11'
+        response = self.app.get(f'/movie/{movie_id}')
+        self.assertIn(b'Star Wars', response.data)
+        self.assertIn(b'Stream', response.data)
+        self.assertIn(b'Disney', response.data)
+        self.assertIn(b'Rent', response.data)
+        self.assertIn(b'Apple', response.data)
+    
+    def test_moviepage_wheretowatch_nodata(self):
+        movie_id = '502057'
+        response = self.app.get(f'/movie/{movie_id}')
+        self.assertIn(b'Dark Streets', response.data)   # A lost film 
+        self.assertIn(b'No provider data available', response.data)
+
+    # Credits
     def test_moviepage_creditsok(self):
         movie_id = "1018"
         response = self.app.get(f'/movie/{movie_id}')

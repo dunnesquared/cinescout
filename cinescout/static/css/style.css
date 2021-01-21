@@ -57,17 +57,12 @@
   padding-bottom: 1em;
 }
 
-.provider-section ul {
-  margin-bottom: 0rem; 
-  color: lightblue;
-}
-
 .provider-section {
   margin-top: 3px;
 }
 
 .provider-section span{
-  color: silver;
+  color: powderblue;
 }
 
 /* Ensures menu items appear on right side of view port when menu collapseed.

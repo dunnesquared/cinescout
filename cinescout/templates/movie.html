@@ -148,28 +148,22 @@
         {% if movie.providers['stream'] or movie.providers['rent'] %}
           <div class="provider-section">
             <div>Stream:</div>
-              <ul>
-                {% for provider in movie.providers['stream'] %}
-                    <li>{{ provider }}</li>
-                {% endfor %}
-              </ul>
-               {% if not movie.providers['stream'] %}
-                 <span>No streaming services listed.</span>
-               {% endif %}
+              {% if movie.providers['stream'] %}
+                <span>{{ movie.providers['stream'] | join(", ") }}</span>
+              {% else %}
+                  <span>No streaming services listed.🙈</span>
+              {% endif %}
           </div>
           <div class='provider-section'>
             <div>Rent:</div>
-              <ul>
-                {% for provider in movie.providers['rent'] %}
-                    <li>{{ provider }}</li>
-                {% endfor %}
-              </ul>
-              {% if not movie.providers['rent'] %}
-                  <span>No rental services listed.</span>
+              {% if movie.providers['rent'] %}
+                <span>{{ movie.providers['rent'] | join(", ") }}</span>
+              {% else %}
+                  <span>No rental services listed.🙈</span>
               {% endif %}
           </div>
         {% else %}
-          <div> No provider data available. </div>
+          <div> No provider data available.🙈</div>
         {% endif %}
       </div>
     </div>

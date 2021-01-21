@@ -57,6 +57,14 @@
   padding-bottom: 1em;
 }
 
+.provider-section {
+  margin-top: 3px;
+}
+
+.provider-section span{
+  color: powderblue;
+}
+
 /* Ensures menu items appear on right side of view port when menu collapseed.
 Thanks: https://stackoverflow.com/questions/47518911/boostrap-4-navbar-collapse-menu-right-align/50881393
 */

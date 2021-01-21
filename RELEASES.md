@@ -1,5 +1,8 @@
 # Cinescout🎞: Releases
 
+### 1.5
+- Display where users in Canada can stream or rent a film 
+
 ### 1.4.2
 - Secure Movie and Person pages by requesting TMDB images over https and not http
 - Refactoring of Browse feature internals

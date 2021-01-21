@@ -4,6 +4,7 @@ import os
 import time
 import json
 from datetime import datetime
+from typing import Dict
 
 import requests
 from urllib import parse
@@ -52,7 +53,7 @@ class Movie:
                  self.runtime = runtime
                  self.original_title = original_title
                  self.filmcredits = filmcredits
-
+                 
 
     @classmethod
     def get_movie_list_by_title(cls, title):
@@ -222,6 +223,10 @@ class TmdbMovie(Movie):
                          a movie's poster should it exist.
         imdb_full_url: String representing complete url to access IMDB movie
                        page, should it exist.
+        tmdb_full_url: String representing complete url to access TMDB movie
+                       page, should it exist.
+        providers: Dictionary containing names of streaming and rental services to 
+                   watch the film. 
     """
     # Class attributes
     api_key = os.getenv('TMDB_API_KEY')
@@ -233,13 +238,15 @@ class TmdbMovie(Movie):
 
     def __init__(self, id=None, title=None,
                  release_year=None, release_date=None, overview=None,
-                 runtime=None, original_title=None, filmcredits=None, poster_full_url=None,
+                 runtime=None, original_title=None, filmcredits=None, providers=None, 
+                 poster_full_url=None,
                  imdb_full_url=None, tmdb_full_url=None):
         Movie.__init__(self, id, title, release_year, release_date,
                         overview, runtime, original_title, filmcredits)
         self.poster_full_url = poster_full_url
         self.imdb_full_url = imdb_full_url
         self.tmdb_full_url = tmdb_full_url
+        self.providers = providers
 
     @classmethod
     def get_movie_list_by_title(cls, title):
@@ -575,6 +582,49 @@ class TmdbMovie(Movie):
         result['crew'] = crew
 
         return result
+    
+
+    @classmethod
+    def _extract_provider_data(cls, tmdb_movie_data : Dict, country_code: str='CA') -> Dict:
+        """Extracts provider data from TMDB JSON response object.
+
+        Args:
+            tmdb_movie_data: Dictionary-like object representing a TMDB JSON response for a 
+                             reeuested movie.
+            country_code: String representing providers' country; default 'CA' for Canada. 
+        
+        Returns:
+            providers: Dictonary object with two keys mapping to lists of streaming and rental
+                       services respectively. Any empty dictionary returned in case 
+        """        
+        providers = { 'stream': [], 'rent': [] }
+
+        try: 
+            # Extract watch/providers data
+            provider_data = tmdb_movie_data.get('watch/providers', None).get('results', 
+                                        None).get(country_code, None)
+        except AttributeError:
+            # No key-value pair: one of the first two gets above returns None.
+            print("Unable to retrieve provider data: tmdb_movie_data entries missing or changed.")
+            return providers
+
+        if provider_data:
+            # Get names of streaming services.
+            stream_data =  provider_data.get('flatrate', None)
+            if stream_data: 
+                for elem in stream_data:
+                    streamer = elem.get('provider_name', None)
+                    if stream_data:
+                        providers['stream'].append(streamer)
+            # Get names of rental services.
+            rent_data =  provider_data.get('rent', None)
+            if rent_data: 
+                for elem in rent_data:
+                    renter = elem.get('provider_name', None)
+                    if renter:
+                        providers['rent'].append(renter)
+
+        return providers
 
     @classmethod
     def get_movie_info_by_id(cls, id):
@@ -598,7 +648,8 @@ class TmdbMovie(Movie):
         print(f"Requesting movie data from TMDB api with movie_id={id}...",
                 end="")
         res = requests.get(f"https://api.themoviedb.org/3/movie/{id}",
-                            params={"api_key": cls.api_key, "append_to_response": "credits"})
+                            params={"api_key": cls.api_key, 
+                                    "append_to_response": "credits,watch/providers"})
 
         # Check whether movie found
         if res.status_code != 200:
@@ -649,7 +700,10 @@ class TmdbMovie(Movie):
                     filmcredits['crew'].append({'name': credit.get('name', None), 
                                                 'job': credit.get('job', None),
                                                 'id':  credit.get('id', None)})
-
+            
+            # Extract watch/providers data
+            providers = cls._extract_provider_data(tmdb_movie_data)
+            
             print("Building Movie object...")
             movie = cls(id=id, title=tmdb_movie_data['title'],
                         release_year=release_year,
@@ -660,7 +714,8 @@ class TmdbMovie(Movie):
                         poster_full_url=poster_full_url,
                         imdb_full_url=imdb_full_url,
                         tmdb_full_url=tmdb_full_url,
-                        filmcredits=filmcredits)
+                        filmcredits=filmcredits,
+                        providers=providers)
 
             result['movie'] = movie
 

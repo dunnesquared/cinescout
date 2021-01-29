@@ -234,7 +234,7 @@ def browse():
 
 
 @app.route("/api/criterion-films")
-def criterionfilm_api():
+def get_criterion_films():
     """Builds data object required to display a list of critically-acclaimed movies.
     on the client side.
 
@@ -258,15 +258,14 @@ def criterionfilm_api():
         return jsonify({
             'success': False,
             'err_message': "Query for Criterion films returned NoneType object."
-        })
+        }), 404
 
     num_films = len(criterion_films)
-
     if num_films == 0:
         return jsonify({
             'success': False,
             'err_message': "Query for Criterion films returned no films."
-        })
+        }), 404
 
     # All good. Build JSON object.
     movies = {

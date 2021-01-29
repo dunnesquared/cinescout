@@ -46,21 +46,18 @@ function hideSpinner () {
 * Makes AJAX request to server api for Criterion movie data.
 */
 function fetchCriterionTableData() {
-
-  const url = "api/criterion-films";
+  const url = "/api/criterion-films";
   console.log(`Making AJAX request to ${url}...`);
 
   const request = new XMLHttpRequest();
-  request.open('GET', '/api/criterion-films');
+  request.open('GET', url);
 
   // Callback function.
   request.onload = () => {
-
       const data = JSON.parse(request.responseText);
 
-      if (data.success){
-
-        console.log("Horray! Criterion film results returned.");
+      if (data.success && request.status === 200){
+        console.log("Horray! Criterion film results returned: " + request.status);
 
         const films = data.results;
         populateTable(films);
@@ -76,8 +73,8 @@ function fetchCriterionTableData() {
       }
       else {
         // Film could not be added for some reason...
-        console.error(`Error: ${data.err_message}`);
-        alert(`Error: Failed to load CriterionTable data:\n${data.err_message}`);
+        console.error(`Error: ${data.err_message}, ` + request.status);
+        alert(`Error: Failed to load CriterionTable data:\n${data.err_message}, ` + request.status);
       }
     }
 

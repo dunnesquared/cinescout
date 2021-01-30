@@ -1,5 +1,9 @@
 # Cinescout🎞: Releases
 
+### 1.5.1
+- Add favicon
+- Refactor api routes to be more adherent to RESTful principles. 
+
 ### 1.5
 - Display where users in Canada can stream or rent a film 
 

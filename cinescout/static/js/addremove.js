@@ -60,8 +60,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const originalTitle = document.querySelector("#original-title").value;
 
     // Initialize new AJAX request.
+    const addMovieURL = '/user-movie-list/item'
     const request = new XMLHttpRequest();
-    request.open('POST', '/add-to-list');
+    request.open('POST', addMovieURL);
 
     // Add CSRF token to AJAX request (NB: request must be open first before
     // adding token).
@@ -71,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
     request.onload = () => {
       const data = JSON.parse(request.responseText);
 
-      if (data.success) {
+      if (data.success && request.status === 201) {
         console.log("Film addedd to list!");
 
         // Remove Add button...
@@ -96,8 +97,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }else{
         // Film could not be added for some reason...
-        console.error(`Error: ${data.err_message}`);
-        alert(`Error: Add Film failed.\n${data.err_message}`);
+        console.error(`Error: ${data.err_message}, ${request.status}`);
+        alert(`Error: Add Film failed.\n${data.err_message}, ${request.status}`);
       }
     };
 
@@ -124,8 +125,9 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log(`tmdbId = ${tmdbId}`);
 
     // Initialize new AJAX request.
+    const removeMovieURL = '/user-movie-list/item'
     const request = new XMLHttpRequest();
-    request.open('POST', '/remove-from-list');
+    request.open('DELETE', removeMovieURL);
 
     // Add CSRF token to AJAX request (NB: request must be open first before
     // adding token).
@@ -135,7 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // Extract JSON data.
       const data = JSON.parse(request.responseText);
 
-      if (data.success){
+      if (data.success && request.status === 200){
         // Delete remove button...
         remove_button.remove();
 
@@ -157,8 +159,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }else{
         // Film could not be removed for some reason...
-        console.error(`Error: ${data.err_message}`);
-        alert(`Error: Remove Film failed.\n${data.err_message}`);
+        console.error(`Error: ${data.err_message}, ${request.status}`);
+        alert(`Error: Remove Film failed.\n${data.err_message}, ${request.status}`);
       }
     };
 

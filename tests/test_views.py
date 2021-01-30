@@ -81,14 +81,14 @@ class RouteTests(unittest.TestCase):
 
     def add_film_to_list(self, tmdb_id=None, title=None, year=None,
                          date=None, original_title=None):
-        return self.app.post('/add-to-list',
+        return self.app.post('/user-movie-list/item',
                    data=dict(tmdb_id=tmdb_id, title=title,
                            year=year, date=date,
                            original_title=original_title),
                            follow_redirects=True)
 
     def remove_film_from_list(self, tmdb_id=None):
-        return self.app.post('/remove-from-list',
+        return self.app.delete('/user-movie-list/item',
               data=dict(tmdb_id=tmdb_id),
                       follow_redirects=True)
 
@@ -490,7 +490,7 @@ class RouteTests(unittest.TestCase):
     # Add when not logged in
     def test_movie_page_add_not_logged_in(self):
         response = self.app.post(
-            '/add-to-list',
+            '/user-movie-list/item',
             data=dict(tmdb_id="1018", title="Mulholland Drive", year="2001"),
                     follow_redirects=True)
 
@@ -499,7 +499,7 @@ class RouteTests(unittest.TestCase):
      # Add ok
     def test_movie_page_add_ok(self):
         self.login("Alex", "123")
-        response = self.app.post('/add-to-list',
+        response = self.app.post('/user-movie-list/item',
                 data=dict(tmdb_id="1018", title="Mulholland Drive",
                         year="2001", date="2001-09-08",
                         original_title="Mulholland Drive"),
@@ -511,7 +511,7 @@ class RouteTests(unittest.TestCase):
     def test_movie_page_add_already_on_list(self):
         self.login("Alex", "123")
         # Add film.
-        response = self.app.post('/add-to-list',
+        response = self.app.post('/user-movie-list/item',
                 data=dict(tmdb_id="1018", title="Mulholland Drive",
                         year="2001", date="2001-09-08",
                         original_title="Mulholland Drive"),
@@ -520,7 +520,7 @@ class RouteTests(unittest.TestCase):
         self.assertTrue(data['success'])
 
         # Try adding same film again.
-        response = self.app.post('/add-to-list',
+        response = self.app.post('/user-movie-list/item',
                    data=dict(tmdb_id="1018", title="Mulholland Drive",
                            year="2001", date="2001-09-08",
                            original_title="Mulholland Drive"),
@@ -533,7 +533,7 @@ class RouteTests(unittest.TestCase):
         self.login("Alex", "123")
 
          # White space
-        response = self.app.post('/add-to-list',
+        response = self.app.post('/user-movie-list/item',
                  data=dict(tmdb_id="", title=" ",
                          year=" ", date="",
                          original_title="  "),
@@ -542,7 +542,7 @@ class RouteTests(unittest.TestCase):
         self.assertFalse(data['success'])
 
         # None types
-        response = self.app.post('/add-to-list',
+        response = self.app.post('/user-movie-list/item',
                 data=dict(tmdb_id=None, title=None, year=None,
                         original_title=None, date=None),
                         follow_redirects=True)
@@ -554,7 +554,7 @@ class RouteTests(unittest.TestCase):
         self.login("Alex", "123")
         # Add film: Note that the id for this film is negative
         movie_id = "-1018"
-        response = self.app.post('/add-to-list',
+        response = self.app.post('/user-movie-list/item',
                 data=dict(tmdb_id=movie_id, title="Mulholland Drive",
                         year="2001", date="2001-09-08",
                         original_title="Mulholland Drive"),
@@ -565,7 +565,7 @@ class RouteTests(unittest.TestCase):
         # Add film with bad year.
         movie_id = "1018"
         year = "-2001"
-        response = self.app.post('/add-to-list',
+        response = self.app.post('/user-movie-list/item',
                 data=dict(tmdb_id=movie_id, title="Mulholland Drive",
                         year=year, date="2001-09-08",
                         original_title="Mulholland Drive"),
@@ -576,7 +576,7 @@ class RouteTests(unittest.TestCase):
     def test_movie_page_add_no_date_year(self):
         self.login("Alex", "123")
         # Add film.
-        response = self.app.post('/add-to-list',
+        response = self.app.post('/user-movie-list/item',
                 data=dict(tmdb_id="1018", title="Mulholland Drive",
                         year="", date=None,
                         original_title="Mulholland Drive"),
@@ -587,8 +587,8 @@ class RouteTests(unittest.TestCase):
     # Remove movie from list
     # Remove when not logged in
     def test_movie_page_remove_not_logged_in(self):
-      	response = self.app.post(
-          '/remove-from-list',
+      	response = self.app.delete(
+          '/user-movie-list/item',
           data=dict(tmdb_id="1018"), follow_redirects=True)
 
       	self.assertIn(b'Access Denied', response.data)
@@ -598,13 +598,13 @@ class RouteTests(unittest.TestCase):
       	self.login("Alex", "123")
 
       	# Add ok
-      	self.app.post('/add-to-list', data=dict(tmdb_id="1018",
+      	self.app.post('/user-movie-list/item', data=dict(tmdb_id="1018",
       				title="Mulholland Drive",
                             year="2001", date="2001-09-08",
                             original_title="Mulholland Drive"),
                             follow_redirects=True)
 
-      	response = self.app.post('/remove-from-list',
+      	response = self.app.delete('/user-movie-list/item',
               data=dict(tmdb_id="1018"),
                       follow_redirects=True)
 
@@ -616,7 +616,7 @@ class RouteTests(unittest.TestCase):
       	self.login("Alex", "123")
 
         # List is empty.
-      	response = self.app.post('/remove-from-list',
+      	response = self.app.delete('/user-movie-list/item',
               data=dict(tmdb_id="1018"),
                       follow_redirects=True)
 
@@ -628,21 +628,21 @@ class RouteTests(unittest.TestCase):
         self.login("Alex", "123")
 
         # Add ok
-        self.app.post('/add-to-list', data=dict(tmdb_id="1018",
+        self.app.post('/user-movie-list/item', data=dict(tmdb_id="1018",
                     title="Mulholland Drive",
                             year="2001", date="2001-09-08",
                             original_title="Mulholland Drive"),
                             follow_redirects=True)
 
         # Blank data
-        response = self.app.post('/remove-from-list',
+        response = self.app.delete('/user-movie-list/item',
               data=dict(tmdb_id="\n\t "),
                       follow_redirects=True)
         data = json.loads(response.get_data(as_text=True))
         self.assertFalse(data['success'])
 
         # Blank data
-        response = self.app.post('/remove-from-list',
+        response = self.app.delete('/user-movie-list/item',
               data=dict(tmdb_id=None),
                       follow_redirects=True)
         data = json.loads(response.get_data(as_text=True))
@@ -653,14 +653,14 @@ class RouteTests(unittest.TestCase):
         self.login("Alex", "123")
 
         # Add ok
-        self.app.post('/add-to-list', data=dict(tmdb_id="1018",
+        self.app.post('/user-movie-list/item', data=dict(tmdb_id="1018",
                     title="Mulholland Drive",
                             year="2001", date="2001-09-08",
                             original_title="Mulholland Drive"),
                            follow_redirects=True)
 
         # Bad id
-        response = self.app.post('/remove-from-list',
+        response = self.app.delete('/user-movie-list/item',
               data=dict(tmdb_id="-1018"),
                       follow_redirects=True)
         data = json.loads(response.get_data(as_text=True))
@@ -671,13 +671,13 @@ class RouteTests(unittest.TestCase):
     # Tests:
     # Try to access list without being logged in.
     def test_user_list_not_logged_in(self):
-        response = self.app.get('/movie-list')
+        response = self.app.get('/user-movie-list')
         self.assertIn(b'Access Denied', response.data)
 
     # Try to access list while logged in.
     def test_user_list_logged_in(self):
         self.login("Alex", "123")
-        response = self.app.get('/movie-list')
+        response = self.app.get('/user-movie-list')
         self.assertIn(b'Alex\'s List', response.data)
 
     # Remove regular remove
@@ -690,7 +690,7 @@ class RouteTests(unittest.TestCase):
 
         self.remove_film_from_list(tmdb_id="1018")
 
-        response = self.app.get('/movie-list')
+        response = self.app.get('/user-movie-list')
         self.assertIn(b'There are no films on your list', response.data)
 
     # Remove when no films on list
@@ -706,7 +706,7 @@ class RouteTests(unittest.TestCase):
         # Try removing it again.
         self.remove_film_from_list(tmdb_id="1018")
 
-        response = self.app.get('/movie-list')
+        response = self.app.get('/user-movie-list')
         self.assertIn(b'There are no films on your list', response.data)
 
     # Try to remove film that is not on list
@@ -720,7 +720,7 @@ class RouteTests(unittest.TestCase):
         # Film 999 not on list
         self.remove_film_from_list(tmdb_id="999")
 
-        response = self.app.get('/movie-list')
+        response = self.app.get('/user-movie-list')
         self.assertIn(b'Mulholland Drive', response.data)
 
     # Remove with blank data.
@@ -732,11 +732,11 @@ class RouteTests(unittest.TestCase):
                             original_title="Mulholland Drive")
 
         self.remove_film_from_list(tmdb_id="\n \t")
-        response = self.app.get('/movie-list')
+        response = self.app.get('/user-movie-list')
         self.assertIn(b'Mulholland Drive', response.data)
 
         self.remove_film_from_list(tmdb_id=None)
-        response = self.app.get('/movie-list')
+        response = self.app.get('/user-movie-list')
         self.assertIn(b'Mulholland Drive', response.data)
 
     # Remove with bad data
@@ -748,7 +748,7 @@ class RouteTests(unittest.TestCase):
                             original_title="Mulholland Drive")
 
         self.remove_film_from_list(tmdb_id="ewr43%#$^^")
-        response = self.app.get('/movie-list')
+        response = self.app.get('/user-movie-list')
         self.assertIn(b'Mulholland Drive', response.data)
 
     # See whether film release date flagged as 'Unknown' if no release info
@@ -760,7 +760,7 @@ class RouteTests(unittest.TestCase):
                             year=None, date=None,
                             original_title="Mulholland Drive")
 
-        response = self.app.get('/movie-list')
+        response = self.app.get('/user-movie-list')
         self.assertIn(b'Unknown', response.data)
 
     # BROWSE

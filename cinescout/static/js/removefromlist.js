@@ -36,9 +36,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const tmdbId = button.value;
 
         // Initialize new AJAX request to remove film.
+        const removeMovieURL = '/user-movie-list/item'
         const request = new XMLHttpRequest();
-        request.open('POST', '/remove-from-list');
-
+        request.open('DELETE', removeMovieURL);
+    
         // Add CSRF token to AJAX request (NB: request must be open first before
         // adding token).
         request.setRequestHeader('X-CSRF-Token', csrftoken);
@@ -49,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
           const data = JSON.parse(request.responseText);
 
           // Film removed from db!
-          if (data.success){
+          if (data.success && request.status === 200) {
             console.log("Film removed from your list!!");
 
             // Removes row from movie-list table, in essence a movie.
@@ -68,8 +69,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
           }else{
             // Film could not be removed for some reason...
-            console.error(`Error: ${data.err_message}`);
-            alert(`Error: Remove Film failed.\n${data.err_message}`);
+            console.error(`Error: ${data.err_message}, ${request.status}`);
+            alert(`Error: Remove Film failed.\n${data.err_message}, ${request.status}`);
           }
         };
 

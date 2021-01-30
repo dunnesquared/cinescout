@@ -93,19 +93,18 @@ def logout():
     return redirect(url_for('login'))
 
 
-@app.route('/movie-list')
+@app.route('/user-movie-list')       # GET /user-movie-list
 @login_required
-def movie_list():
+def get_user_movie_list():
     """Displays list of movies user has added."""
     films = FilmListItem.query.filter_by(user_id=current_user.id).all()
     return render_template("list.html", films=films)
 
 
-@app.route('/add-to-list', methods=['POST'])
+@app.route('/user-movie-list/item', methods=['POST'])     # POST /user-movie-list/item
 @login_required
-def add_to_list():
-    """Adds movies to user's list."""
-
+def create_user_movie_item():
+    """Adds movie to user's list."""
     try:
         print("Request received to add film to list...")
         print("Retrieving POST data...", end="")
@@ -130,7 +129,7 @@ def add_to_list():
         date = request.form.get("date")
 
         if date is None:
-            date = '';
+            date = ''
 
         # Original title
         original_title = request.form.get("original_title")
@@ -151,7 +150,7 @@ def add_to_list():
         print("FAILED!")
         err_message = "Fatal Error: {0}".format(err)
         print(err_message)
-        return jsonify({"success": False, "err_message": err_message})
+        return jsonify({"success": False, "err_message": err_message}), 500
 
     print("Success!")
 
@@ -170,25 +169,25 @@ def add_to_list():
                                 original_title=original_title)
         db.session.add(new_film)
         db.session.commit()
-        return jsonify({"success": True})
+        return jsonify({"success": True}), 201
     else:
         # Film is on list. Send error message.
         err_message = ("Film already on list! Film likely added elsewhere on " \
                         "site. Try refreshing page movie list or movie page.")
         print(err_message)
-        return jsonify({"success": False, "err_message": err_message})
+        # Send 409 response code ('Conflict') b/c film cannot be added if already on list!
+        return jsonify({"success": False, "err_message": err_message}), 409
 
 
-@app.route('/remove-from-list', methods=["POST"])
+@app.route('/user-movie-list/item', methods=["DELETE"])       # DELETE /user-movie-list/item
 @login_required
-def remove_from_list():
+def delete_user_movie_item():
     """Removes film from user's list."""
-
     print("Request received to remove film...")
 
     try:
         # Get id of film to be removed.
-        print("Retrieving POST data...", end="")
+        print("Retrieving DELETE data...", end="")
         tmdb_id = int(request.form.get('tmdb_id'))
 
         # Check for bad values.
@@ -199,7 +198,7 @@ def remove_from_list():
         # Bad id value or NoneType passed.
         err_message = "Fatal Error: {0}".format(err)
         print(err_message)
-        return jsonify({"success": False, "err_message": err_message})
+        return jsonify({"success": False, "err_message": err_message}), 500
 
     print("Success!")
 
@@ -218,7 +217,7 @@ def remove_from_list():
         err_message = ("Film not on list! Film likely removed elsewhere on " \
                        "site. Try refreshing movie list or movie page.")
         print(err_message)
-        return jsonify({"success": False, "err_message": err_message})
+        return jsonify({"success": False, "err_message": err_message}), 409
 
 
 @app.route("/browse")
@@ -234,7 +233,7 @@ def browse():
 
 
 @app.route("/api/criterion-films")
-def criterionfilm_api():
+def get_criterion_films():
     """Builds data object required to display a list of critically-acclaimed movies.
     on the client side.
 
@@ -258,15 +257,14 @@ def criterionfilm_api():
         return jsonify({
             'success': False,
             'err_message': "Query for Criterion films returned NoneType object."
-        })
+        }), 404
 
     num_films = len(criterion_films)
-
     if num_films == 0:
         return jsonify({
             'success': False,
             'err_message': "Query for Criterion films returned no films."
-        })
+        }), 404
 
     # All good. Build JSON object.
     movies = {

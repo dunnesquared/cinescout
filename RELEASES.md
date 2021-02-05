@@ -1,5 +1,8 @@
 # Cinescout🎞: Releases
 
+### 1.5.2
+- Update html document meta-data. 
+
 ### 1.5.1
 - Add favicon
 - Refactor api routes to be more adherent to RESTful principles. 

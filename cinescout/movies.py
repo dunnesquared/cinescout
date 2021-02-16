@@ -914,7 +914,7 @@ class NytMovieReview(MovieReview):
                 print("Making initial request to NYT Movie Review API...", end="")
                 res = requests.get("https://api.nytimes.com/svc/movies/v2/reviews/search.json",
                                         params={"api-key": cls.api_key,
-                                                "opening-date": f"{opening_date_start};{opening_date_end}",
+                                                "opening-date": f"{opening_date_start}:{opening_date_end}",
                                                 "query": movie.title.strip()})
 
                 # Request to NYT failed...
@@ -949,7 +949,7 @@ class NytMovieReview(MovieReview):
                 print("Making initial request to NYT Movie Review API...", end="")
                 res = requests.get("https://api.nytimes.com/svc/movies/v2/reviews/search.json",
                                         params={"api-key": cls.api_key,
-                                                "opening-date": f"{opening_date_start};{opening_date_end}",
+                                                "opening-date": f"{opening_date_start}:{opening_date_end}",
                                                 "query": '1984'})
 
                 # Request to NYT failed...
@@ -1041,16 +1041,16 @@ class NytMovieReview(MovieReview):
 
             # Look from beginning of year. The film's release date may differ
             # from that of the NYT. For the NYT, it may have been released
-            # earlier, so reviewed earlier.
+            # earlier, so reviewed earlier. Accept results within several years of review year.
             start = f"{release_year}-01-01"
-
+            end = f"{release_year + cls.max_year_gap}-12-31"
+           
             url = "https://api.nytimes.com/svc/movies/v2/reviews/search.json"
 
             res = requests.get(url, params={"api-key": cls.api_key,
-                                            "publication-date": f"{start}",
+                                            "publication-date": f"{start}:{end}",
                                             "order": "by-publication-date",
                                             "query": title.strip()})
-            print(res)
             return res
 
         def nyt_api_title_release_date_query(title, release_date):
@@ -1074,7 +1074,7 @@ class NytMovieReview(MovieReview):
             end_date = f"{end_year}-{date_parts[1]}"
 
             # Date to send with API request.
-            opening_date = f"{release_date};{end_date}"
+            opening_date = f"{release_date}:{end_date}"
 
             res = requests.get(url, params={"api-key": cls.api_key,
                                             "opening-date": opening_date,

@@ -557,11 +557,13 @@ def movie_info(tmdb_id):
             else:
                 # Movie may not have a review yet because it hasn't been released.
                 # This is not an error, and so should not be handled as such.
+                # Everything else though IS an error, and should be explored.
                 if not result['future_release']:
-                    print("Error retrieving NYT review: movie is future release; review dne.")
+                    print("Error retrieving NYT review.")
                     status_code = result['status_code']
                     description = result['message']
                     err_message = f"NYT API query failed ({status_code}): {description}"
+                    print(err_message)
                     return render_template("errors/misc-error.html", err_message=err_message)
 
         # Looks like a review has been returned. Get it.

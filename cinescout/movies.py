@@ -1050,7 +1050,7 @@ class NytMovieReview(MovieReview):
                                             "publication-date": f"{start}",
                                             "order": "by-publication-date",
                                             "query": title.strip()})
-
+            print(res)
             return res
 
         def nyt_api_title_release_date_query(title, release_date):
@@ -1459,8 +1459,10 @@ class NytMovieReview(MovieReview):
 
         # 5. Check the api's response. Return if something's gone wrong.
         if response.status_code != 200:
-            message = "Error: Http response status code = {response.status_code}"
-            result = error_result(message=message, status_code=response.status_code)
+            err_data = response.json()
+            message = f"{err_data.get('message', None)}"
+            result = error_result(message=message, 
+                                  status_code=response.status_code)
             return result
 
         # 6. Unpack the response object.

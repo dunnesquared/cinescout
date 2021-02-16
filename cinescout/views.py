@@ -552,14 +552,16 @@ def movie_info(tmdb_id):
         if not result['success'] and result['status_code'] != 200:
             # Too many requests
             if result['status_code'] == 429:
-                print("Error!")
+                print("Error retrieving NYT review: too many requests.")
                 abort(429)
             else:
                 # Movie may not have a review yet because it hasn't been released.
                 # This is not an error, and so should not be handled as such.
                 if not result['future_release']:
-                    print("Error!")
-                    err_message = f"NYT API query failed; HTTP response = {result['status_code']}  description={result['message']}"
+                    print("Error retrieving NYT review: movie is future release; review dne.")
+                    status_code = result['status_code']
+                    description = result['message']
+                    err_message = f"NYT API query failed ({status_code}): {description}"
                     return render_template("errors/misc-error.html", err_message=err_message)
 
         # Looks like a review has been returned. Get it.

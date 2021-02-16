@@ -1,5 +1,8 @@
 # Cinescout🎞: Releases
 
+### 1.5.3
+- Hotfix: fix severe production bugs due to changes in NYT Movie Review API. 
+
 ### 1.5.2
 - Update html document meta-data. 
 

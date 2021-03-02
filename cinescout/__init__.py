@@ -55,6 +55,9 @@ print("cinescout.errors imported.")
 from cinescout import movies
 print("cinescout.movies imported.")
 
+from cinescout import reviews
+print("cinescout.reviews imported.")
+
 # ========== Admin panel configuration ===============
 # Code adapted from:
 # https://github.com/flask-admin/flask-admin/tree/master/examples/auth-flask-login 

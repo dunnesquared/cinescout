@@ -101,7 +101,8 @@ Project package containing all domain logic code. Files and folders include
 - `errors.py`: Module that handles http errors and raised exceptions.
 - `forms.py`: Module that implements logic to render and validate web forms for `Cinescout` features; uses Flask-WTF.
 - `models.py`: Module that implements database table models via SQLAlchemy ORM.
-- `movies.py`: Module containing business logic classes of `Cinescout` app: `Person`, `Movie`, `TmdbMovie`, `MovieReview` and `NytMovieReview`. The "heart" of the application, so to speak.
+- `movies.py`: Module containing classes to make api requests from external sources for movie info: `Person`, `Movie`, and `TmdbMovie`.
+- `reviews.py`: Module containing classes to make api requests from external sources for movie reviews: `MovieReview` and `NytMovieReview`.
 - `views.py`: Module containing functions (routes) representing the app's features and handles users' requests.
 - `/static`: Contains CSS and JavaScript files.
   - `css/style.css`: CSS file for extra bits of styling on top of what Bootstrap provides.
@@ -137,6 +138,7 @@ and `context.py` make running these tests possible.
 - `context.py`: Ensures Python can find `Cinescout` modules and objects for test files.
 - `test_view.py`: Performs unit test on functions in `views.py`.
 - `test_movies.py`: Performs unit test on class methods in `movies.py`.
+- `test_reviews.py`: Performs unit test on class methods in `reviews.py`.
 - `test.db`: SQLite database, mainly used by `test_views.py` script.
 
 To execute the test scripts, run the following on the console:
@@ -144,6 +146,7 @@ To execute the test scripts, run the following on the console:
 ```sh
 python tests/test_views.py
 python tests/test_movies.py
+python tests/test_reviews.py
 ```
 
 N.B. The script `test_movies.py` will take around four minutes to run as it

@@ -11,7 +11,8 @@ from flask_login import current_user, login_user, logout_user, login_required
 from cinescout import app, db # Get app, db object defined in __init__.py
 from cinescout.models import User, Film, CriterionFilm, PersonalFilm, FilmListItem
 from cinescout.forms import LoginForm, RegistrationForm, SearchByTitleForm, SearchByPersonForm, AdminLoginForm
-from cinescout.movies import TmdbMovie, NytMovieReview, Person
+from cinescout.movies import TmdbMovie, Person
+from cinescout.reviews import NytMovieReview
 
 
 # Won't be able to access the NYT or The Movie Database without these.

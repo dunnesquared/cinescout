@@ -1,5 +1,8 @@
 # Cinescout🎞: Releases
 
+### 1.5.3.1
+- Separate movie-info and movie-review classes to make Cinescout easier to maintain.
+
 ### 1.5.3
 - Hotfix: fix severe production bugs due to changes in NYT Movie Review API. 
 

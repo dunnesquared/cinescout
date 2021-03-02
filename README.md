@@ -24,7 +24,7 @@ You can try out `Cinescout` in its current state [here](https://dunnesquared.pyt
 You'll be able to search for films and crew members, but won't be able to create an account, maintain a movie list
 or see NYT movie reviews. For security and maintainability reasons, I've made myself the gatekeeper and limited these features to registered users. See [README-LIVE](https://github.com/dunnesquared/cinescout/blob/master/README-LIVE.md) if you're curious to know more.
 
-That said, you can get some idea of what these features look like by watching my Razzie-winning [screencast of `Cinescout v1.0`](https://vimeo.com/450192710). It's a bit out of date UI-wise, but you'll get the picture. 
+That said, you can get some idea of what these features look like by watching my Razzie-winning [screencast of `Cinescout v1.5.3`](https://vimeo.com/513508836).
 I hear watching the video works wonders for insomnia :-p.
 
 ## APIs

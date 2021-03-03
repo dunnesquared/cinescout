@@ -41,6 +41,9 @@ csrf = CSRFProtect()
 csrf.init_app(app)
 print("CSRF object created and applied to app.")
 
+# Register Blueprint packages
+from cinescout.errors import bp as errors_bp
+app.register_blueprint(errors_bp)
 
 # Import application modules.
 from cinescout import views
@@ -48,9 +51,6 @@ print("cinescout.views imported.")
 
 from cinescout import models
 print("cinescout.models imported.")
-
-from cinescout import errors
-print("cinescout.errors imported.")
 
 from cinescout import movies
 print("cinescout.movies imported.")

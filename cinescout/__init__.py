@@ -45,6 +45,9 @@ print("CSRF object created and applied to app.")
 from cinescout.errors import bp as errors_bp
 app.register_blueprint(errors_bp)
 
+from cinescout.auth import bp as auth_bp
+app.register_blueprint(auth_bp)
+
 # Import application modules.
 from cinescout import views
 print("cinescout.views imported.")

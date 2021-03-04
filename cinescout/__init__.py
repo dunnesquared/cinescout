@@ -48,6 +48,9 @@ app.register_blueprint(errors_bp)
 from cinescout.auth import bp as auth_bp
 app.register_blueprint(auth_bp)
 
+from cinescout.admin import bp as admin_bp
+app.register_blueprint(admin_bp)
+
 # Import application modules.
 from cinescout import views
 print("cinescout.views imported.")
@@ -72,17 +75,19 @@ from flask_admin import Admin, AdminIndexView
 from flask_admin.contrib.sqla import ModelView
 print("flask_admin classes imported.")
 
+from cinescout import admin
+
 # Link admin panel with map. 
-admin = Admin(app, 'Cinescout: Admin Panel', 
-              index_view=views.MyAdminIndexView(),
+x_admin = Admin(app, 'Cinescout: Admin Panel', 
+              index_view=admin.routes.MyAdminIndexView(),
               base_template="admin/accesscontrol.html")
 print("FlaskAdmin object initialized and applied to app.")
 
 # Add which views of database tables you want authenticated supersuser(s) to see.
-admin.add_view(views.CinescoutModelView(models.User, db.session))
-admin.add_view(views.CinescoutModelView(models.Film, db.session))
-admin.add_view(views.CinescoutModelView(models.CriterionFilm, db.session))
-admin.add_view(views.CinescoutModelView(models.FilmListItem, db.session))
+x_admin.add_view(admin.routes.CinescoutModelView(models.User, db.session))
+x_admin.add_view(admin.routes.CinescoutModelView(models.Film, db.session))
+x_admin.add_view(admin.routes.CinescoutModelView(models.CriterionFilm, db.session))
+x_admin.add_view(admin.routes.CinescoutModelView(models.FilmListItem, db.session))
 print("flask_admin database views added.")
 
 print("***End of __init__.py***")

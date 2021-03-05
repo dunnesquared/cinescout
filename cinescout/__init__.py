@@ -1,7 +1,7 @@
 """Defines cinescout directory as package, i.e. a folder that other modules
 can import. File executed when package imported."""
 
-print("***Executing __init__.py...***")
+print("*** Executing __init__.py... ***")
 
 # Import PyPi modules.
 from flask import Flask
@@ -41,7 +41,7 @@ csrf = CSRFProtect()
 csrf.init_app(app)
 print("CSRF object created and applied to app.")
 
-# Register Blueprint packages
+# Register Blueprint packages.
 from cinescout.errors import bp as errors_bp
 app.register_blueprint(errors_bp)
 
@@ -54,20 +54,17 @@ app.register_blueprint(admin_bp)
 from cinescout.api import bp as api_bp
 app.register_blueprint(api_bp, url_prefix='/api')
 
-# Import application modules.
-from cinescout import views
-print("cinescout.views imported.")
+from cinescout.main import bp as main_bp
+app.register_blueprint(main_bp)
 
+print("Blueprints registered.")
+
+# Import models and business-logic modules.
 from cinescout import models
 print("cinescout.models imported.")
 
-from cinescout import movies
-print("cinescout.movies imported.")
 
-from cinescout import reviews
-print("cinescout.reviews imported.")
-
-# ========== Admin panel configuration ===============
+# ========================= Admin panel configuration ==============================
 # Code adapted from:
 # https://github.com/flask-admin/flask-admin/tree/master/examples/auth-flask-login 
 # Many thanks.

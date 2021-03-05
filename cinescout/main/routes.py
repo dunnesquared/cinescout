@@ -4,10 +4,11 @@ from flask_login import current_user, login_required
 
 from cinescout import app, db # Get app, db object defined in __init__.py
 from cinescout.models import User, Film, CriterionFilm, FilmListItem
-from cinescout.forms import  SearchByTitleForm, SearchByPersonForm
+from cinescout.main.forms import  SearchByTitleForm, SearchByPersonForm
 from cinescout.movies import TmdbMovie
 from cinescout.reviews import NytMovieReview
 
+from cinescout.main import bp
 
 # Won't be able to access the NYT or The Movie Database without these.
 NYT_API_KEY = app.config['NYT_API_KEY']
@@ -23,14 +24,14 @@ NYT_API_DELAY = 3 # Six seconds recommneded
 
 print("Executing views.py...")
 
-@app.route('/')
-@app.route('/index')
+@bp.route('/')
+@bp.route('/index')
 def index():
     """Home page."""
     return render_template("index.html")
 
 
-@app.route('/user-movie-list')       # GET /user-movie-list
+@bp.route('/user-movie-list')       # GET /user-movie-list
 @login_required
 def get_user_movie_list():
     """Displays list of movies user has added."""
@@ -38,7 +39,7 @@ def get_user_movie_list():
     return render_template("list.html", films=films)
 
 
-@app.route("/browse")
+@bp.route("/browse")
 def browse():
     """Displays list of critically-acclaimed movies."""
     # Ensure that film query works alright before trying to render anything on the template.
@@ -50,7 +51,7 @@ def browse():
         return render_template("errors/misc-error.html", err_message=err_message)
 
 
-@app.route("/search")
+@bp.route("/search")
 def search():
     """Renders search forms."""
     title_form = SearchByTitleForm()
@@ -60,7 +61,7 @@ def search():
                             person_form=person_form)
 
 
-@app.route("/title-search-results", methods=["GET", "POST"])
+@bp.route("/title-search-results", methods=["GET", "POST"])
 def search_results_title():
     """Validates form data from movie search form."""
 
@@ -73,7 +74,7 @@ def search_results_title():
         # Redirect rather than render so user can book the results page
         # and refresh the results page without resubmittting the form.
         # As per Post-Get-Redirect pattern.
-        return redirect(url_for('display_movie_search_results',
+        return redirect(url_for('main.display_movie_search_results',
                         movie_title=movie_title))
 
     # In case users GET this route, or the form data is invalid.
@@ -82,7 +83,7 @@ def search_results_title():
                            person_form=SearchByPersonForm())
 
 
-@app.route("/movie-search-results", methods=["GET"])
+@bp.route("/movie-search-results", methods=["GET"])
 def display_movie_search_results():
     """Renders list of movies from the external movie API based on
     title supplied. Allows users to see list of possible movies
@@ -115,7 +116,7 @@ def display_movie_search_results():
                             form_title=movie_title)
 
 
-@app.route("/person-search-results", methods=["GET", "POST"])
+@bp.route("/person-search-results", methods=["GET", "POST"])
 def search_results_person():
     """Validates data from person search form."""
 
@@ -126,7 +127,7 @@ def search_results_person():
         name = form.name.data.strip()
         known_for = form.known_for.data
 
-        return redirect(url_for('search_results_person_get',
+        return redirect(url_for('main.search_results_person_get',
                         name=name, known_for=known_for))
 
     # In case users GET this route, or the form data is invalid.
@@ -135,7 +136,7 @@ def search_results_person():
                             title_form=SearchByTitleForm())
 
 
-@app.route("/person-search", methods=["GET"])
+@bp.route("/person-search", methods=["GET"])
 def search_results_person_get():
     """Renders list of people in their associated fields in the movie
     industry, via GET request."""
@@ -167,7 +168,7 @@ def search_results_person_get():
     return render_template("persons.html", persons=result['persons'], name=name)
 
 
-@app.route("/person/<int:person_id>", methods=["GET"])
+@bp.route("/person/<int:person_id>", methods=["GET"])
 def filmography(person_id):
     """Renders movie credits of a person in the movie industry.
 
@@ -230,7 +231,7 @@ def filmography(person_id):
 
 
 # New movie_info view using redesigned NYTMovieReview algorithm.
-@app.route("/movie/<int:tmdb_id>", methods=["GET"])
+@bp.route("/movie/<int:tmdb_id>", methods=["GET"])
 def movie_info(tmdb_id):
     """Renders salient movie data and review summary from external APIs."""
 
@@ -342,6 +343,6 @@ def movie_info(tmdb_id):
                             search_engines=search_engines)
 
 
-@app.route("/about", methods=['GET'])
+@bp.route("/about", methods=['GET'])
 def about():
     return render_template("about.html")

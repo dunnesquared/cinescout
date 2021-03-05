@@ -15,7 +15,7 @@ def login():
 
     # Logged-in users don't get to log-in before logging out again.
     if current_user.is_authenticated:
-        return redirect(url_for('index'))
+        return redirect(url_for('main.index'))
 
     form = LoginForm()
 
@@ -30,7 +30,7 @@ def login():
         # e.g. closing tab while still logged-in.
         login_user(user, remember=form.remember_me.data)
         flash('You have been logged in!', 'success')
-        return redirect(url_for('search'))
+        return redirect(url_for('main.search'))
 
     return render_template('auth/login.html', title='Sign In', form=form)
 

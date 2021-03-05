@@ -24,6 +24,7 @@ class CinescoutModelView(ModelView):
         """Defines who can access the admin panel."""
         return current_user.is_authenticated and current_user.username == 'admin'
 
+
 # Create customized index view class that handles login & registration.
 class MyAdminIndexView(admin.AdminIndexView):
     """Creates views for admin panel part of website."""

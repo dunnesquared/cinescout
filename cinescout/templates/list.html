@@ -34,7 +34,7 @@
         {% for film in films %}
           <tr>
             <td>
-              <a href="{{ url_for('movie_info', tmdb_id=film.tmdb_id )}}" class="movie-link text-white">
+              <a href="{{ url_for('main.movie_info', tmdb_id=film.tmdb_id )}}" class="movie-link text-white">
                 <i>{{ film.title }}</i>
                 {# <span class="spinner-border spinner-border-sm"></span> #}
               </a>

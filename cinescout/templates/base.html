@@ -44,7 +44,7 @@
         <!--NEW NAVBAR-->
         <nav id="mynavbar" class="navbar navbar-expand-lg navbar-dark bg-secondary fixed-top border-bottom">
 
-            <a id="mynavlogo" class="navbar-brand mb-01 font-weight-bold" href="{{ url_for('index')}}">Cinescout🎞</a>
+            <a id="mynavlogo" class="navbar-brand mb-01 font-weight-bold" href="{{ url_for('main.index')}}">Cinescout🎞</a>
 
             <!-- Collapsible menu button on reduced viewports, e.g. phones -->
             <button
@@ -60,20 +60,20 @@
 
               <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
-                  <a class="nav-link text-white" href= "{{ url_for('search') }}">Search</a>
+                  <a class="nav-link text-white" href= "{{ url_for('main.search') }}">Search</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link text-white" href="{{ url_for('browse')}}">Browse</a>
+                  <a class="nav-link text-white" href="{{ url_for('main.browse')}}">Browse</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link text-white" href="{{ url_for('about')}}">About</a>
+                  <a class="nav-link text-white" href="{{ url_for('main.about')}}">About</a>
                 </li>
 
                 {% if current_user.is_authenticated %}
 
                   <!-- Right side of navbar -->
                   <li class="nav-item">
-                      <a class="nav-link text-white" href="{{ url_for('get_user_movie_list')}}">List</a>
+                      <a class="nav-link text-white" href="{{ url_for('main.get_user_movie_list')}}">List</a>
                   </li>
 
                    <li class="nav-item">

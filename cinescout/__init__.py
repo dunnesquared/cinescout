@@ -51,6 +51,9 @@ app.register_blueprint(auth_bp)
 from cinescout.admin import bp as admin_bp
 app.register_blueprint(admin_bp)
 
+from cinescout.api import bp as api_bp
+app.register_blueprint(api_bp, url_prefix='/api')
+
 # Import application modules.
 from cinescout import views
 print("cinescout.views imported.")

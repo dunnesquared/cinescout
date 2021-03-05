@@ -1,17 +1,11 @@
 """Handling functions of users' requests that represent app's features."""
-
-import os
-import time
-import json
-import requests
-
-from flask import render_template, request, redirect, url_for, abort, flash, jsonify
-from flask_login import current_user, login_user, logout_user, login_required
+from flask import render_template, request, redirect, url_for, abort, flash
+from flask_login import current_user, login_required
 
 from cinescout import app, db # Get app, db object defined in __init__.py
-from cinescout.models import User, Film, CriterionFilm, PersonalFilm, FilmListItem
+from cinescout.models import User, Film, CriterionFilm, FilmListItem
 from cinescout.forms import  SearchByTitleForm, SearchByPersonForm
-from cinescout.movies import TmdbMovie, Person
+from cinescout.movies import TmdbMovie
 from cinescout.reviews import NytMovieReview
 
 
@@ -44,125 +38,6 @@ def get_user_movie_list():
     return render_template("list.html", films=films)
 
 
-@app.route('/user-movie-list/item', methods=['POST'])     # POST /user-movie-list/item
-@login_required
-def create_user_movie_item():
-    """Adds movie to user's list."""
-    try:
-        print("Request received to add film to list...")
-        print("Retrieving POST data...", end="")
-
-        # Get minimum data. An exception should be thrown if there's a problem
-        # and the program should fail gracefully.
-        tmdb_id = int(request.form.get("tmdb_id"))
-        title = request.form.get("title").strip()
-
-        # Get non-essential data. Appropriate placeholders should be
-        # used if data values are blank.
-
-        # Film release year.
-        # TypeError if None, ValueError if string: ''
-        try:
-            year = int(request.form.get("year"))
-        except (TypeError, ValueError):
-            print("POST value 'year' not an integer. Setting year to zero.")
-            year = 0
-
-        # Film release date.
-        date = request.form.get("date")
-
-        if date is None:
-            date = ''
-
-        # Original title
-        original_title = request.form.get("original_title")
-
-        if original_title:
-            original_title = original_title.strip()
-
-        # Check for bad values.
-        if year < 0:
-            raise ValueError("Year value must be non-negative.")
-        if tmdb_id < 1:
-            raise ValueError("tmdb_id must be positive.")
-        if title.strip() == "":
-            raise ValueError("Name cannot be blank.")
-
-    except (ValueError, TypeError) as err:
-        # Possible non-integer values passed for id or year; NoneType also.
-        print("FAILED!")
-        err_message = "Fatal Error: {0}".format(err)
-        print(err_message)
-        return jsonify({"success": False, "err_message": err_message}), 500
-
-    print("Success!")
-
-    # See whether movie is in user list.
-    film = FilmListItem.query.filter_by(user_id=current_user.id,
-                                        tmdb_id=tmdb_id).first()
-
-    if not film:
-        # Film is not list: add it.
-        print(f"Adding film '{title}'...")
-        new_film = FilmListItem(user_id=current_user.id,
-                                title=title,
-                                year=year,
-                                tmdb_id=tmdb_id,
-                                date=date,
-                                original_title=original_title)
-        db.session.add(new_film)
-        db.session.commit()
-        return jsonify({"success": True}), 201
-    else:
-        # Film is on list. Send error message.
-        err_message = ("Film already on list! Film likely added elsewhere on " \
-                        "site. Try refreshing page movie list or movie page.")
-        print(err_message)
-        # Send 409 response code ('Conflict') b/c film cannot be added if already on list!
-        return jsonify({"success": False, "err_message": err_message}), 409
-
-
-@app.route('/user-movie-list/item', methods=["DELETE"])       # DELETE /user-movie-list/item
-@login_required
-def delete_user_movie_item():
-    """Removes film from user's list."""
-    print("Request received to remove film...")
-
-    try:
-        # Get id of film to be removed.
-        print("Retrieving DELETE data...", end="")
-        tmdb_id = int(request.form.get('tmdb_id'))
-
-        # Check for bad values.
-        if tmdb_id < 1:
-            raise ValueError("tmdb_id must be positive.")
-
-    except (ValueError, TypeError) as err:
-        # Bad id value or NoneType passed.
-        err_message = "Fatal Error: {0}".format(err)
-        print(err_message)
-        return jsonify({"success": False, "err_message": err_message}), 500
-
-    print("Success!")
-
-    # See whether film is on list. Can't be removed otherwise.
-    print("Checking to see whether film is on list...")
-    film = FilmListItem.query.filter_by(tmdb_id=tmdb_id, user_id=current_user.id).first()
-
-    # Film is on list. Remove it.
-    if film:
-        print(f"Deleting film '{film.title}' from database...")
-        db.session.delete(film)
-        db.session.commit()
-        return jsonify({"success": True})
-    else:
-        # Film is not on list. Send error message.
-        err_message = ("Film not on list! Film likely removed elsewhere on " \
-                       "site. Try refreshing movie list or movie page.")
-        print(err_message)
-        return jsonify({"success": False, "err_message": err_message}), 409
-
-
 @app.route("/browse")
 def browse():
     """Displays list of critically-acclaimed movies."""
@@ -173,64 +48,6 @@ def browse():
         err_message = f"Unable to load Criterion films: error fetching results from database."
         print("ERROR! " + err_message)
         return render_template("errors/misc-error.html", err_message=err_message)
-
-
-@app.route("/api/criterion-films")
-def get_criterion_films():
-    """Builds data object required to display a list of critically-acclaimed movies.
-    on the client side.
-
-    Returns:
-        JSON object with the following fields:
-        In case of errors:
-            'success': Boolean set to False.
-            'err_message': String containing error message.
-        Otherwise:
-            'success': Boolean set to True.
-            'num_results': Integer of indicating number of movies returned.
-            'results': List of dictionaries where each represents a film.
-                'title': String representing a movie's title.
-                'year': String represent movie's release year.
-                'directors': A list of strings representing directors' namees.
-    """
-    criterion_films = db.session.query(Film).join(CriterionFilm).all()
-
-    # Check for error cases.
-    if criterion_films is None:
-        return jsonify({
-            'success': False,
-            'err_message': "Query for Criterion films returned NoneType object."
-        }), 404
-
-    num_films = len(criterion_films)
-    if num_films == 0:
-        return jsonify({
-            'success': False,
-            'err_message': "Query for Criterion films returned no films."
-        }), 404
-
-    # All good. Build JSON object.
-    movies = {
-        'success': True,
-        'num_results': len(criterion_films),
-        'results': []
-    }
-
-    # Extract film info from ORM object.
-    for film in criterion_films:
-        result = {}
-        result['title'] = film.title
-        result['year'] = film.year
-
-        directors = film.director.split('&')
-        directors = [ director.strip() for director in directors ]
-        result['directors'] = directors
-
-        result['tmdb_id'] = film.tmdb_id
-
-        movies['results'].append(result)
-
-    return jsonify(movies)
 
 
 @app.route("/search")

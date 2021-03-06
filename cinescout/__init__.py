@@ -59,7 +59,7 @@ app.register_blueprint(main_bp)
 
 print("Blueprints registered.")
 
-# Import models and business-logic modules.
+# Import models. This will create the schema of your database via SqlAlchemy magic!
 from cinescout import models
 print("cinescout.models imported.")
 

@@ -1,4 +1,4 @@
-"""Performs unit test on functions in `views.py`."""
+"""Performs unit tests on routes in cinsescout.main package: main html views of app."""
 
 import os
 import unittest
@@ -7,7 +7,7 @@ import unittest
 from context import app, db, basedir, User, Film, CriterionFilm
 
 
-class RouteTests(unittest.TestCase):
+class MainViewsTests(unittest.TestCase):
 
     def setUp(self):
         # """Executes before each test."""
@@ -16,7 +16,11 @@ class RouteTests(unittest.TestCase):
         app.config['DEBUG'] = False
         app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'tests/test.db')
         self.app = app.test_client()
-        db.create_all()
+        
+        # Need to push app's new test context to ensure that db is created anew.
+        with app.app_context():
+            db.drop_all()
+            db.create_all()
 
         # See whether Alex in db. If not add him. 
         default_user = User.query.filter_by(username="Alex").first()
@@ -94,6 +98,7 @@ class RouteTests(unittest.TestCase):
     def test_main_page(self):
         response = self.app.get('/', follow_redirects=True)
         self.assertEqual(response.status_code, 200)
+
 
     # *** SEARCH - Title Search ***
     def test_search_page_title(self):
@@ -227,8 +232,8 @@ class RouteTests(unittest.TestCase):
         response = self.app.get(f'person-search?')
         self.assertIn(b'422', response.data)
 
-    # *** FILMOGRAPHY ***
 
+    # *** FILMOGRAPHY ***
     def test_filmography_good_parameters(self):
         firstname = "Ingmar"
         lastname = "Bergman"
@@ -256,7 +261,6 @@ class RouteTests(unittest.TestCase):
         response = self.app.get(f'/person/{id}?name={firstname}+{lastname}')
         self.assertIn(b'URL person name and TMDB person name do not match',
                         response.data)
-
 
 
     # *** MOVIE PAGE ***
@@ -319,6 +323,7 @@ class RouteTests(unittest.TestCase):
         movie_id = "\n\t   "
         response = self.app.get(f'/movie/{movie_id}')
         self.assertIn(b'404: Page Not Found', response.data)
+
 
     # USER LIST
     # Tests:
@@ -415,6 +420,7 @@ class RouteTests(unittest.TestCase):
 
         response = self.app.get('/user-movie-list')
         self.assertIn(b'Unknown', response.data)
+
 
     # BROWSE
     # Check if Criterion film page loaded properly.

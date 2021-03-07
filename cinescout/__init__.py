@@ -1,7 +1,7 @@
 """Defines cinescout directory as package, i.e. a folder that other modules
 can import. File executed when package imported."""
 
-print("***Executing __init__.py...***")
+print("*** Executing __init__.py... ***")
 
 # Import PyPi modules.
 from flask import Flask
@@ -41,24 +41,30 @@ csrf = CSRFProtect()
 csrf.init_app(app)
 print("CSRF object created and applied to app.")
 
+# Register Blueprint packages.
+from cinescout.errors import bp as errors_bp
+app.register_blueprint(errors_bp)
 
-# Import application modules.
-from cinescout import views
-print("cinescout.views imported.")
+from cinescout.auth import bp as auth_bp
+app.register_blueprint(auth_bp)
 
+from cinescout.admin import bp as admin_bp
+app.register_blueprint(admin_bp)
+
+from cinescout.api import bp as api_bp
+app.register_blueprint(api_bp, url_prefix='/api')
+
+from cinescout.main import bp as main_bp
+app.register_blueprint(main_bp)
+
+print("Blueprints registered.")
+
+# Import models. This will create the schema of your database via SqlAlchemy magic!
 from cinescout import models
 print("cinescout.models imported.")
 
-from cinescout import errors
-print("cinescout.errors imported.")
 
-from cinescout import movies
-print("cinescout.movies imported.")
-
-from cinescout import reviews
-print("cinescout.reviews imported.")
-
-# ========== Admin panel configuration ===============
+# ========================= Admin panel configuration ==============================
 # Code adapted from:
 # https://github.com/flask-admin/flask-admin/tree/master/examples/auth-flask-login 
 # Many thanks.
@@ -69,17 +75,19 @@ from flask_admin import Admin, AdminIndexView
 from flask_admin.contrib.sqla import ModelView
 print("flask_admin classes imported.")
 
+from cinescout import admin
+
 # Link admin panel with map. 
-admin = Admin(app, 'Cinescout: Admin Panel', 
-              index_view=views.MyAdminIndexView(),
+x_admin = Admin(app, 'Cinescout: Admin Panel', 
+              index_view=admin.routes.MyAdminIndexView(),
               base_template="admin/accesscontrol.html")
 print("FlaskAdmin object initialized and applied to app.")
 
 # Add which views of database tables you want authenticated supersuser(s) to see.
-admin.add_view(views.CinescoutModelView(models.User, db.session))
-admin.add_view(views.CinescoutModelView(models.Film, db.session))
-admin.add_view(views.CinescoutModelView(models.CriterionFilm, db.session))
-admin.add_view(views.CinescoutModelView(models.FilmListItem, db.session))
+x_admin.add_view(admin.routes.CinescoutModelView(models.User, db.session))
+x_admin.add_view(admin.routes.CinescoutModelView(models.Film, db.session))
+x_admin.add_view(admin.routes.CinescoutModelView(models.CriterionFilm, db.session))
+x_admin.add_view(admin.routes.CinescoutModelView(models.FilmListItem, db.session))
 print("flask_admin database views added.")
 
 print("***End of __init__.py***")

@@ -1,14 +1,13 @@
-"""Performs unit test on functions in `views.py`."""
+"""Performs unit tests on routes in cinsescout.main package: main html views of app."""
 
 import os
 import unittest
-import json
 
 # Add this line to whatever test script you write
 from context import app, db, basedir, User, Film, CriterionFilm
 
 
-class RouteTests(unittest.TestCase):
+class MainViewsTests(unittest.TestCase):
 
     def setUp(self):
         # """Executes before each test."""
@@ -17,10 +16,11 @@ class RouteTests(unittest.TestCase):
         app.config['DEBUG'] = False
         app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'tests/test.db')
         self.app = app.test_client()
-        db.create_all()
-
-        # print("TEST DB setup!")
-        # print(f"{User.query.all()}")
+        
+        # Need to push app's new test context to ensure that db is created anew.
+        with app.app_context():
+            db.drop_all()
+            db.create_all()
 
         # See whether Alex in db. If not add him. 
         default_user = User.query.filter_by(username="Alex").first()
@@ -81,14 +81,14 @@ class RouteTests(unittest.TestCase):
 
     def add_film_to_list(self, tmdb_id=None, title=None, year=None,
                          date=None, original_title=None):
-        return self.app.post('/user-movie-list/item',
+        return self.app.post('/api/user-movie-list/item',
                    data=dict(tmdb_id=tmdb_id, title=title,
                            year=year, date=date,
                            original_title=original_title),
                            follow_redirects=True)
 
     def remove_film_from_list(self, tmdb_id=None):
-        return self.app.delete('/user-movie-list/item',
+        return self.app.delete('/api/user-movie-list/item',
               data=dict(tmdb_id=tmdb_id),
                       follow_redirects=True)
 
@@ -98,166 +98,6 @@ class RouteTests(unittest.TestCase):
     def test_main_page(self):
         response = self.app.get('/', follow_redirects=True)
         self.assertEqual(response.status_code, 200)
-
-    # *** LOGIN ***
-    def test_valid_login(self):
-        response = self.login(username="Alex", password="123")
-        self.assertIn(b'You have been logged in!', response.data)
-
-    def test_invalid_login_bad_password(self):
-        # Bad password.
-        # self.create_user(name='xyz', email="alex@test.com", password="123")
-        response = self.login(username="Alex", password="789")
-        self.assertIn(b'Invalid username or password', response.data)
-    
-    def test_invalid_login_user_dne(self):
-        # User does not exist.
-        response = self.login(username="AlexO324", password="123")
-        self.assertIn(b'Invalid username or password', response.data)
-
-    def test_login_when_loggedin(self):
-        response = self.login(username="Alex", password="123")
-        self.assertNotIn(b'Login', response.data)
-        self.assertIn(b'Logout', response.data)
-
-    def test_login_no_data(self):
-        # No data
-        response = self.login(username=None, password=None)
-        self.assertIn(b'This field is required.', response.data)
-
-        # Whitespace data
-        response = self.login(username="   ", password="\n\t\r   ")
-        self.assertIn(b'This field is required.', response.data)
-
-    def test_login_remember_me(self):
-        # Can't figure out a good way to test this; proabably
-        # have to use a higher-level framework like Selenium.
-        pass
-
-    # *** LOGOUT ***
-    def test_logout_when_logged_in(self):
-        response = self.login(username="Alex", password="123")
-        response = self.logout()
-        self.assertIn(b'Login', response.data)
-        self.assertNotIn(b'Logout', response.data)
-
-    def test_logout_when_not_logged_in(self):
-        response = self.logout()
-        self.assertIn(b'Access Denied', response.data)
-
-
-    # # *** REGISTER ***
-    # ==============  TESTS OBSOLETE AS OF v1.1.0 =====================
-    # def test_register_page_anonymous(self):
-    #     response = self.app.get('/register', follow_redirects=True)
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertIn(b'Register', response.data)
-
-    # def test_register_page_authenticated(self):
-    #     response = self.login(username="Alex", password="123")
-    #     response = self.app.get('/register', follow_redirects=True)
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertIn(b'Welcome', response.data)
-
-    # def test_register_valid_data(self):
-    #     username = "borat"
-    #     email = "borat@borat.com"
-    #     password = self.dummy_pw
-    #     password2 = self.dummy_pw
-    #     response = self.app.post(
-    #         '/register',
-    #         data=dict(username=username, email=email, password=password, password2=password2),
-    #         follow_redirects=True
-    #     )
-    #     self.assertIn(b'Welcome to Cinescout, borat! Now login to get started.', response.data)
-
-    # def test_register_blank_fields(self):
-    #     # Empty string: ""
-    #     username = ""
-    #     email = ""
-    #     password = ""
-    #     password2 = ""
-    #     response = self.app.post(
-    #         '/register',
-    #         data=dict(username=username, email=email, password=password, password2=password2),
-    #         follow_redirects=True
-    #     )
-    #     self.assertIn(b'This field is required.', response.data)
-
-    #     # Whitespace strings: "     "
-    #     # Empty string: ""
-    #     username = "\n\t\r"
-    #     email = "    "
-    #     password = "    "
-    #     password2 = "     "
-    #     response = self.app.post(
-    #         '/register',
-    #         data=dict(username=username, email=email, password=password, password2=password2),
-    #         follow_redirects=True
-    #     )
-    #     self.assertIn(b'This field is required.', response.data)
-
-    #     # No data passed
-    #     response = self.app.post(
-    #         '/register',
-    #         data=dict(username=None, email=None, password=None, password2=None),
-    #         follow_redirects=True
-    #     )
-    #     self.assertIn(b'This field is required.', response.data)
-
-    # def test_taken_username_email(self):
-    #     # Taken username
-    #     response = self.app.post(
-    #         '/register',
-    #         data=dict(username="Alex", email="a@a.com", password=123, password2=123),
-    #         follow_redirects=True
-    #     )
-    #     self.assertIn(b'Username already taken.', response.data)
-
-    #     # Taken email
-    #     response = self.app.post(
-    #         '/register',
-    #         data=dict(username="Random", email="alex@test.com", password=123, password2=123),
-    #         follow_redirects=True
-    #     )
-    #     self.assertIn(b'An account already exists with this email address.', response.data)
-
-    # def test_bad_input(self):
-    #     # Non alphanumeric characters in username
-    #     response = self.app.post(
-    #         '/register',
-    #         data=dict(username="Sheryl?Lee", email="shery@lee.com",
-    #         password=123, password2=123),
-    #         follow_redirects=True
-    #     )
-    #     self.assertIn(b'Username must contain only alphanumeric or underscore characters.', response.data)
-
-    #     # Bad email
-    #     response = self.app.post(
-    #         '/register',
-    #         data=dict(username="SherylLee", email="shery?lee.com",
-    #         password=123, password2=123),
-    #         follow_redirects=True
-    #     )
-    #     self.assertIn(b'Invalid email address.', response.data)
-
-    # def test_different_passwords(self):
-    #     response = self.app.post(
-    #         '/register',
-    #         data=dict(username="SherylLee", email="shery@lee.com",
-    #         password=123, password2=456),
-    #         follow_redirects=True
-    #     )
-    #     self.assertIn(b'Passwords do not match.', response.data)
-
-    # def test_password_length(self):
-    #     response = self.app.post(
-    #         '/register',
-    #         data=dict(username="SherylLee", email="shery@lee.com",
-    #         password=123, password2=123),
-    #         follow_redirects=True
-    #     )
-    #     self.assertIn(b'Password must be at least 8 characters long.', response.data)
 
 
     # *** SEARCH - Title Search ***
@@ -392,8 +232,8 @@ class RouteTests(unittest.TestCase):
         response = self.app.get(f'person-search?')
         self.assertIn(b'422', response.data)
 
-    # *** FILMOGRAPHY ***
 
+    # *** FILMOGRAPHY ***
     def test_filmography_good_parameters(self):
         firstname = "Ingmar"
         lastname = "Bergman"
@@ -421,7 +261,6 @@ class RouteTests(unittest.TestCase):
         response = self.app.get(f'/person/{id}?name={firstname}+{lastname}')
         self.assertIn(b'URL person name and TMDB person name do not match',
                         response.data)
-
 
 
     # *** MOVIE PAGE ***
@@ -485,187 +324,6 @@ class RouteTests(unittest.TestCase):
         response = self.app.get(f'/movie/{movie_id}')
         self.assertIn(b'404: Page Not Found', response.data)
 
-    # Add movie to list
-
-    # Add when not logged in
-    def test_movie_page_add_not_logged_in(self):
-        response = self.app.post(
-            '/user-movie-list/item',
-            data=dict(tmdb_id="1018", title="Mulholland Drive", year="2001"),
-                    follow_redirects=True)
-
-        self.assertIn(b'Access Denied', response.data)
-
-     # Add ok
-    def test_movie_page_add_ok(self):
-        self.login("Alex", "123")
-        response = self.app.post('/user-movie-list/item',
-                data=dict(tmdb_id="1018", title="Mulholland Drive",
-                        year="2001", date="2001-09-08",
-                        original_title="Mulholland Drive"),
- 						follow_redirects=True)
-        data = json.loads(response.get_data(as_text=True))
-        self.assertTrue(data['success'])
-
-     # Add when already on list
-    def test_movie_page_add_already_on_list(self):
-        self.login("Alex", "123")
-        # Add film.
-        response = self.app.post('/user-movie-list/item',
-                data=dict(tmdb_id="1018", title="Mulholland Drive",
-                        year="2001", date="2001-09-08",
-                        original_title="Mulholland Drive"),
-                        follow_redirects=True)
-        data = json.loads(response.get_data(as_text=True))
-        self.assertTrue(data['success'])
-
-        # Try adding same film again.
-        response = self.app.post('/user-movie-list/item',
-                   data=dict(tmdb_id="1018", title="Mulholland Drive",
-                           year="2001", date="2001-09-08",
-                           original_title="Mulholland Drive"),
-                           follow_redirects=True)
-        data = json.loads(response.get_data(as_text=True))
-        self.assertFalse(data['success'])
-
-     # Add blank
-    def test_movie_page_add_blank(self):
-        self.login("Alex", "123")
-
-         # White space
-        response = self.app.post('/user-movie-list/item',
-                 data=dict(tmdb_id="", title=" ",
-                         year=" ", date="",
-                         original_title="  "),
-                         follow_redirects=True)
-        data = json.loads(response.get_data(as_text=True))
-        self.assertFalse(data['success'])
-
-        # None types
-        response = self.app.post('/user-movie-list/item',
-                data=dict(tmdb_id=None, title=None, year=None,
-                        original_title=None, date=None),
-                        follow_redirects=True)
-        data = json.loads(response.get_data(as_text=True))
-        self.assertFalse(data['success'])
-
-    # Add movie with bad id or bad year
-    def test_movie_page_add_bad_data(self):
-        self.login("Alex", "123")
-        # Add film: Note that the id for this film is negative
-        movie_id = "-1018"
-        response = self.app.post('/user-movie-list/item',
-                data=dict(tmdb_id=movie_id, title="Mulholland Drive",
-                        year="2001", date="2001-09-08",
-                        original_title="Mulholland Drive"),
-                        follow_redirects=True)
-        data = json.loads(response.get_data(as_text=True))
-        self.assertFalse(data['success'])
-
-        # Add film with bad year.
-        movie_id = "1018"
-        year = "-2001"
-        response = self.app.post('/user-movie-list/item',
-                data=dict(tmdb_id=movie_id, title="Mulholland Drive",
-                        year=year, date="2001-09-08",
-                        original_title="Mulholland Drive"),
-                        follow_redirects=True)
-        data = json.loads(response.get_data(as_text=True))
-        self.assertFalse(data['success'])
-
-    def test_movie_page_add_no_date_year(self):
-        self.login("Alex", "123")
-        # Add film.
-        response = self.app.post('/user-movie-list/item',
-                data=dict(tmdb_id="1018", title="Mulholland Drive",
-                        year="", date=None,
-                        original_title="Mulholland Drive"),
-                        follow_redirects=True)
-        data = json.loads(response.get_data(as_text=True))
-        self.assertTrue(data['success'])
-
-    # Remove movie from list
-    # Remove when not logged in
-    def test_movie_page_remove_not_logged_in(self):
-      	response = self.app.delete(
-          '/user-movie-list/item',
-          data=dict(tmdb_id="1018"), follow_redirects=True)
-
-      	self.assertIn(b'Access Denied', response.data)
-
-    # Remove ok
-    def test_movie_page_remove_ok(self):
-      	self.login("Alex", "123")
-
-      	# Add ok
-      	self.app.post('/user-movie-list/item', data=dict(tmdb_id="1018",
-      				title="Mulholland Drive",
-                            year="2001", date="2001-09-08",
-                            original_title="Mulholland Drive"),
-                            follow_redirects=True)
-
-      	response = self.app.delete('/user-movie-list/item',
-              data=dict(tmdb_id="1018"),
-                      follow_redirects=True)
-
-      	data = json.loads(response.get_data(as_text=True))
-      	self.assertTrue(data['success'])
-
-    # Remove when not on list
-    def test_movie_page_remove_not_on_list(self):
-      	self.login("Alex", "123")
-
-        # List is empty.
-      	response = self.app.delete('/user-movie-list/item',
-              data=dict(tmdb_id="1018"),
-                      follow_redirects=True)
-
-      	data = json.loads(response.get_data(as_text=True))
-      	self.assertFalse(data['success'])
-
-    # Remove blank
-    def test_movie_page_remove_blank(self):
-        self.login("Alex", "123")
-
-        # Add ok
-        self.app.post('/user-movie-list/item', data=dict(tmdb_id="1018",
-                    title="Mulholland Drive",
-                            year="2001", date="2001-09-08",
-                            original_title="Mulholland Drive"),
-                            follow_redirects=True)
-
-        # Blank data
-        response = self.app.delete('/user-movie-list/item',
-              data=dict(tmdb_id="\n\t "),
-                      follow_redirects=True)
-        data = json.loads(response.get_data(as_text=True))
-        self.assertFalse(data['success'])
-
-        # Blank data
-        response = self.app.delete('/user-movie-list/item',
-              data=dict(tmdb_id=None),
-                      follow_redirects=True)
-        data = json.loads(response.get_data(as_text=True))
-        self.assertFalse(data['success'])
-
-      # Remove movie with bad id
-    def test_movie_page_remove_bad_id(self):
-        self.login("Alex", "123")
-
-        # Add ok
-        self.app.post('/user-movie-list/item', data=dict(tmdb_id="1018",
-                    title="Mulholland Drive",
-                            year="2001", date="2001-09-08",
-                            original_title="Mulholland Drive"),
-                           follow_redirects=True)
-
-        # Bad id
-        response = self.app.delete('/user-movie-list/item',
-              data=dict(tmdb_id="-1018"),
-                      follow_redirects=True)
-        data = json.loads(response.get_data(as_text=True))
-        self.assertFalse(data['success'])
-    
 
     # USER LIST
     # Tests:
@@ -763,6 +421,7 @@ class RouteTests(unittest.TestCase):
         response = self.app.get('/user-movie-list')
         self.assertIn(b'Unknown', response.data)
 
+
     # BROWSE
     # Check if Criterion film page loaded properly.
     def test_browse_not_logged_in(self):
@@ -791,29 +450,6 @@ class RouteTests(unittest.TestCase):
     def test_browse_list_empty(self):
         response = self.app.get('/browse')
         self.assertIn(b'Unable to load Criterion films', response.data)
-
-    # CRITERION API
-    # No movies in db table
-    def test_criterion_api_no_entries(self):
-        response = self.app.get('/api/criterion-films', data=dict())
-        data = json.loads(response.get_data(as_text=True))
-        self.assertFalse(data['success'])
-        self.assertIn('no films', data['err_message'])
-
-    # One Criterion movie in db
-    def test_criterion_api_ok(self):
-        title = "Mulholland Dr."
-        release_year = 2001
-        tmdb_id = 1018
-        director = "David Lynch"
-        self.create_film(title=title, year=release_year, tmdb_id=tmdb_id, director=director,
-                         criterionfilm=True)
-        response = self.app.get('/api/criterion-films', data=dict())
-        data = json.loads(response.get_data(as_text=True))
-        self.assertTrue(data['success'])
-        self.assertEqual(data['num_results'], 1)
-        self.assertIn(data['results'][0]['title'], 'Mulholland Dr.')
-        self.assertIn(data['results'][0]['directors'][0], 'David Lynch')
 
     # ABOUT
     def test_about_menubar_anonymous(self):

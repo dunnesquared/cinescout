@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const originalTitle = document.querySelector("#original-title").value;
 
     // Initialize new AJAX request.
-    const addMovieURL = '/user-movie-list/item'
+    const addMovieURL = '/api/user-movie-list/item'
     const request = new XMLHttpRequest();
     request.open('POST', addMovieURL);
 
@@ -125,7 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log(`tmdbId = ${tmdbId}`);
 
     // Initialize new AJAX request.
-    const removeMovieURL = '/user-movie-list/item'
+    const removeMovieURL = '/api/user-movie-list/item'
     const request = new XMLHttpRequest();
     request.open('DELETE', removeMovieURL);
 

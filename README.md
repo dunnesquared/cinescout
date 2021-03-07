@@ -1,6 +1,6 @@
-# Cinescout🎞 (v1.5.3.1)
+# Cinescout🎞 (v1.6)
 
-`Cinescout` is a Flask-based, mobile-responsive, web tool that allows you to learn
+`Cinescout` is a Flask-based, mobile-responsive, website that allows you to learn
 more about almost any film or person in the world of cinema.
 
 With `Cinescout` you can:
@@ -27,7 +27,7 @@ or see NYT movie reviews. For security and maintainability reasons, I've made my
 That said, you can get some idea of what these features look like by watching my Razzie-winning [screencast of `Cinescout v1.5.3`](https://vimeo.com/513508836).
 I hear watching the video works wonders for insomnia :-p.
 
-## APIs
+## Dependency on external APIs
 `Cinescout` retrieves all movie data from two places: *The New York Times* (NYT)
 and the *The Movie Database* (TMDB). Movie reviews are retrieved from the former;
 general movie vitals from the latter.
@@ -38,7 +38,7 @@ own.
 
 ## Python version
 I wrote `Cinescout` using `Python 3.6.1`. Any version higher than that
-until `Python 3.8.5` (the latest version from which `Cinescout` was run)
+until `Python 3.8.5` (the latest version from which `Cinescout` is run)
 should be fine (I hope).
 
 ## External dependencies
@@ -68,7 +68,6 @@ code. Notable dependencies include
 10. Type `flask run` into your Terminal and hit Enter.
 11. Open a web browser and go to `http://127.0.0.1:5000/` to start using `Cinescout`!
 
-
 ## Running `Cinescout` on Windows
 You can do all of the above, except, I suspect, running `setup.sh` (Step 7). That's okay: the script just automates a few simple tasks that can be done manually. It's helpful but not really necessary.
 
@@ -96,20 +95,41 @@ To keep things straight, let's look at the contents of each folder in the projec
 - `requirements.txt`: List of external Python modules `pip` downloads and installs.
 
 ### `/cinescout`
-Project package containing all domain logic code. Files and folders include
-- `__init__.py`: Makes parent folder into a Python package; intializes import app objects.   
-- `errors.py`: Module that handles http errors and raised exceptions.
-- `forms.py`: Module that implements logic to render and validate web forms for `Cinescout` features; uses Flask-WTF.
+Main package containing business-logic modules, models, sub-packages and folders. 
+- `__init__.py`: Makes parent folder into main Python package of app; initializes import app objects; registers sub-packages.    
 - `models.py`: Module that implements database table models via SQLAlchemy ORM.
 - `movies.py`: Module containing classes to make api requests from external sources for movie info: `Person`, `Movie`, and `TmdbMovie`.
 - `reviews.py`: Module containing classes to make api requests from external sources for movie reviews: `MovieReview` and `NytMovieReview`.
-- `views.py`: Module containing functions (routes) representing the app's features and handles users' requests.
-- `/static`: Contains CSS and JavaScript files.
+- `/static`: Contains CSS, images and JavaScript files.
   - `css/style.css`: CSS file for extra bits of styling on top of what Bootstrap provides.
   - `js/addremove.js`: JavaScript file that adds and removes films via AJAX requests to the server.
-  - `js/removefromlist.js`: Javascript file that removes films from users' lists
+  - `js/removefromlist.js`: Javascript file that removes films from users' lists.
+  - `js/browse.js`: Javascript file that requests Criterion films from app.
+  - `js/loadspiner.js`: Javascript file that displays a loading spinner.
+  - `img/apple-touch-icon.png`: Favicon from https://favicon.io/
 - `/templates`: Contains all HTML-Jinja2 template files. All of these are self-explanatory. Please look at the folder's contents for more info.
 
+### `/cinescout/admin`
+Package responsible for providing a secure UI to access database data. Uses two separate modules 
+to render/validate web forms and define end points.
+
+### `/cinescout/api`
+Package responsible for providing private/public API to to app. The `criterion` module returns
+list of Criterion films. The `usermovielist` module allows movies to be added and removed 
+from a user's movie list (login required).
+
+### `/cinescout/auth`
+Package responsible for user authentication. Uses two separate modules to render/validate web forms 
+and define end points.
+
+### `/cinescout/errors`
+Package responsible for displaying HTTP and connection errors. Uses `handlers` modules to 
+define end points.
+
+### `/cinescout/main`
+Package responsible for main views of app. Uses two separate modules to render/validate web forms 
+and define end points.
+   
 ### `/data`
 Folder containing CSV files which in turn contain movie data.
 - `criterion.csv`: Contains TMDB data of movies from [The Criterion Collection](https://criterion.com). Input file to `film_data.py` script.
@@ -131,25 +151,27 @@ to `found.csv` and `notfound.csv.` READ WARNING BELOW!
 
 ### `/tests`
 Unit-testing package. Contains files to run `unittest` framework tests on app.
-There are two test files: `test_views.py` and `test_movies.py`; `__init__.py`
-and `context.py` make running these tests possible.
+There are several test scripts; each tests one of the app's features.
+The `context` module makes running these tests possible.
 
 - `__init__.py`: Turns parent folder into a Python package.
 - `context.py`: Ensures Python can find `Cinescout` modules and objects for test files.
-- `test_view.py`: Performs unit test on functions in `views.py`.
-- `test_movies.py`: Performs unit test on class methods in `movies.py`.
-- `test_reviews.py`: Performs unit test on class methods in `reviews.py`.
-- `test.db`: SQLite database, mainly used by `test_views.py` script.
+- `test_api.py`: Performs unit tests on functions in `api` package.
+- `test_auth.py`: Performs unit tests on functions in `auth` package.
+- `test_main.py`: Performs unit tests on functions in `main` package.
+- `test_movies.py`: Performs unit tests on class methods in `movies` module.
+- `test_reviews.py`: Performs unit tests on class methods in `reviews` module.
+- `test.db`: SQLite test database.
 
 To execute the test scripts, run the following on the console:
 
 ```sh
-python tests/test_views.py
-python tests/test_movies.py
-python tests/test_reviews.py
+python tests/test_api.py
+python tests/test_auth.py
+...
 ```
 
-N.B. The script `test_movies.py` will take around four minutes to run as it
+N.B. The script `test_movies.py` will take around several minutes to run as it
 currently stands. Each call to the NYT API has to be delayed by six seconds
 to prevent being locked out. Read 'HTTP Error 429: Too Many Requests' below.
 
@@ -159,10 +181,9 @@ error, aka Too Many Requests. This is almost certainly because the NYT only allo
 for 10 requests per minute (Read https://developer.nytimes.com/faq#a11). As
 searching for a review with `Cinescout` requires at least one NYT API call but as many four, it's quite easy to hit this ceiling if you're looking at one movie after another. The NYT recommends setting the delay between calls to six seconds, but I've set it to three, as that is as much as my patience can bear.
 
-
 ## Special Thanks
 In addition to CS50W's illuminating lessons and solid instruction from Brian Yu,
-I'd like to thank Miguel Gringberg for his helpful [tutorials](https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-i-hello-world) on how to set up a Flask-based Python project in a more professional manner than I would've otherwise done left to my own devices. A general thank you to all the authors of resources I used and learned from.
+I'd like to thank Miguel Grinberg for his helpful [tutorials](https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-i-hello-world) on how to set up a Flask-based Python project in a more professional manner than I would've otherwise done left to my own devices. A general thank you to all the authors of resources I used and learned from.
 
 Finally, a special thanks to my partner for all her support and patience during the
 several weeks it took me put together this app. It took me *way longer* than

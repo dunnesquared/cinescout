@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const tmdbId = button.value;
 
         // Initialize new AJAX request to remove film.
-        const removeMovieURL = '/user-movie-list/item'
+        const removeMovieURL = '/api/user-movie-list/item'
         const request = new XMLHttpRequest();
         request.open('DELETE', removeMovieURL);
     

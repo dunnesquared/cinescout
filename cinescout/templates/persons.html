@@ -11,7 +11,7 @@
       {% for person in persons %}
 
         <li>
-          <a href="{{ url_for('filmography', person_id=person.id, name=person.name ) }}"
+          <a href="{{ url_for('main.filmography', person_id=person.id, name=person.name ) }}"
             class="text-white">
             <strong>{{ person.name }}</strong> (Known for: {{ person.known_for }})
           </a>

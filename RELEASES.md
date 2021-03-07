@@ -1,5 +1,8 @@
 # Cinescout🎞: Releases
 
+### 1.6
+- Encapsulate features into separate packages to make extending and maintaining Cinescout easier
+
 ### 1.5.3.1
 - Separate movie-info and movie-review classes to make Cinescout easier to maintain.
 

@@ -1,4 +1,4 @@
-# Cinescout🎞 (v1.6)
+# Cinescout🎞 (v1.6.1)
 
 `Cinescout` is a Flask-based, mobile-responsive, website that allows you to learn
 more about almost any film or person in the world of cinema.

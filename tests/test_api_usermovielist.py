@@ -1,17 +1,16 @@
-"""Performs unit test on functions in cinescout.api package."""
+"""Performs unit test on functions in cinescout.api.usermovielist."""
 
 import os
+import time
 import unittest
 import json
 
 
 # Add this line to whatever test script you write
 from context import app, db, basedir, User, Film, CriterionFilm
-# from context import app, basedir, User, Film, CriterionFilm
 
 
-class ApiTests(unittest.TestCase):
-
+class UserMovieListApiTests(unittest.TestCase):
     def setUp(self):
         # """Executes before each test."""
         app.config['TESTING'] = True
@@ -41,6 +40,11 @@ class ApiTests(unittest.TestCase):
         db.drop_all()
 
     # **** HELPER METHODS ****
+    def delay_api_call(self, amt=6):
+        """Delays executions by amt seconds"""
+        print(f"DELAYING API CALL BY {amt} seconds...")
+        time.sleep(amt)
+
     def create_user(self, name, email, password):
         u = User(username=name, email=email)
         u.set_password(password)
@@ -271,29 +275,7 @@ class ApiTests(unittest.TestCase):
         self.assertFalse(data['success'])
     
 
-    # +++++++++++++++++++++++++++++++ TESTS: criterion.py +++++++++++++++++++++++++++++++++
-    # No movies in criterion db table
-    def test_criterion_api_no_entries(self):
-        response = self.app.get('/api/criterion-films', data=dict())
-        data = json.loads(response.get_data(as_text=True))
-        self.assertFalse(data['success'])
-        self.assertIn('no films', data['err_message'])
-
-    # One Criterion movie in db
-    def test_criterion_api_ok(self):
-        title = "Mulholland Dr."
-        release_year = 2001
-        tmdb_id = 1018
-        director = "David Lynch"
-        self.create_film(title=title, year=release_year, tmdb_id=tmdb_id, director=director,
-                         criterionfilm=True)
-        response = self.app.get('/api/criterion-films', data=dict())
-        data = json.loads(response.get_data(as_text=True))
-        self.assertTrue(data['success'])
-        self.assertEqual(data['num_results'], 1)
-        self.assertIn(data['results'][0]['title'], 'Mulholland Dr.')
-        self.assertIn(data['results'][0]['directors'][0], 'David Lynch')
-
-
+ 
+    
 if __name__ == "__main__":
     unittest.main()

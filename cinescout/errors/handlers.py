@@ -1,7 +1,7 @@
 """Handles http errors and raised exceptions."""
 
 import requests
-from flask import render_template
+from flask import render_template, jsonify
 
 from cinescout.errors import bp
 
@@ -19,13 +19,9 @@ def not_authorized(e):
 
 
 @bp.app_errorhandler(429)
-def too_many_requests_error(e):
-    """Too many requests made to API in short period,
-    mostly like to NYT movie reviews."""
-
-    err_message = ("Too many requests in a row. Please wait 30–60 seconds "
-                   "before your next query.")
-    return render_template("errors/429.html", err_message=err_message), 429
+def ratelimit_handler(e):
+   """Too many requests to an API resource.""" 
+   return jsonify({'success': False, 'err_message': f"Rate limit exceeded: {e.description}"}), 429
 
 
 @bp.app_errorhandler(422)

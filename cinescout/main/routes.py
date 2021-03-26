@@ -313,8 +313,12 @@ def movie_info(tmdb_id):
         if not result['success'] and result['status_code'] != 200:
             # Too many requests
             if result['status_code'] == 429:
-                print("Error retrieving NYT review: too many requests.")
-                abort(429)
+                err_message = ("Too many requests in a row. Please wait 30–60 seconds "
+                   "before your next query.")
+                print(err_message)
+                return render_template("errors/429.html", err_message=err_message), 429
+                # Use again once reviews are asynchonously fetched via JS script.
+                # abort(429)   
             else:
                 # Movie may not have a review yet because it hasn't been released.
                 # This is not an error, and so should not be handled as such.

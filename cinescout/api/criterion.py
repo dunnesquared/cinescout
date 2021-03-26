@@ -7,8 +7,11 @@ from cinescout import db # Get db object defined in __init__.py
 from cinescout.models import Film, CriterionFilm
 
 from cinescout.api import bp
+from cinescout import limiter
 
+# Rate-limit calls to this api route. 
 @bp.route("/criterion-films")
+@limiter.limit("30 per minute, 2 per second")    
 def get_criterion_films():
     """Builds data object required to display a list of critically-acclaimed movies.
     on the client side.

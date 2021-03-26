@@ -41,6 +41,12 @@ csrf = CSRFProtect()
 csrf.init_app(app)
 print("CSRF object created and applied to app.")
 
+# Rate limit access to resources, especially public APIs. 
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+limiter = Limiter(app, key_func=get_remote_address, retry_after=30)
+print("Limiter object created. Retry allowed from remote address after 30 seconds.")
+
 # Register Blueprint packages.
 from cinescout.errors import bp as errors_bp
 app.register_blueprint(errors_bp)

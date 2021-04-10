@@ -13,6 +13,7 @@ from cinescout.api import bp
 
 
 def _nyt_response_error(response : Dict) -> Dict:
+     """Private function to handle errors returned from NYT api."""
      print("Error retrieving NYT review.")
      status_code = response['status_code']
      if status_code == 429:
@@ -27,14 +28,17 @@ def _nyt_response_error(response : Dict) -> Dict:
 
 @bp.route("/nyt-movie-review/")
 def get_nyt_movie_review():
-    """Fetches movie review from NYT api
+    """Fetches movie review from NYT API.
 
     Returns:
         JSON object with the following fields:
-        In case of errors:
+        In case NYT api returns an error:
             'success': Boolean set to False.
             'err_message': String containing error message.
-        Otherwise:
+        In case a review cannot be found despite all attempts:
+            'success': Boolean set to False.
+            'message': String containing message describing that fim could not be found.
+        In case review is found:
             'success': Boolean set to True.
             'review_text': String respresenting NYT movie review for given movie.
             'critics_pick': Boolean whether film is a NYT Critic's Pick.
@@ -83,7 +87,7 @@ def get_nyt_movie_review():
     # See if there's a review to print.
     review = response.get('review', None)
     
-    # Make second attempt. NytMovieReview will try diffently this time.
+    # Make second attempt. NytMovieReview will try using a different method this time.
     if not review:
         print("Making second attempt...")
         NytMovieReview.delay_next()
@@ -102,13 +106,11 @@ def get_nyt_movie_review():
     review_text = review.text
     critics_pick = bool(review.critics_pick)
     review_warning = not response.get('bullseye', None)
-
     result = {
                 'success': True, 
                 'review_text': review_text, 
                 'critics_pick': critics_pick,
                 'review_warning': review_warning
              }
-
     return jsonify(result)
 

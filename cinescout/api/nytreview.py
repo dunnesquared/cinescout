@@ -5,7 +5,7 @@ from typing import Dict
 from datetime import datetime
 
 from flask import jsonify, request
-from flask_login import current_user, login_user, logout_user, login_required
+from flask_login import current_user, login_required
 
 from cinescout.movies import Movie
 from cinescout.reviews import NytMovieReview
@@ -26,7 +26,7 @@ def _nyt_response_error(response : Dict) -> Dict:
      return {'success': False, 'err_message': err_message}, status_code
 
 
-@bp.route("/nyt-movie-review/")
+@bp.route("/nyt-movie-review", methods=['POST'])
 def get_nyt_movie_review():
     """Fetches movie review from NYT API.
 
@@ -46,6 +46,11 @@ def get_nyt_movie_review():
                               indicating that fetched film review may not be the correct one.
             
     """
+    # Only authenticated users can access this api.
+    if not current_user.is_authenticated:
+        err_message = "Current user not authenticated."
+        return {'success': False, 'err_message': err_message}, 401
+
     data = request.get_json()
     title = data.get('title')
     original_title = data.get("original_title")

@@ -52,21 +52,29 @@ def get_nyt_movie_review():
         return {'success': False, 'err_message': err_message}, 401
 
     data = request.get_json()
-    title = data.get('title')
-    original_title = data.get("original_title")
-    release_year = data.get("release_year")
-    release_date = data.get("release_date")
+    title = data.get('title', None)
+    original_title = data.get("original_title", None)
+    release_year = data.get("release_year", None)
+    release_date = data.get("release_date", None)
+
+    # No point in searching for review if query missing data.
+    if not (title and original_title and release_year and release_date):
+        err_message = "Unable to fetch review: data missing from query payload."
+        return {'success': False, 'err_message': err_message}, 400
     
+    # Data should be of expected type. 
+    right_data_types = (isinstance(title, str) and isinstance(original_title, str) 
+                       and isinstance(release_year, int) and isinstance(release_date, str))
+    if not right_data_types:
+        err_message = "Unable to fetch review: bad data type(s) in payload."
+        return {'success': False, 'err_message': err_message}, 400
+    
+
     print("Fetching movie review:")
     print(f"Title: '{title}'")
     print(f"Original Title: {original_title}")
     print(f"Release Year: {release_year}")
     print(f"Release Date: {release_date}")
-
-    # No point in searching for review if release year DNE.
-    if not release_year:
-        err_message = "Unable to fetch review: No review year specified in payload."
-        return {'success': False, 'err_message': err_message}, 400
 
     # No point in searching for review if movie has yet to come out.
     today = datetime.today()

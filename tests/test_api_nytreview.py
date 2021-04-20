@@ -29,7 +29,7 @@ class NytReviewApiTests(unittest.TestCase):
             self.create_user(name="Alex", email="alex@test.com", password="123")
 
         # Endpoint to query
-        self.end_point = '/api//nyt-movie-review'
+        self.end_point = '/api/nyt-movie-review'
 
         # Data that can be use to test out api normally or modified for other test
         self.movie_data = {
@@ -71,7 +71,7 @@ class NytReviewApiTests(unittest.TestCase):
         )
 
     # +++++++++++++++++++++++++++++++ TESTS: nytreview.py +++++++++++++++++++++++++++++++++
-    def test_get_review_not_logged_in(self):
+    def test_not_logged_in(self):
         response = self.app.post(self.end_point, json=self.movie_data, follow_redirects=True)
         json_data = response.get_json()
         print(json_data)
@@ -79,7 +79,8 @@ class NytReviewApiTests(unittest.TestCase):
         self.assertFalse(json_data['success'])
         self.assertIn("Current user not authenticated.", json_data['err_message'])
 
-    def test_get_review_ok(self):
+    # Review found.
+    def test_review_found(self):
         self.login("Alex", "123")
         response = self.app.post(self.end_point, json=self.movie_data, follow_redirects=True)
         json_data = response.get_json()
@@ -88,7 +89,103 @@ class NytReviewApiTests(unittest.TestCase):
         self.assertIn('Tax inspector obsessed with stripper', json_data['review_text'])
         self.assertFalse(json_data['critics_pick'])
         self.assertFalse(json_data['review_warning'])
-        
-     
+    
+    # Review not found. Multiple cases.
+    # Missing input.
+    def test_no_title(self):
+        self.login("Alex", "123")
+        self.movie_data['title'] = None
+        response = self.app.post(self.end_point, json=self.movie_data, follow_redirects=True)
+        json_data = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(json_data['success'])
+    
+    def test_no_original_title(self):
+        self.login("Alex", "123")
+        self.movie_data['original_title'] = None
+        response = self.app.post(self.end_point, json=self.movie_data, follow_redirects=True)
+        json_data = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(json_data['success'])
+    
+    def test_no_release_year(self):
+        self.login("Alex", "123")
+        self.movie_data['release_year'] = None
+        response = self.app.post(self.end_point, json=self.movie_data, follow_redirects=True)
+        json_data = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(json_data['success'])
+    
+    def test_no_release_date(self):
+        self.login("Alex", "123")
+        self.movie_data['release_date'] = None
+        response = self.app.post(self.end_point, json=self.movie_data, follow_redirects=True)
+        json_data = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(json_data['success'])
+
+    # Bad input
+    def test_bad_title(self):
+        self.login("Alex", "123")
+        self.movie_data['title'] = ('bad', 'type')
+        response = self.app.post(self.end_point, json=self.movie_data, follow_redirects=True)
+        json_data = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(json_data['success'])
+    
+    def test_bad_original_title(self):
+        self.login("Alex", "123")
+        self.movie_data['original_title'] = ('bad', 'type')
+        response = self.app.post(self.end_point, json=self.movie_data, follow_redirects=True)
+        json_data = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(json_data['success'])
+    
+    def test_bad_release_year(self):
+        self.login("Alex", "123")
+        self.movie_data['release_year'] = ('bad', 'type')
+        response = self.app.post(self.end_point, json=self.movie_data, follow_redirects=True)
+        json_data = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(json_data['success'])
+    
+    def test_bad_release_date(self):
+        self.login("Alex", "123")
+        self.movie_data['release_date'] = ('bad', 'type')
+        response = self.app.post(self.end_point, json=self.movie_data, follow_redirects=True)
+        json_data = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(json_data['success'])
+    
+    # Review does not exist.
+    # Non-existent film because of incorrect info.
+    def test_no_title(self):
+        self.login("Alex", "123")
+        self.movie_data['title'] = self.movie_data['original_title'] = 'Mulholland Five'
+        response = self.app.post(self.end_point, json=self.movie_data, follow_redirects=True)
+        json_data = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(json_data['success'])
+        self.assertIn("No review found", json_data['message'])
+    
+    # Film has yet to be released and so has no review.
+    def test_film_not_released(self):
+        self.login("Alex", "123")
+        future_film = {
+                        'title': 'The Future',
+                        'original_title': 'The Future',
+                        'release_year': 2999,
+                        'release_date': '2999-12-31'
+                      }
+        response = self.app.post(self.end_point, json=future_film, follow_redirects=True)
+        json_data = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(json_data['success'])
+        self.assertIn("this film has yet to be released.", json_data['message'])
+
+    # Too many requests, 429
+    # Won't write unit test. Manually tested in Postman: works.
+
+            
 if __name__ == "__main__":
     unittest.main()

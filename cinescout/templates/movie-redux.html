@@ -1,0 +1,253 @@
+{% extends "base.html" %}
+
+{% block title %}"{{ movie.title }}"
+  {% if movie.release_year %}
+    ({{movie.release_year}})
+  {% else %}
+    (????)
+  {% endif %}
+{% endblock %}
+
+{% block javascript %}
+  {% if current_user.is_authenticated %}
+    <script src="{{ url_for('static', filename='js/addremove.js') }}" crossorigin="anonymous"></script>
+    <script src="{{ url_for('static', filename='js/getreview.js') }}" crossorigin="anonymous"></script>
+  {% endif %}
+{% endblock %}
+
+{% block body %}
+  <h1><i>{{ movie.title }}</i></h1>
+  <br>
+
+  <div>
+    {% if movie.poster_full_url %}
+      <img src="{{ movie.poster_full_url }}" class="border border-white"></img>
+    {% else %}
+      <p>No poster available for this movie.</p>
+    {% endif %}
+  </div>
+
+  <br>
+  {% if current_user.is_authenticated %}
+    <div id="button-container">
+    {% if not on_user_list %}
+        <button class="btn btn-secondary" id="add-button" type="submit"><h2>Add to list</h2></button>
+    {% else %}
+        <button class="btn btn-secondary" id="remove-button" type="submit"><h2>Remove from list</h2></button>
+    {% endif %}
+    </div>
+    <br>
+  {% endif %}
+
+  <section>
+    <div class="movie-section-row">
+        <div class="movie-section-heading">
+          Release Date
+        </div>
+        <div>
+          {% if movie.release_date %}
+            {{ movie.release_date }}
+          {% else %}
+            Release date unknown for this movie.
+          {% endif %}
+        </div>
+    </div>
+
+    {% if movie.title != movie.original_title and movie.original_title is not none %}
+    <div class="movie-section-row">
+        <div class="movie-section-heading">Original Title</div>
+        <div> <i> {{ movie.original_title }} </i> </div>
+    </div>
+    {% endif %}
+
+    <div class="movie-section-row">
+        <div class="movie-section-heading">Overview</div>
+        <div>
+        {% if movie.overview %}
+          {{ movie.overview }}
+        {% else %}
+          <span>A summary for this film could not be found.</span>
+        {% endif %}
+        </div>
+    </div>
+
+    <div class="movie-section-row">
+      <div class="movie-section-heading">Runtime</div>
+        {% if movie.runtime %}
+          <div> {{ movie.runtime }} min </div>
+        {% else %}
+          <div> Runtime unknown for this movie. </div>
+        {% endif %}
+    </div>
+
+    {% if current_user.is_authenticated %}
+      <div class="movie-section-row">
+        <div class="movie-section-heading">Movie Review</div>
+          <div class="review">
+           {# {% if review is not none %}
+              <span class="review-text">
+                {{ review.text }}
+                {% if review.critics_pick == 1 %}
+                  <span title="Critic's Pick">⭐️</span>
+                {% endif %}
+              </span>
+              <br>
+              <span class="publication">
+                New York Times, {{ review.publication_date }}
+                  {% if review_warning %}
+                    <sup>☂︎</sup>
+                  {% endif %}
+                  <!--Put here because was not rendering properly-->
+                  <div class="movie-section-row"></div>
+              </span>
+            {% else %}
+              <span> A movie review could not be found for this movie. </span>
+          </div>
+            {% endif %} #}
+      </div>
+    {% endif %}
+
+   
+    <div class="movie-section-row">
+      <div class="movie-section-heading">TMDB Link</div>
+      <div>
+        {% if movie.tmdb_full_url %}
+          <a href="{{ movie.tmdb_full_url }}" target="_blank" class="text-info">
+            {{ movie.tmdb_full_url }}
+          </a>
+        {% else %}
+          <span> There is no TMDB link for this film. </span>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="movie-section-row">
+      <div class="movie-section-heading">IMDB Link</div>
+      <div>
+        {% if movie.imdb_full_url %}
+          <a href="{{ movie.imdb_full_url }}" target="_blank" class="text-info">
+            {{ movie.imdb_full_url }}
+          </a>
+        {% else %}
+          <span> There is no IMDB link for this film. </span>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="movie-section-row">
+      <div class="movie-section-heading">Learn More</div>
+      {% for search_engine, query in search_engines.items() %}
+        <div>
+         <a href="{{ query }}" target="_blank" class="text-info">
+         {{ search_engine }}
+        </a>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="movie-section-row">
+      <div class="movie-section-heading">Where to Watch (Canada only)</div>
+      <div id="provider-parent">
+        {% if movie.providers['stream'] or movie.providers['rent'] %}
+          <div class="provider-section">
+            <div>Stream:</div>
+              {% if movie.providers['stream'] %}
+                <span>{{ movie.providers['stream'] | join(", ") }}</span>
+              {% else %}
+                  <span>No streaming services listed.🙈</span>
+              {% endif %}
+          </div>
+          <div class='provider-section'>
+            <div>Rent:</div>
+              {% if movie.providers['rent'] %}
+                <span>{{ movie.providers['rent'] | join(", ") }}</span>
+              {% else %}
+                  <span>No rental services listed.🙈</span>
+              {% endif %}
+          </div>
+        {% else %}
+          <div> No provider data available.🙈</div>
+        {% endif %}
+      </div>
+    </div>
+
+     <div>
+      <div class="movie-section-heading">Cast</div>
+        <table class="table table-sm table-hover table-dark">
+          
+          <colgroup>
+            <col span=1 class="creditslist-col-name">
+            <col span=1 class="creditslist-col-rolejob">
+          </colgroup>
+
+          {% for credit in movie.filmcredits['cast'] %}
+            <tr>
+              <td>
+                <a href="/person/{{ credit['id'] }}" class="text-white">{{ credit['name'] }}</a>
+                &nbsp
+              </td>
+              <td>
+                {% if credit['character'] %}
+                {{ credit['character'] }}
+                {% else %}
+                  ???
+                {% endif %}
+              </td>
+            </tr>
+          {% else %}
+            <span> No data available. </span> 
+          {% endfor %}
+        </table>
+    </div>
+
+    <div>
+      <div class="movie-section-heading">Crew</div>
+        <table class="table table-sm table-hover table-dark">
+
+          <colgroup>
+            <col span=1 class="creditslist-col-name">
+            <col span=1 class="creditslist-col-rolejob">
+          </colgroup>
+
+          {% for credit in movie.filmcredits['crew'] %}
+              <tr>
+                  <td>
+                    <a href="/person/{{ credit['id'] }}" class="text-white">{{ credit['name'] }}</a>
+                    &nbsp
+                  </td>
+                  <td>
+                    {% if credit['job'] %}
+                      {{ credit['job'] }}
+                    {% else %}
+                      ???
+                    {% endif %}
+                  </td> 
+                </tr>
+            {% else %}
+             <span> No data available. </span> 
+            {% endfor %}
+        </table>
+    </div>
+
+    {# {% if current_user.is_authenticated %}
+      {% if review_warning is true %}
+        <div class="movie-section-row" id="review-warning">
+          <sup>☂︎</sup>
+          <em>
+            Because the release and review years are different,
+            this movie review might be for another movie of a similar title.
+          </em>
+        </div>
+      {% endif %}
+    {% endif %} #}
+  </section>
+
+  <!-- Data values required to add/remove film -->
+  <input id="tmdb-id" type="hidden" value="{{ movie.id }}">
+  <input id="title" type="hidden" value="{{ movie.title }}">
+  <input id="year" type="hidden" value="{{ movie.release_year }}">
+  <input id="date" type="hidden" value="{{ movie.release_date }}">
+  <input id="original-title" type="hidden" value="{{ movie.original_title }}">
+
+
+{% endblock %}

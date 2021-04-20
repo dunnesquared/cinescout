@@ -350,3 +350,67 @@ def movie_info(tmdb_id):
 @bp.route("/about", methods=['GET'])
 def about():
     return render_template("about.html")
+
+
+### REFACTORED METHODS
+# New movie_info view using redesigned NYTMovieReview algorithm.
+@bp.route("/movie-redux/<int:tmdb_id>", methods=["GET"])
+def movie_info_redux(tmdb_id):
+    """Renders salient movie data and review summary from external APIs."""
+
+    # Get movie info TMDB database.
+    print("Fetching movie info based on tmdb id...")
+    result = TmdbMovie.get_movie_info_by_id(tmdb_id)
+
+    # TMDB request failed.
+    if not result['success']:
+        print("Error!")
+        # Can't find movie referenced by id.
+        if result['status_code'] == 404:
+            abort(404)
+        else:
+            # Some other error, e.g. 429: too many request.
+            err_message = f"TMDB API query failed; HTTP response = {result['status_code']}"
+            return render_template("errors/misc-error.html",
+                                    err_message=err_message)
+
+    # Collect movie object.
+    movie = result['movie']
+
+    # To check a user's personal movie list, user must be logged in.
+    # Also, limiting the fetching of NYT movie reviews to authenticated users.
+    # This will speed up display of movie info for anonymous users as NYT review
+    # fetching requires time delays between API requests.
+
+     # See whether movie is already on user's list.
+    on_user_list, film_list_item_id = False, None
+
+    # To ref before assignment errors in the case of anonymous users requesting movie info.
+    review, review_warning = None, None
+
+    # Get search-engine queries for movie.
+    search_engines = {
+                        'Google': movie.get_query('google'),
+                        'DuckDuckGo': movie.get_query('duckduckgo')
+                     }
+
+    if current_user.is_authenticated:
+
+        # CHECK PERSONAL MOVIE LIST!!!
+        print(f"Checking whether '{movie.title}' on user list...")
+        film = FilmListItem.query.filter_by(tmdb_id=tmdb_id,
+                                            user_id=current_user.id).first()
+        if film:
+            on_user_list = True
+            film_list_item_id = film.id
+
+        # on_user_list = True if film else False
+        print(f"On user list? {on_user_list}, id: {film_list_item_id}")
+
+       
+
+    return render_template("movie-redux.html",
+                            movie=movie,
+                            on_user_list=on_user_list,
+                            review_warning=review_warning, 
+                            search_engines=search_engines)

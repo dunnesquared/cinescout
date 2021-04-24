@@ -83,31 +83,11 @@
     {% if current_user.is_authenticated %}
       <div class="movie-section-row">
         <div class="movie-section-heading">Movie Review</div>
-          <div class="review">
-           {# {% if review is not none %}
-              <span class="review-text">
-                {{ review.text }}
-                {% if review.critics_pick == 1 %}
-                  <span title="Critic's Pick">⭐️</span>
-                {% endif %}
-              </span>
-              <br>
-              <span class="publication">
-                New York Times, {{ review.publication_date }}
-                  {% if review_warning %}
-                    <sup>☂︎</sup>
-                  {% endif %}
-                  <!--Put here because was not rendering properly-->
-                  <div class="movie-section-row"></div>
-              </span>
-            {% else %}
-              <span> A movie review could not be found for this movie. </span>
-          </div>
-            {% endif %} #}
+          <div class="review"></div> 
+            <span class="review-text">Searching...</span>
       </div>
     {% endif %}
 
-   
     <div class="movie-section-row">
       <div class="movie-section-heading">TMDB Link</div>
       <div>
@@ -229,17 +209,9 @@
         </table>
     </div>
 
-    {# {% if current_user.is_authenticated %}
-      {% if review_warning is true %}
-        <div class="movie-section-row" id="review-warning">
-          <sup>☂︎</sup>
-          <em>
-            Because the release and review years are different,
-            this movie review might be for another movie of a similar title.
-          </em>
-        </div>
-      {% endif %}
-    {% endif %} #}
+    {% if current_user.is_authenticated %}
+        <div class="movie-section-row" id="review-warning"></div>
+    {% endif %}
   </section>
 
   <!-- Data values required to add/remove film -->
@@ -248,6 +220,4 @@
   <input id="year" type="hidden" value="{{ movie.release_year }}">
   <input id="date" type="hidden" value="{{ movie.release_date }}">
   <input id="original-title" type="hidden" value="{{ movie.original_title }}">
-
-
 {% endblock %}

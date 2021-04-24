@@ -117,11 +117,13 @@ def get_nyt_movie_review():
         
     # All good. Extract data.
     review_text = review.text
+    publication_date = review.publication_date
     critics_pick = bool(review.critics_pick)
     review_warning = not response.get('bullseye', None)
     result = {
                 'success': True, 
-                'review_text': review_text, 
+                'review_text': review_text,
+                'publication_date': publication_date, 
                 'critics_pick': critics_pick,
                 'review_warning': review_warning
              }

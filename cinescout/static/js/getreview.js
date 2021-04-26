@@ -103,6 +103,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     })
     .catch(err => {
-        console.error(err.message)
+        const errTextElem = document.querySelector('.review-text');
+        console.error(err.message);
+        errTextElem.textContent = "An error has occurred. Please open console for more info.";
+        document.querySelector('.review').appendChild(errTextElem);
     });
 });

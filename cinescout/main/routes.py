@@ -230,10 +230,15 @@ def filmography(person_id):
                              person_image_url=bio_data.get('image_url'))
 
 
+@bp.route("/about", methods=['GET'])
+def about():
+    return render_template("about.html")
+
+
 # New movie_info view using redesigned NYTMovieReview algorithm.
 @bp.route("/movie/<int:tmdb_id>", methods=["GET"])
 def movie_info(tmdb_id):
-    """Renders salient movie data and review summary from external APIs."""
+    """Renders salient movie data from external API."""
 
     # Get movie info TMDB database.
     print("Fetching movie info based on tmdb id...")
@@ -259,11 +264,8 @@ def movie_info(tmdb_id):
     # This will speed up display of movie info for anonymous users as NYT review
     # fetching requires time delays between API requests.
 
-     # See whether movie is already on user's list.
+    # See whether movie is already on user's list.
     on_user_list, film_list_item_id = False, None
-
-    # To ref before assignment errors in the case of anonymous users requesting movie info.
-    review, review_warning = None, None
 
     # Get search-engine queries for movie.
     search_engines = {
@@ -272,7 +274,6 @@ def movie_info(tmdb_id):
                      }
 
     if current_user.is_authenticated:
-
         # CHECK PERSONAL MOVIE LIST!!!
         print(f"Checking whether '{movie.title}' on user list...")
         film = FilmListItem.query.filter_by(tmdb_id=tmdb_id,
@@ -284,69 +285,7 @@ def movie_info(tmdb_id):
         # on_user_list = True if film else False
         print(f"On user list? {on_user_list}, id: {film_list_item_id}")
 
-        # GET MOVIE REVIEW!!!
-        # No point in searching for a movie review if release year is unknown.
-        if movie.release_year is not None and movie.release_year != 0:
-            # Try this first.
-            print(f"Fetching NYT movie review for '{movie.title}' ({movie.release_year})...")
-            print("Making first attempt...")
-            result = NytMovieReview.get_movie_review(movie)
-
-            # If the above doesn't work, give this a shot.
-            # Note that there is no point doing a second attempt for a film
-            # that hasn't come out yet.
-            if not result['review'] and not result['future_release']:
-                print("Making second attempt...")
-                print(f"Waiting {NytMovieReview.delay} seconds...")
-                NytMovieReview.delay_next()
-                result = NytMovieReview.get_movie_review(movie, first_try=False)
-
-        else:
-            print("Unable to fetch review: Movie has no review year.")
-            return render_template("movie.html",
-                                    movie=movie,
-                                    review=None,
-                                    on_user_list=on_user_list,
-                                    search_engines=search_engines)
-
-        # NYT request failed.
-        if not result['success'] and result['status_code'] != 200:
-            # Too many requests
-            if result['status_code'] == 429:
-                err_message = ("Too many requests in a row. Please wait 30–60 seconds "
-                   "before your next query.")
-                print(err_message)
-                return render_template("errors/429.html", err_message=err_message), 429
-                # Use again once reviews are asynchonously fetched via JS script.
-                # abort(429)   
-            else:
-                # Movie may not have a review yet because it hasn't been released.
-                # This is not an error, and so should not be handled as such.
-                # Everything else though IS an error, and should be explored.
-                if not result['future_release']:
-                    print("Error retrieving NYT review.")
-                    status_code = result['status_code']
-                    description = result['message']
-                    err_message = f"NYT API query failed ({status_code}): {description}"
-                    print(err_message)
-                    return render_template("errors/misc-error.html", err_message=err_message)
-
-        # Looks like a review has been returned. Get it.
-        review = result['review']
-
-        # Check whether review has been flagged as being potentially wrong.
-        review_warning = None
-        if result['bullseye'] is not None:
-            review_warning = not result['bullseye']
-
     return render_template("movie.html",
                             movie=movie,
-                            review=review,
                             on_user_list=on_user_list,
-                            review_warning=review_warning, 
                             search_engines=search_engines)
-
-
-@bp.route("/about", methods=['GET'])
-def about():
-    return render_template("about.html")

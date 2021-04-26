@@ -292,7 +292,7 @@ class MainViewsTests(unittest.TestCase):
         self.assertIn(b'Stream', response.data)
         self.assertIn(b'Disney', response.data)
         self.assertIn(b'Rent', response.data)
-        self.assertIn(b'Apple', response.data)
+        self.assertIn(b'YouTube', response.data)
     
     def test_moviepage_wheretowatch_nodata(self):
         movie_id = '502057'

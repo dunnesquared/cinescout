@@ -38,14 +38,13 @@
     </article>
 
     <article>
-        <div class="question">I'm a registered user, and I've noticed that it's often slower to
-            pull up movie info when I'm logged in than when I'm not. Are you warping time or 
-            is something else going on here?</div>
+        <div class="question">I'm a registered user. I've noticed that while most movie reviews 
+            appear instantaneously, others take more time to display. Why?</div>
         <div class="answer">
-            NYT's API has a max request limit of 10 requests per minute, so I have to delay certain 
-            API calls by six seconds. For some movies, it may take several calls to search for a 
-            review, resulting in longer wait times. I have a design fix to reduce the wait time 
-            for movie info, which I hope implement in the future. 
+            NYT's API has a max request limit of 10 requests per minute, so I have to delay each 
+            API call by several seconds. For some movies, it may take a few calls to search for a 
+            review, resulting in longer wait times. Other movie info will appear relatively faster,
+            however, as calls to the NYT API are done asynchronously.
         </div>
     </article>
 
@@ -86,7 +85,7 @@
             {%  if version %}
                 {{ version }} :-) 
             {% else %}
-                1.6.1
+                1.7
             {% endif %}
         </div>
     </article>

@@ -54,6 +54,7 @@ code. Notable dependencies include
 - `Flask-Admin` to create a UI to administer the user logins, passwords and other database tasks.
 - `requests` to interact the external APIs.
 - `fuzzywuzzy` to determine how similar two movie titles are to each other.
+- `Flask-Limiter` to rate-limit api queries that fetch a list of Criterion films.
 
 ## Running `Cinescout` on macOS, 'nix
 1. Download or clone this project from `github`.
@@ -106,6 +107,7 @@ Main package containing business-logic modules, models, sub-packages and folders
   - `js/removefromlist.js`: Javascript file that removes films from users' lists.
   - `js/browse.js`: Javascript file that requests Criterion films from app.
   - `js/loadspiner.js`: Javascript file that displays a loading spinner.
+  - `js/getreview.js`: Javascript file that queries for and displays a movie review.
   - `img/apple-touch-icon.png`: Favicon from https://favicon.io/
 - `/templates`: Contains all HTML-Jinja2 template files. All of these are self-explanatory. Please look at the folder's contents for more info.
 
@@ -116,7 +118,8 @@ to render/validate web forms and define end points.
 ### `/cinescout/api`
 Package responsible for providing private/public API to to app. The `criterion` module returns
 list of Criterion films. The `usermovielist` module allows movies to be added and removed 
-from a user's movie list (login required).
+from a user's movie list (login required). The `nytreview` module fetches movies reviews using the
+NYT movie-review API. 
 
 ### `/cinescout/auth`
 Package responsible for user authentication. Uses two separate modules to render/validate web forms 
@@ -156,7 +159,7 @@ The `context` module makes running these tests possible.
 
 - `__init__.py`: Turns parent folder into a Python package.
 - `context.py`: Ensures Python can find `Cinescout` modules and objects for test files.
-- `test_api.py`: Performs unit tests on functions in `api` package.
+- `test_api_*.py`: Performs unit tests on functions of different modules in `api` package.
 - `test_auth.py`: Performs unit tests on functions in `auth` package.
 - `test_main.py`: Performs unit tests on functions in `main` package.
 - `test_movies.py`: Performs unit tests on class methods in `movies` module.

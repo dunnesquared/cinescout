@@ -1,7 +1,8 @@
 # Cinescout🎞: Releases
 
 ### 1.7
-- Make movie-review retrieval asynchronous so as not to delay sending movie-info page to client
+- Make movie-review retrieval asynchronous so as not to delay sending movie-info page to client.
+- Rate-limit queries to Criterion-film-list api.
 
 ### 1.6.1
 - Upgrade certain packages to patch security holes (thank you Snyk!).

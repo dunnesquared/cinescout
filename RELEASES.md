@@ -1,5 +1,10 @@
 # Cinescout🎞: Releases
 
+### 1.7.1
+- Upgrade packages to patch security holes.
+- Replace deprecated WTForms module.
+- Create test-suite script to run tests in batch. 
+
 ### 1.7
 - Make movie-review retrieval asynchronous so as not to delay sending movie-info page to client.
 - Rate-limit queries to Criterion-film-list api.

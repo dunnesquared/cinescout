@@ -166,12 +166,18 @@ The `context` module makes running these tests possible.
 - `test_reviews.py`: Performs unit tests on class methods in `reviews` module.
 - `test.db`: SQLite test database.
 
-To execute the test scripts, run the following on the console:
+To execute a test script, you can run the following on the console:
 
 ```sh
 python tests/test_api.py
 python tests/test_auth.py
 ...
+```
+
+If you want to run all the tests in batch, you can execute a test-suite script:
+
+```sh
+python tests/run_test_suite.py
 ```
 
 N.B. The script `test_movies.py` will take around several minutes to run as it

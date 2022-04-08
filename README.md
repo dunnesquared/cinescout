@@ -20,7 +20,7 @@ So, I worked on it for a few more more weeks, and, eventually, `version 1.x` was
 born.
 
 ## Demo and Video
-You can try out `Cinescout` in its current state [here](https://dunnesquared.pythonanywhere.com).
+You can try out `Cinescout` in its current state [here](https://cinescout.dunnesquared.dev).
 You'll be able to search for films and crew members, but won't be able to create an account, maintain a movie list
 or see NYT movie reviews. For security and maintainability reasons, I've made myself the gatekeeper and limited these features to registered users. See [README-LIVE](https://github.com/dunnesquared/cinescout/blob/master/README-LIVE.md) if you're curious to know more.
 

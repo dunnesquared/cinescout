@@ -31,5 +31,5 @@ if __name__ == "__main__":
     # Load tests, build suite and run.
     tests = [unittest.TestLoader().loadTestsFromTestCase(test_case)
              for test_case in test_cases]
-    suite = suite = unittest.TestSuite(tests)
+    suite = unittest.TestSuite(tests)
     unittest.TextTestRunner(verbosity=2).run(suite)

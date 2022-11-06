@@ -9,7 +9,7 @@ print(f"basedir={basedir}")
 class Config(object):
 	"""Class that retrieves and stores essential data for app."""
 
-	print("Configuing application...")
+	print("Configuring application...")
 
 	SECRET_KEY = os.getenv('SECRET_KEY')
 

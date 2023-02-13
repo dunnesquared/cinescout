@@ -1,5 +1,8 @@
 # Cinescout🎞: Releases
 
+### 1.7.3
+- Update Mako package to patch security vulnerability.
+
 ### 1.7.2
 - Update packages to patch security vulnerability.
 - Minor code and documentation fixes.

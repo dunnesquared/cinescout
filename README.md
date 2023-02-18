@@ -1,6 +1,6 @@
-# Cinescout🎞 (v1.7)
+# Cinescout🎞 (v1.7.3)
 
-`Cinescout` is a Flask-based, mobile-responsive, website that allows you to learn
+`Cinescout` is a Flask-based, mobile-responsive website that allows you to learn
 more about almost any film or person in the world of cinema.
 
 With `Cinescout` you can:
@@ -20,7 +20,7 @@ So, I worked on it for a few more more weeks, and, eventually, `version 1.x` was
 born.
 
 ## Demo and Video
-You can try out `Cinescout` in its current state [here](https://dunnesquared.pythonanywhere.com).
+You can try out `Cinescout` in its current state [here](https://cinescout.dunnesquared.dev).
 You'll be able to search for films and crew members, but won't be able to create an account, maintain a movie list
 or see NYT movie reviews. For security and maintainability reasons, I've made myself the gatekeeper and limited these features to registered users. See [README-LIVE](https://github.com/dunnesquared/cinescout/blob/master/README-LIVE.md) if you're curious to know more.
 
@@ -33,7 +33,7 @@ and the *The Movie Database* (TMDB). Movie reviews are retrieved from the former
 general movie vitals from the latter.
 
 API keys are required to access these resources. For security reasons
-no keys are provided with this app: go to each website and get your
+no keys are provided with this app: please go to each website and get your
 own.
 
 ## Python version

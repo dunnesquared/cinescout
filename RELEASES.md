@@ -1,5 +1,12 @@
 # Cinescout🎞: Releases
 
+### 1.7.3
+- Update Mako package to patch security vulnerability.
+
+### 1.7.2
+- Update packages to patch security vulnerability.
+- Minor code and documentation fixes.
+
 ### 1.7.1
 - Upgrade packages to patch security holes.
 - Replace deprecated WTForms module.

@@ -190,7 +190,7 @@ class MainViewsTests(unittest.TestCase):
     def test_search_person_invalid_id_02(self):
         id = 123445465465765767687687980879686787567744566765756
         response = self.app.get(f'/person/{id}')
-        self.assertIn(b'Internal Server Error', response.data)
+        self.assertIn(b'404: Page Not Found', response.data)
 
     def test_search_person_invalid_id_03(self):
         id = "sdjkfdkbgkfdbgkfdsjgb"

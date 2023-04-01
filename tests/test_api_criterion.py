@@ -1,6 +1,10 @@
 """Performs unit test on functions in cinescout.api.criterion."""
 
 import os
+
+# Use in-memory database for testing.
+os.environ['DATABASE_URL'] = 'sqlite://'
+
 import time
 import unittest
 import json
@@ -14,25 +18,30 @@ CRITERION_API_CALL_DELAY = 30
 
 class CriterionApiTests(unittest.TestCase):
     def setUp(self):
-        # """Executes before each test."""
+        """Executes before each test."""
+        self.app = app
+
+        # Create and push app context before any db transactions
+        self.appctx = self.app.app_context()
+        self.appctx.push()
+        db.create_all()
+        
+        # Create a client to make HTTP requests.
+        self.client = self.app.test_client()
+
+        # Set some config options (not sure these do anything anymore)
         app.config['TESTING'] = True
         app.config['WTF_CSRF_ENABLED'] = False
         app.config['DEBUG'] = False
-        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'tests/test.db')
-        self.app = app.test_client()
 
-        # Need to push app's new test context to ensure that db is created anew.
-        with app.app_context():
-            db.drop_all()
-            db.create_all()
-
-        # See whether default user in db. If not add him. 
+        # Add user to test db. See whether Alex exists. If not add him. 
         default_user = User.query.filter_by(username="Alex").first()
         if not default_user:
             print("Creating default user 'Alex'...")
-            self.create_user(name="Alex", email="alex@test.com", password="123")
+            self.create_user(name="Alex", email="alex@test.com", 
+                            password="123")
 
-        # Placeholder variables to make testing easier.
+        # Placeholder variables to make testing easier
         self.dummy_pw = "12345678"
 
 
@@ -40,6 +49,13 @@ class CriterionApiTests(unittest.TestCase):
         """Executes after each test."""
         db.session.remove()
         db.drop_all()
+
+        # Delete app context, no longer required.
+        self.appctx.pop()
+        self.app = None
+        self.appctx = None
+        self.client = None
+
 
     # **** HELPER METHODS ****
     def delay_api_call(self, amt=6):
@@ -70,28 +86,28 @@ class CriterionApiTests(unittest.TestCase):
         return film
 
     def login(self, username, password):
-        return self.app.post(
+        return self.client.post(
             '/login',
             data=dict(username=username, password=password),
             follow_redirects=True
         )
 
     def logout(self):
-        return self.app.get(
+        return self.client.get(
             '/logout',
             follow_redirects=True
         )
 
     def add_film_to_list(self, tmdb_id=None, title=None, year=None,
                          date=None, original_title=None):
-        return self.app.post('/api/user-movie-list/item',
+        return self.client.post('/api/user-movie-list/item',
                    data=dict(tmdb_id=tmdb_id, title=title,
                            year=year, date=date,
                            original_title=original_title),
                            follow_redirects=True)
 
     def remove_film_from_list(self, tmdb_id=None):
-        return self.app.delete('/api/user-movie-list/item',
+        return self.client.delete('/api/user-movie-list/item',
               data=dict(tmdb_id=tmdb_id),
                       follow_redirects=True)
 
@@ -101,7 +117,7 @@ class CriterionApiTests(unittest.TestCase):
     def test_criterion_api_no_entries(self):
         self.delay_api_call(amt=CRITERION_API_CALL_DELAY)
 
-        response = self.app.get('/api/criterion-films', data=dict())
+        response = self.client.get('/api/criterion-films', data=dict())
         data = json.loads(response.get_data(as_text=True))
         self.assertFalse(data['success'])
         self.assertIn('no films', data['err_message'])
@@ -116,7 +132,7 @@ class CriterionApiTests(unittest.TestCase):
         director = "David Lynch"
         self.create_film(title=title, year=release_year, tmdb_id=tmdb_id, director=director,
                          criterionfilm=True)
-        response = self.app.get('/api/criterion-films', data=dict())
+        response = self.client.get('/api/criterion-films', data=dict())
         data = json.loads(response.get_data(as_text=True))
         self.assertTrue(data['success'])
         self.assertEqual(data['num_results'], 1)
@@ -134,7 +150,7 @@ class CriterionApiTests(unittest.TestCase):
         
         # Make five rapid calls to api to cause it to violate its 2 request per second policy.
         for i in range(0, 5):
-            response = self.app.get('/api/criterion-films', data=dict())
+            response = self.client.get('/api/criterion-films', data=dict())
 
         data = json.loads(response.get_data(as_text=True))
         self.assertFalse(data['success'])
@@ -151,7 +167,7 @@ class CriterionApiTests(unittest.TestCase):
         # Make 40 rapid calls to api to cause it to violate its 30 request per minute policy.
         for i in range(0, 40):
             self.delay_api_call(amt=1)
-            response = self.app.get('/api/criterion-films', data=dict())
+            response = self.client.get('/api/criterion-films', data=dict())
 
         data = json.loads(response.get_data(as_text=True))
         self.assertFalse(data['success'])

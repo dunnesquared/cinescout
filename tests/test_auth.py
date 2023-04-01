@@ -1,6 +1,10 @@
 """Performs unit-tests of functions in cinescout.auth package."""
 
 import os
+
+# Use in-memory database for testing.
+os.environ['DATABASE_URL'] = 'sqlite://'
+
 import unittest
 
 # Add this line to whatever test script you write
@@ -10,23 +14,28 @@ from context import app, db, basedir, User, Film, CriterionFilm
 class AuthTests(unittest.TestCase):
 
     def setUp(self):
-        # """Executes before each test."""
+        """Executes before each test."""
+        self.app = app
+
+        # Create and push app context before any db transactions
+        self.appctx = self.app.app_context()
+        self.appctx.push()
+        db.create_all()
+        
+        # Create a client to make HTTP requests.
+        self.client = self.app.test_client()
+
+        # Set some config options (not sure these do anything anymore)
         app.config['TESTING'] = True
         app.config['WTF_CSRF_ENABLED'] = False
         app.config['DEBUG'] = False
-        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'tests/test.db')
-        self.app = app.test_client()
 
-        # Need to push app's new test context to ensure that db is created anew.
-        with app.app_context():
-            db.drop_all()
-            db.create_all()
-           
-        # See whether Alex in db. If not add him. 
+        # Add user to test db. See whether Alex exists. If not add him. 
         default_user = User.query.filter_by(username="Alex").first()
         if not default_user:
             print("Creating default user 'Alex'...")
-            self.create_user(name="Alex", email="alex@test.com", password="123")
+            self.create_user(name="Alex", email="alex@test.com", 
+                            password="123")
 
         # Placeholder variables to make testing easier
         self.dummy_pw = "12345678"
@@ -36,6 +45,12 @@ class AuthTests(unittest.TestCase):
         # print("TEST DB dropped!")
         db.session.remove()
         db.drop_all()
+
+        # Delete app context, no longer required.
+        self.appctx.pop()
+        self.app = None
+        self.appctx = None
+        self.client = None
 
     # **** HELPER METHODS ****
     def create_user(self, name, email, password):
@@ -66,14 +81,14 @@ class AuthTests(unittest.TestCase):
         pass
 
     def login(self, username, password):
-        return self.app.post(
+        return self.client.post(
             '/login',
             data=dict(username=username, password=password),
             follow_redirects=True
         )
 
     def logout(self):
-        return self.app.get(
+        return self.client.get(
             '/logout',
             follow_redirects=True
         )
@@ -130,13 +145,13 @@ class AuthTests(unittest.TestCase):
     # # *** REGISTER ***
     # ==============  TESTS OBSOLETE AS OF v1.1.0 =====================
     # def test_register_page_anonymous(self):
-    #     response = self.app.get('/register', follow_redirects=True)
+    #     response = self.client.get('/register', follow_redirects=True)
     #     self.assertEqual(response.status_code, 200)
     #     self.assertIn(b'Register', response.data)
 
     # def test_register_page_authenticated(self):
     #     response = self.login(username="Alex", password="123")
-    #     response = self.app.get('/register', follow_redirects=True)
+    #     response = self.client.get('/register', follow_redirects=True)
     #     self.assertEqual(response.status_code, 200)
     #     self.assertIn(b'Welcome', response.data)
 
@@ -145,7 +160,7 @@ class AuthTests(unittest.TestCase):
     #     email = "borat@borat.com"
     #     password = self.dummy_pw
     #     password2 = self.dummy_pw
-    #     response = self.app.post(
+    #     response = self.client.post(
     #         '/register',
     #         data=dict(username=username, email=email, password=password, password2=password2),
     #         follow_redirects=True
@@ -158,7 +173,7 @@ class AuthTests(unittest.TestCase):
     #     email = ""
     #     password = ""
     #     password2 = ""
-    #     response = self.app.post(
+    #     response = self.client.post(
     #         '/register',
     #         data=dict(username=username, email=email, password=password, password2=password2),
     #         follow_redirects=True
@@ -171,7 +186,7 @@ class AuthTests(unittest.TestCase):
     #     email = "    "
     #     password = "    "
     #     password2 = "     "
-    #     response = self.app.post(
+    #     response = self.client.post(
     #         '/register',
     #         data=dict(username=username, email=email, password=password, password2=password2),
     #         follow_redirects=True
@@ -179,7 +194,7 @@ class AuthTests(unittest.TestCase):
     #     self.assertIn(b'This field is required.', response.data)
 
     #     # No data passed
-    #     response = self.app.post(
+    #     response = self.client.post(
     #         '/register',
     #         data=dict(username=None, email=None, password=None, password2=None),
     #         follow_redirects=True
@@ -188,7 +203,7 @@ class AuthTests(unittest.TestCase):
 
     # def test_taken_username_email(self):
     #     # Taken username
-    #     response = self.app.post(
+    #     response = self.client.post(
     #         '/register',
     #         data=dict(username="Alex", email="a@a.com", password=123, password2=123),
     #         follow_redirects=True
@@ -196,7 +211,7 @@ class AuthTests(unittest.TestCase):
     #     self.assertIn(b'Username already taken.', response.data)
 
     #     # Taken email
-    #     response = self.app.post(
+    #     response = self.client.post(
     #         '/register',
     #         data=dict(username="Random", email="alex@test.com", password=123, password2=123),
     #         follow_redirects=True
@@ -205,7 +220,7 @@ class AuthTests(unittest.TestCase):
 
     # def test_bad_input(self):
     #     # Non alphanumeric characters in username
-    #     response = self.app.post(
+    #     response = self.client.post(
     #         '/register',
     #         data=dict(username="Sheryl?Lee", email="shery@lee.com",
     #         password=123, password2=123),
@@ -214,7 +229,7 @@ class AuthTests(unittest.TestCase):
     #     self.assertIn(b'Username must contain only alphanumeric or underscore characters.', response.data)
 
     #     # Bad email
-    #     response = self.app.post(
+    #     response = self.client.post(
     #         '/register',
     #         data=dict(username="SherylLee", email="shery?lee.com",
     #         password=123, password2=123),
@@ -223,7 +238,7 @@ class AuthTests(unittest.TestCase):
     #     self.assertIn(b'Invalid email address.', response.data)
 
     # def test_different_passwords(self):
-    #     response = self.app.post(
+    #     response = self.client.post(
     #         '/register',
     #         data=dict(username="SherylLee", email="shery@lee.com",
     #         password=123, password2=456),
@@ -232,7 +247,7 @@ class AuthTests(unittest.TestCase):
     #     self.assertIn(b'Passwords do not match.', response.data)
 
     # def test_password_length(self):
-    #     response = self.app.post(
+    #     response = self.client.post(
     #         '/register',
     #         data=dict(username="SherylLee", email="shery@lee.com",
     #         password=123, password2=123),

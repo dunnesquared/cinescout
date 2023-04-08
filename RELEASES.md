@@ -1,5 +1,10 @@
 # Cinescout🎞: Releases
 
+### 1.7.4
+- Update packages to fix DOS vulnerability
+- Add app context to prevent fatal exceptions
+- Disable admin feature to pass tests
+
 ### 1.7.3
 - Update Mako package to patch security vulnerability.
 

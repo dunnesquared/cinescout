@@ -1,6 +1,10 @@
 """Performs unit test on functions in cinescout.api.nytreviewapi."""
 
 import os
+
+# Use in-memory database for testing.
+os.environ['DATABASE_URL'] = 'sqlite://'
+
 import time
 import unittest
 
@@ -10,23 +14,28 @@ from context import app, db, basedir, User
 
 class NytReviewApiTests(unittest.TestCase):
     def setUp(self):
-        # """Executes before each test."""
+        """Executes before each test."""
+        self.app = app
+
+        # Create and push app context before any db transactions
+        self.appctx = self.app.app_context()
+        self.appctx.push()
+        db.create_all()
+        
+        # Create a client to make HTTP requests.
+        self.client = self.app.test_client()
+
+        # Set some config options (not sure these do anything anymore)
         app.config['TESTING'] = True
         app.config['WTF_CSRF_ENABLED'] = False
         app.config['DEBUG'] = False
-        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'tests/test.db')
-        self.app = app.test_client()
 
-        # Need to push app's new test context to ensure that db is created anew.
-        with app.app_context():
-            db.drop_all()
-            db.create_all()
-
-        # See whether default user in db. If not add him. 
+        # Add user to test db. See whether Alex exists. If not add him. 
         default_user = User.query.filter_by(username="Alex").first()
         if not default_user:
             print("Creating default user 'Alex'...")
-            self.create_user(name="Alex", email="alex@test.com", password="123")
+            self.create_user(name="Alex", email="alex@test.com", 
+                            password="123")
 
         # Endpoint to query
         self.end_point = '/api/nyt-movie-review'
@@ -44,6 +53,12 @@ class NytReviewApiTests(unittest.TestCase):
         db.session.remove()
         db.drop_all()
 
+        # Delete app context, no longer required.
+        self.appctx.pop()
+        self.app = None
+        self.appctx = None
+        self.client = None
+
     # **** HELPER METHODS ****
     def delay_api_call(self, amt=6):
         """Delays executions by amt seconds"""
@@ -58,21 +73,21 @@ class NytReviewApiTests(unittest.TestCase):
         return u
     
     def login(self, username, password):
-        return self.app.post(
+        return self.client.post(
             '/login',
             data=dict(username=username, password=password),
             follow_redirects=True
         )
 
     def logout(self):
-        return self.app.get(
+        return self.client.get(
             '/logout',
             follow_redirects=True
         )
 
     # +++++++++++++++++++++++++++++++ TESTS: nytreview.py +++++++++++++++++++++++++++++++++
     def test_not_logged_in(self):
-        response = self.app.post(self.end_point, json=self.movie_data, follow_redirects=True)
+        response = self.client.post(self.end_point, json=self.movie_data, follow_redirects=True)
         json_data = response.get_json()
         print(json_data)
         self.assertEqual(response.status_code, 401)
@@ -82,7 +97,7 @@ class NytReviewApiTests(unittest.TestCase):
     # Review found.
     def test_review_found(self):
         self.login("Alex", "123")
-        response = self.app.post(self.end_point, json=self.movie_data, follow_redirects=True)
+        response = self.client.post(self.end_point, json=self.movie_data, follow_redirects=True)
         json_data = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertTrue(json_data['success'])
@@ -95,7 +110,7 @@ class NytReviewApiTests(unittest.TestCase):
     def test_no_title(self):
         self.login("Alex", "123")
         self.movie_data['title'] = None
-        response = self.app.post(self.end_point, json=self.movie_data, follow_redirects=True)
+        response = self.client.post(self.end_point, json=self.movie_data, follow_redirects=True)
         json_data = response.get_json()
         self.assertEqual(response.status_code, 400)
         self.assertFalse(json_data['success'])
@@ -103,7 +118,7 @@ class NytReviewApiTests(unittest.TestCase):
     def test_no_original_title(self):
         self.login("Alex", "123")
         self.movie_data['original_title'] = None
-        response = self.app.post(self.end_point, json=self.movie_data, follow_redirects=True)
+        response = self.client.post(self.end_point, json=self.movie_data, follow_redirects=True)
         json_data = response.get_json()
         self.assertEqual(response.status_code, 400)
         self.assertFalse(json_data['success'])
@@ -111,7 +126,7 @@ class NytReviewApiTests(unittest.TestCase):
     def test_no_release_year(self):
         self.login("Alex", "123")
         self.movie_data['release_year'] = None
-        response = self.app.post(self.end_point, json=self.movie_data, follow_redirects=True)
+        response = self.client.post(self.end_point, json=self.movie_data, follow_redirects=True)
         json_data = response.get_json()
         self.assertEqual(response.status_code, 400)
         self.assertFalse(json_data['success'])
@@ -119,7 +134,7 @@ class NytReviewApiTests(unittest.TestCase):
     def test_no_release_date(self):
         self.login("Alex", "123")
         self.movie_data['release_date'] = None
-        response = self.app.post(self.end_point, json=self.movie_data, follow_redirects=True)
+        response = self.client.post(self.end_point, json=self.movie_data, follow_redirects=True)
         json_data = response.get_json()
         self.assertEqual(response.status_code, 400)
         self.assertFalse(json_data['success'])
@@ -128,7 +143,7 @@ class NytReviewApiTests(unittest.TestCase):
     def test_bad_title(self):
         self.login("Alex", "123")
         self.movie_data['title'] = ('bad', 'type')
-        response = self.app.post(self.end_point, json=self.movie_data, follow_redirects=True)
+        response = self.client.post(self.end_point, json=self.movie_data, follow_redirects=True)
         json_data = response.get_json()
         self.assertEqual(response.status_code, 400)
         self.assertFalse(json_data['success'])
@@ -136,7 +151,7 @@ class NytReviewApiTests(unittest.TestCase):
     def test_bad_original_title(self):
         self.login("Alex", "123")
         self.movie_data['original_title'] = ('bad', 'type')
-        response = self.app.post(self.end_point, json=self.movie_data, follow_redirects=True)
+        response = self.client.post(self.end_point, json=self.movie_data, follow_redirects=True)
         json_data = response.get_json()
         self.assertEqual(response.status_code, 400)
         self.assertFalse(json_data['success'])
@@ -144,7 +159,7 @@ class NytReviewApiTests(unittest.TestCase):
     def test_bad_release_year(self):
         self.login("Alex", "123")
         self.movie_data['release_year'] = ('bad', 'type')
-        response = self.app.post(self.end_point, json=self.movie_data, follow_redirects=True)
+        response = self.client.post(self.end_point, json=self.movie_data, follow_redirects=True)
         json_data = response.get_json()
         self.assertEqual(response.status_code, 400)
         self.assertFalse(json_data['success'])
@@ -152,7 +167,7 @@ class NytReviewApiTests(unittest.TestCase):
     def test_bad_release_date(self):
         self.login("Alex", "123")
         self.movie_data['release_date'] = ('bad', 'type')
-        response = self.app.post(self.end_point, json=self.movie_data, follow_redirects=True)
+        response = self.client.post(self.end_point, json=self.movie_data, follow_redirects=True)
         json_data = response.get_json()
         self.assertEqual(response.status_code, 400)
         self.assertFalse(json_data['success'])
@@ -162,7 +177,7 @@ class NytReviewApiTests(unittest.TestCase):
     def test_no_title(self):
         self.login("Alex", "123")
         self.movie_data['title'] = self.movie_data['original_title'] = 'Mulholland Five'
-        response = self.app.post(self.end_point, json=self.movie_data, follow_redirects=True)
+        response = self.client.post(self.end_point, json=self.movie_data, follow_redirects=True)
         json_data = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertFalse(json_data['success'])
@@ -177,7 +192,7 @@ class NytReviewApiTests(unittest.TestCase):
                         'release_year': 2999,
                         'release_date': '2999-12-31'
                       }
-        response = self.app.post(self.end_point, json=future_film, follow_redirects=True)
+        response = self.client.post(self.end_point, json=future_film, follow_redirects=True)
         json_data = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertFalse(json_data['success'])

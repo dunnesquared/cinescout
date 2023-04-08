@@ -7,7 +7,7 @@ from flask import request, redirect, url_for, abort, flash
 from flask_login import current_user, login_user, logout_user
 
 import flask_admin as admin
-from flask_admin.contrib import sqla
+# from flask_admin.contrib import sqla  # Not used in code
 from flask_admin import helpers, expose
 from flask_admin.contrib.sqla import ModelView
 

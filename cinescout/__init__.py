@@ -54,8 +54,8 @@ app.register_blueprint(errors_bp)
 from cinescout.auth import bp as auth_bp
 app.register_blueprint(auth_bp)
 
-from cinescout.admin import bp as admin_bp
-app.register_blueprint(admin_bp)
+# from cinescout.admin import bp as admin_bp
+# app.register_blueprint(admin_bp)
 
 from cinescout.api import bp as api_bp
 app.register_blueprint(api_bp, url_prefix='/api')
@@ -75,25 +75,25 @@ print("cinescout.models imported.")
 # https://github.com/flask-admin/flask-admin/tree/master/examples/auth-flask-login 
 # Many thanks.
 
-print("Setting up admin panel...")
+# print("Setting up admin panel...")
 
-from flask_admin import Admin, AdminIndexView
-from flask_admin.contrib.sqla import ModelView
-print("flask_admin classes imported.")
+# from flask_admin import Admin, AdminIndexView
+# from flask_admin.contrib.sqla import ModelView
+# print("flask_admin classes imported.")
 
-from cinescout import admin
+# from cinescout import admin
 
-# Link admin panel with map. 
-x_admin = Admin(app, 'Cinescout: Admin Panel', 
-              index_view=admin.routes.MyAdminIndexView(),
-              base_template="admin/accesscontrol.html")
-print("FlaskAdmin object initialized and applied to app.")
+# # Link admin panel with map. 
+# x_admin = Admin(app, 'Cinescout: Admin Panel', 
+#               index_view=admin.routes.MyAdminIndexView(),
+#               base_template="admin/accesscontrol.html")
+# print("FlaskAdmin object initialized and applied to app.")
 
-# Add which views of database tables you want authenticated supersuser(s) to see.
-x_admin.add_view(admin.routes.CinescoutModelView(models.User, db.session))
-x_admin.add_view(admin.routes.CinescoutModelView(models.Film, db.session))
-x_admin.add_view(admin.routes.CinescoutModelView(models.CriterionFilm, db.session))
-x_admin.add_view(admin.routes.CinescoutModelView(models.FilmListItem, db.session))
-print("flask_admin database views added.")
+# # Add which views of database tables you want authenticated supersuser(s) to see.
+# x_admin.add_view(admin.routes.CinescoutModelView(models.User, db.session))
+# x_admin.add_view(admin.routes.CinescoutModelView(models.Film, db.session))
+# x_admin.add_view(admin.routes.CinescoutModelView(models.CriterionFilm, db.session))
+# x_admin.add_view(admin.routes.CinescoutModelView(models.FilmListItem, db.session))
+# print("flask_admin database views added.")
 
 print("***End of __init__.py***")

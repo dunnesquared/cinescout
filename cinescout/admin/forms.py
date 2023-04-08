@@ -9,6 +9,8 @@ from wtforms.fields import EmailField
 from wtforms.validators import DataRequired, ValidationError, Email, EqualTo, Regexp, Length
 from cinescout.models import User
 
+# Application context required since package updates in v1.7.4
+from cinescout import app
 
 class AdminLoginForm(FlaskForm):
     """Form for admin to login into admin panel with views to database."""
@@ -19,7 +21,9 @@ class AdminLoginForm(FlaskForm):
 def userlist():
     """Helper functions that builds value-pairs used in the Reset Password form's dropdown list"""
     # Get names from from users' list.
-    usernames = [ user.username for user in User.query.all() ]
+    # Require application context before query since v1.7.4
+    with app.app_context():
+        usernames = [ user.username for user in User.query.all() ]
 
     # Build value-label list for dropdown menu.
     valuelabels = [ (name, name) for name in usernames ]

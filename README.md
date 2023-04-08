@@ -81,10 +81,21 @@ Note that this assumes you're okay using the default SQLite database. I'll leave
 if you want to use something else.
  
 ## Accessing the admin panel
+_N.B. As of April 2023, I have disabled the admin panel at http://127.0.0.1:5000/admin. 
+Until I fix its bugs, you can use the instructions below as a guide to add users
+or change passwords._
+
 1. After setting up `Cinescout` per the instructions above, run `flask shell`.
-2. Create user `admin` via SQLAlchemy API calls. Please look up how to do this; as an admin you 
-should know how. Please choose a strong password if you're making this project public in any way.
-3. Go to `http://127.0.0.1:5000/admin` and login. 
+2. Get a list of all users by entering the following Flask-SQLAlchemy 
+statement (skip to Step 4 if `admin` user exists): `users = User.query.all()`
+3. Create an `admin` user: `u = User(username="admin", email="admin@example.com")`
+4. Add or update the `admin` password.
+```sh
+  password = "alf89catZ!"
+  u.set_password(password)
+  db.session.add(u)
+  db.session.commit()
+```
 
 ## Files of note
 To keep things straight, let's look at the contents of each folder in the project, beginning at the project's root.
@@ -165,6 +176,8 @@ The `context` module makes running these tests possible.
 - `test_movies.py`: Performs unit tests on class methods in `movies` module.
 - `test_reviews.py`: Performs unit tests on class methods in `reviews` module.
 - `test.db`: SQLite test database.
+
+## Running tests
 
 To execute a test script, you can run the following on the console:
 

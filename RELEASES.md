@@ -1,5 +1,9 @@
 # Cinescout🎞: Releases
 
+### 1.7.5
+- Upgrade Flask to patch information-exposure vulnerability
+- Upgrade requests, certifi to patch certificate vulnerability
+
 ### 1.7.4
 - Update packages to fix DOS vulnerability
 - Add app context to prevent fatal exceptions

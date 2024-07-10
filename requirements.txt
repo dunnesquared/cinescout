@@ -34,4 +34,4 @@ update==0.0.1
 urllib3==1.26.7
 Werkzeug==2.2.3
 WTForms==3.0.0
-zipp==3.14.0
+zipp==3.19.1

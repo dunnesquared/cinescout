@@ -35,3 +35,4 @@ urllib3==1.26.7
 Werkzeug==2.2.3
 WTForms==3.0.0
 zipp==3.14.0
+setuptools>=70.0.0 # not directly required, pinned by Snyk to avoid a vulnerability
